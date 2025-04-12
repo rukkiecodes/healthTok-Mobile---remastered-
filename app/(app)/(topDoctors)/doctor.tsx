@@ -119,7 +119,7 @@ const doctor = () => {
                   >
                     <View>
                       <ThemedText type='subtitle' font='Poppins-Bold'>{item?.name}</ThemedText>
-                      <ThemedText type='body' font='Poppins-Regular'>{item?.specialization}</ThemedText>
+                      <ThemedText type='body' font='Poppins-Medium'>{item?.specialization}</ThemedText>
                     </View>
 
                     <View
@@ -146,10 +146,10 @@ const doctor = () => {
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'center',
-                        backgroundColor: `${accent}20`,
+                        backgroundColor: theme == 'dark' ? `${light}33` : `${accent}20`,
                         alignSelf: 'flex-start',
                         paddingHorizontal: 10,
-                        paddingVertical: 5,
+                        paddingVertical: 3,
                         borderRadius: 10,
                         gap: 5
                       }}
@@ -183,7 +183,8 @@ const doctor = () => {
                         contentFit='contain'
                         style={{
                           width: 20,
-                          height: 20
+                          height: 20,
+                          tintColor: theme == 'dark' ? light : appDark
                         }}
                       />
 
