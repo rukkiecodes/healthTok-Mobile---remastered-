@@ -7,31 +7,74 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '@/utils/fb'
+import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
+import { auth, db } from '@/utils/fb'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setAppointment, setDoctorProfile } from '@/store/slices/appointmentSlice'
 import { Paystack } from 'react-native-paystack-webview'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
+import { convertUSDToNGN } from '@/libraries/convertUSDToNGN';
+import { formatCurrency } from '@/libraries/formatMoney'
 const { width } = Dimensions.get('window')
 
+
+type DayObject = {
+  day: number;
+  dayName?: string;
+  month: string;
+  year: number;
+};
 
 
 export default function appointment () {
   const theme = useColorScheme()
-  const { doctorUID } = useLocalSearchParams()
+  const { doctorUID }: any = useLocalSearchParams()
   const dispatch = useDispatch()
   const bottomSheetRef = useRef<BottomSheet>(null)
+  const successBottomSheetRef = useRef<BottomSheet>(null)
 
   const { doctorProfile, selectedDate, selectedTime, appointment } = useSelector((state: RootState) => state.appointment)
+  const { profile } = useSelector((state: RootState) => state.profile)
 
   const [startPayment, setStartPayment] = useState(false)
+  const [dateString, setDateString] = useState(null)
+  const [amount, setAmount] = useState(32)
+  const [convertedAmount, setConvertedAmount] = useState(0)
 
   const fetchDoctorProfile = async () => {
     const profile: any = (await getDoc(doc(db, 'users', String(doctorUID)))).data()
     dispatch(setDoctorProfile(profile))
   }
+
+  function convertToFormattedDateString (obj: DayObject): string | null {
+    const fullMonthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const monthIndex = fullMonthNames.findIndex(
+      (m) => m.toLowerCase() === obj.month.toLowerCase()
+    );
+
+    if (monthIndex === -1) {
+      console.warn("Invalid month name:", obj.month);
+      return null;
+    }
+
+    const date = new Date(obj.year, monthIndex, obj.day);
+
+    // Format: "Thursday, Jul 24, 2024"
+    const formatted = new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(date);
+
+    return formatted;
+  }
+
 
   const reasonsToSeeDoctor = [
     "Erectile Dysfunction",
@@ -76,13 +119,104 @@ export default function appointment () {
     />
   ), []);
 
+  const proccessPayment = async (payment: any) => {
+    if (payment.data.transactionRef?.status != 'success') return
+    successBottomSheetRef.current?.expand()
+
+    await addDoc(collection(db, 'users', String(auth.currentUser?.uid), 'transactions'), {
+      transaction: payment.data.transactionRef,
+      doctor: doctorProfile,
+      appointment: {
+        appointment,
+        selectedTime,
+        selectedDate
+      },
+      timestamp: serverTimestamp()
+    })
+  }
+
+  const startChatWithDoctor = async () => {
+    const user = auth.currentUser;
+
+    if (!user?.uid || !doctorUID) return;
+
+    try {
+      // Check if a chat already exists between patient and doctor
+      const chatQuery = query(
+        collection(db, 'chats'),
+        where('participants', 'array-contains', user.uid)
+      );
+
+      const querySnapshot = await getDocs(chatQuery);
+      let chatExists = false;
+      let existingChatId: string | null = null;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.participants.includes(doctorUID)) {
+          chatExists = true;
+          existingChatId = doc.id;
+        }
+      });
+
+      let chatDocRef;
+
+      if (!chatExists) {
+        // Create a new chat document
+        chatDocRef = await addDoc(collection(db, 'chats'), {
+          participants: [user.uid, doctorUID],
+          createdAt: new Date(),
+          lastMessage: null,
+          isConsultionOpen: true,
+          doctor: {
+            uid: doctorUID,
+            name: doctorProfile?.name || '',
+            photoURL: (doctorProfile?.displayImage ? doctorProfile?.displayImage?.image : doctorProfile?.profilePicture) || '',
+          },
+          patient: {
+            uid: user.uid,
+            name: profile?.name || '',
+            photoURL: (profile?.displayImage ? profile?.displayImage?.image : profile?.profilePicture) || '',
+          },
+        });
+      } else {
+        chatDocRef = doc(db, 'chats', existingChatId!);
+      }
+
+      // Fetch the messages in the chat
+      const messagesSnapshot = await getDocs(collection(chatDocRef, 'messages'));
+      const messages = messagesSnapshot.docs.map((doc) => doc.data());
+
+      // Navigate to the chat screen with preloaded messages
+      router.push({
+        pathname: '/(app)/(chats)/[chatId]',
+        params: { chatId: chatDocRef.id },
+      });
+    } catch (error) {
+      console.error('Error starting chat:', error);
+    }
+  }
+
 
 
 
 
   useEffect(() => {
-    fetchDoctorProfile()
-  }, [doctorUID])
+    (() => {
+      const input: any = { ...selectedDate };
+      const result: any = convertToFormattedDateString(input);
+      setDateString(result)
+
+      fetchDoctorProfile()
+    })()
+  }, [doctorUID, selectedDate])
+
+  useEffect(() => {
+    (async () => {
+      const money: any = await convertUSDToNGN(amount)
+      setConvertedAmount(money)
+    })()
+  }, []);
 
   return (
     <PaperProvider>
@@ -257,7 +391,7 @@ export default function appointment () {
               />
             </View>
 
-            <ThemedText>Thursday, Jul 24, 2024| 10:00 AM</ThemedText>
+            <ThemedText>{dateString || ''} | {selectedTime?.time || ''}</ThemedText>
           </View>
         </View>
 
@@ -370,13 +504,11 @@ export default function appointment () {
         {startPayment && (
           <Paystack
             paystackKey="pk_test_514af104c122b28a6581b6d5371ca893a82c0c98"
-            amount={'25000.00'}
-            billingEmail="rukkiecodes@gmail.com"
-            activityIndicatorColor="green"
+            amount={convertedAmount}
+            billingEmail={String(profile?.email)}
+            activityIndicatorColor={accent}
             onCancel={() => { }}
-            onSuccess={(res) => {
-              console.log(res)
-            }}
+            onSuccess={(res) => proccessPayment(res)}
             autoStart={true}
           />
         )}
@@ -399,18 +531,20 @@ export default function appointment () {
           }}
         >
           <ThemedText type='default'>Total</ThemedText>
-          <ThemedText type='subtitle' font='Poppins-Bold'>$32.00</ThemedText>
+          <ThemedText type='subtitle' font='Poppins-Bold'>{formatCurrency(amount)}</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => setStartPayment(true)}
+          disabled={!convertedAmount}
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: accent,
             borderRadius: 20,
-            height: 50
+            height: 50,
+            opacity: convertedAmount ? 1 : 0.6
           }}
         >
           <ThemedText lightColor={light} font='Poppins-Bold' type='body'>Book Apointment</ThemedText>
@@ -427,7 +561,7 @@ export default function appointment () {
         animateOnMount
         backdropComponent={renderBackdrop}
       >
-        <BottomSheetScrollView>
+        <BottomSheetScrollView contentContainerStyle={{ gap: 20, padding: 20 }}>
           {
             reasonsToSeeDoctor.map((item, index) => (
               <TouchableOpacity
@@ -440,6 +574,8 @@ export default function appointment () {
                 }}
                 style={{
                   height: 50,
+                  backgroundColor: appointment?.reason == item ? `${accent}33` : transparent,
+                  borderRadius: 20,
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center'
@@ -450,6 +586,65 @@ export default function appointment () {
             ))
           }
         </BottomSheetScrollView>
+      </BottomSheet>
+
+
+      <BottomSheet
+        index={-1}
+        ref={successBottomSheetRef}
+        snapPoints={[500]}
+        enablePanDownToClose
+        enableOverDrag
+        enableDynamicSizing={false}
+        animateOnMount
+        backdropComponent={renderBackdrop}
+      >
+        <BottomSheetView
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 20,
+            padding: 40
+          }}
+        >
+          <View
+            style={{
+              width: 120,
+              height: 120,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: `${accent}33`,
+              borderRadius: '50%'
+            }}
+          >
+            <Image
+              source={require('@/assets/images/icons/check.png')}
+              style={{
+                width: 80,
+                height: 80
+              }}
+            />
+          </View>
+          <ThemedText type='title' font='Poppins-Bold' darkColor={appDark}>Payment  Success</ThemedText>
+
+          <ThemedText type='default' font='Poppins-Regular' opacity={0.5} darkColor={appDark} style={{ textAlign: 'center' }}>
+            Your payment has been successful, you can have a consultation session with your trusted doctor
+          </ThemedText>
+
+          <TouchableOpacity
+            onPress={() => startChatWithDoctor()}
+            style={{
+              paddingHorizontal: 40,
+              height: 50,
+              backgroundColor: accent,
+              borderRadius: 50,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <ThemedText type='body' font='Poppins-Bold' lightColor={light}>Chat Doctor</ThemedText>
+          </TouchableOpacity>
+        </BottomSheetView>
       </BottomSheet>
     </PaperProvider>
   )

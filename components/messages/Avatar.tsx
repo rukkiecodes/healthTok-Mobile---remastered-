@@ -13,8 +13,11 @@ const Avatar = ({ user, size }: AvatarProps) => {
   const [avatar, setAvatar] = useState<string | ''>('')
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'users', String(user)),
-      doc => setAvatar(doc?.data()?.photoURL))
+    const unsub = onSnapshot(doc(db, 'users', String(user)), doc => {
+      const usersDoc = doc.data()
+
+      setAvatar(usersDoc?.displayImage ? usersDoc?.displayImage?.image : usersDoc?.profilePicture)
+    })
     return unsub
   }, [])
 

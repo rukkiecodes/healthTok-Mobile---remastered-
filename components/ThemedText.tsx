@@ -7,7 +7,24 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'caption' | 'body';
-  font?: 'Poppins-Black' | 'Poppins-BlackItalic' | 'Poppins-Bold' | 'Poppins-BoldItalic' | 'Poppins-Italic' | 'Poppins-Light' | 'Poppins-LightItalic' | 'Poppins-Regular' | 'Poppins-Thin' | 'Poppins-ThinItalic'
+  font?: 'Poppins-Black' |
+  'Poppins-BlackItalic' |
+  'Poppins-Bold' |
+  'Poppins-BoldItalic' |
+  'Poppins-ExtraBold' |
+  'Poppins-ExtraBoldItalic' |
+  'Poppins-ExtraLight' |
+  'Poppins-ExtraLightItalic' |
+  'Poppins-Italic' |
+  'Poppins-Light' |
+  'Poppins-LightItalic' |
+  'Poppins-Medium' |
+  'Poppins-MediumItalic' |
+  'Poppins-Regular' |
+  'Poppins-SemiBold' |
+  'Poppins-SemiBoldItalic' |
+  'Poppins-Thin' |
+  'Poppins-ThinItalic'
   opacity?: number
 };
 
