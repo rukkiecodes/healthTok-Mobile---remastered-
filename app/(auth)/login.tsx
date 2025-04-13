@@ -6,11 +6,27 @@ import { accent, appDark, dark, light } from '@/utils/colors'
 import { auth, db } from '@/utils/fb'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { useState } from 'react'
 import { View, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
+import Constants from "expo-constants";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+const { webClientId, iosClientId } = Constants.expoConfig?.extra?.expoPublic || {};
+
+GoogleSignin.configure({
+  webClientId: webClientId,
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+  hostedDomain: '', // specifies a hosted domain restriction
+  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
+  accountName: '', // [Android] specifies an account name on the device that should be used
+  iosClientId: iosClientId,
+  googleServicePlistPath: '/GoogleService-Info.plist', // [iOS] The path to the GoogleService-Info.plist file in your project. This is used to configure the Google Sign-In SDK.
+  openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+  profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+});
 
 export default function login () {
   const theme = useColorScheme()
@@ -19,6 +35,38 @@ export default function login () {
   const [password, setPassword] = useState('')
   const [peek, setPeek] = useState(false)
   const [loading, setLoading] = useState(false)
+  
+  const googleAuth = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const result = await GoogleSignin.signIn();
+
+      const { idToken }: any = result?.data;
+
+      if (!idToken) {
+        return;
+      }
+
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      const user = userCredential.user;
+
+      const q = query(collection(db, "users"), where("uid", "==", user.uid));
+      const userSnapshot = await getDocs(q);
+
+      if (userSnapshot.empty) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          profilePicture: user.photoURL,
+          createdAt: serverTimestamp(),
+        });
+      }
+    } catch (error) {
+      console.log('Error signing in', error);
+    }
+  }
 
   const signIn = async () => {
     try {
@@ -192,6 +240,7 @@ export default function login () {
 
             <View style={{ gap: 20 }}>
               <TouchableOpacity
+                onPress={() => googleAuth()}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',

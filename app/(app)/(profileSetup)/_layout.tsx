@@ -94,7 +94,7 @@ export default function _layout () {
               height: 150,
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: '50%'
+              borderRadius: 100
             }}
           >
             <Image

@@ -1,252 +1,209 @@
-import { View, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import { View, TouchableOpacity, Platform, Keyboard } from 'react-native'
+import React from 'react'
+import { ActivityIndicator, Appbar, Checkbox, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
-import { ThemedText } from '@/components/ThemedText'
-import { useThemeColor } from '@/hooks/useThemeColor'
 import { router } from 'expo-router'
-import AuthInputs from '@/components/auth/Inputs'
-import { ScrollView } from 'react-native-gesture-handler'
-import { useDispatch, useSelector } from 'react-redux'
-import { setSignupObject } from '@/features/userSlice'
-import { Appbar, PaperProvider } from 'react-native-paper'
-import { RootState } from '@/utils/store'
+import { Image } from 'expo-image'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { accent, amber, black, dark, light, transparent } from '@/utils/colors'
+import { accent, appDark, black, dark, light } from '@/utils/colors'
+import { ThemedText } from '@/components/ThemedText'
+import { Input } from '@/components/auth/Input'
+import { KeyboardAvoidingView } from 'react-native'
+import { TouchableWithoutFeedback } from 'react-native'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth, db } from '@/utils/fb'
+import { collection, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 
-const SignupScreen = () => {
-  const colorScheme = useColorScheme()
-  const dispatch = useDispatch()
-  const { signupObject } = useSelector((state: RootState) => state.user);
+export default function Signup () {
+  const theme = useColorScheme()
 
-  const buttonBackground = useThemeColor({ light: accent, dark: amber }, 'background');
-  const buttonBackgroundText = useThemeColor({ light, dark }, 'text');
-  const outlineColor = useThemeColor({ light: black, dark: light }, 'text');
+  const [name, setName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [peek, setPeek] = React.useState(false)
+  const [checked, setChecked] = React.useState(false);
+  const [loading, setLoading] = React.useState(false)
 
-  const [fullName, setFullName] = useState<string>(signupObject.fullName);
-  const [username, setUsername] = useState<string>(signupObject.username);
-  const [companyName, setCompanyName] = useState<string>(signupObject.companyName);
-  const [email, setEmail] = useState<string>(signupObject.email);
-  const [phone, setPhone] = useState<string>(signupObject.phone);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [password, setPassword] = useState<string>(signupObject.password);
-  const [confirmPassword, setConfirmPassword] = useState<string>(signupObject.confirmPassword);
+  const signUpUser = async () => {
+    if (!name || !email || !password) {
+      alert('Please fill all fields')
+      return
+    }
 
-  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
+    try {
+      setLoading(true)
+      const { user } = await createUserWithEmailAndPassword(auth, email, password)
 
-  const next = () => {
-    if (!fullName || !username || !email || !phone || !password || !confirmPassword) return;
+      const q = query(collection(db, "users"), where("uid", "==", user.uid));
+      const userSnapshot = await getDocs(q);
 
-    dispatch(
-      setSignupObject({
-        ...signupObject,
-        fullName,
-        username,
-        companyName,
-        email,
-        phone,
-        password,
-        confirmPassword
-      })
-    );
+      if (userSnapshot.empty) saveUser(user.uid, name, email)
+      setLoading(false)
+    } catch (error: any) {
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          alert('Email already in use')
+          break
+        case 'auth/invalid-email':
+          alert('Invalid email')
+          break
+        case 'auth/weak-password':
+          alert('Weak password')
+          break
+        default:
+          alert('Error signing up')
+          break
+      }
 
-    if (signupObject.joiningAs == 'artisan')
-      router.navigate('/(auth)/artisanDetails')
-    else
-      router.navigate('/(auth)/displayPics')
-      // router.navigate('/(auth)/verifyEmail')
+      setLoading(false)
+    }
   }
 
-  const handlePhoneChange = (text: string): void => {
-    // Remove any non-digit characters
-    let sanitizedText = text.replace(/\D/g, '');
-
-    // Check if the number starts with '0' and display an error message
-    if (sanitizedText.startsWith('0')) {
-      setErrorMessage("Please don't start with '0'. Enter your number without the leading zero.");
-    } else {
-      setErrorMessage('');
-    }
-
-    // Limit the phone number to 10 digits
-    if (sanitizedText.length > 10) {
-      sanitizedText = sanitizedText.slice(0, 10);
-    }
-
-    // Format the phone number as 916 642 2808 (without country code)
-    if (sanitizedText.length === 10) {
-      sanitizedText = sanitizedText.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-    }
-
-    setPhone(sanitizedText);
-  };
+  const saveUser = async (uid: string, name: string, email: string) => {
+    await setDoc(doc(db, "users", uid), {
+      uid: uid,
+      email,
+      name,
+      profilePicture: null,
+      createdAt: serverTimestamp(),
+    });
+  }
 
   return (
     <PaperProvider>
-      <ThemedView style={{ flex: 1, paddingHorizontal: 20 }}>
-        <Appbar.Header mode='small' style={{ backgroundColor: transparent }}>
-          <Appbar.BackAction onPress={router.back} />
-        </Appbar.Header>
+      <Appbar.Header
+        style={{
+          backgroundColor: theme == 'dark' ? appDark : light,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{
+            width: 50,
+            height: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Image
+            source={require('@/assets/images/icons/arrow_left.png')}
+            style={{
+              tintColor: theme == 'dark' ? light : accent,
+              width: 25,
+              height: 25,
+            }}
+          />
+        </TouchableOpacity>
 
-        <ThemedText type='title' font='Poppins-Bold'> Join healthTok </ThemedText>
+        <ThemedText type='subtitle' font='Poppins-Bold'>Sign up</ThemedText>
 
-        <ThemedText style={{ marginTop: 10 }}>
-          Create your account with us to explore amazing offers and unique products.
-        </ThemedText>
+        <View style={{ width: 60 }} />
+      </Appbar.Header>
 
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 20 }}>
-            <AuthInputs
-              value={fullName}
-              updateValue={text => setFullName(text)}
-              placeholder='Enter Full Name'
-              label='Full Name'
-              separation={20}
-              passwordMode={false}
-            />
-
-            <AuthInputs
-              value={username}
-              updateValue={text => setUsername(text)}
-              placeholder='Enter Username'
-              label='Username'
-              separation={30}
-              passwordMode={false}
-            />
-
-            {
-              signupObject.joiningAs == 'artisan' &&
-              <AuthInputs
-                value={companyName}
-                updateValue={text => setCompanyName(text)}
-                placeholder='Enter Company Name'
-                label='Company Name'
-                separation={30}
-                passwordMode={false}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <ThemedView style={{ flex: 1, paddingHorizontal: 20 }}>
+            <View style={{ marginTop: 50 }}>
+              <Input
+                value={name}
+                updateValue={setName}
+                label={'Enter your name'}
+                left={require('@/assets/images/icons/user_alt.png')}
               />
-            }
 
-            <AuthInputs
-              value={email}
-              updateValue={text => setEmail(text)}
-              placeholder='Email Address'
-              label='Email Address'
-              separation={30}
-              passwordMode={false}
-              inputMode='email'
-            />
+              <Input
+                gap={20}
+                value={email}
+                updateValue={setEmail}
+                label={'Enter your email'}
+                left={require('@/assets/images/icons/mail.png')}
+              />
+
+              <Input
+                gap={20}
+                peek={peek}
+                setPeek={setPeek}
+                updateValue={setPassword}
+                right={true}
+                value={password}
+                secureTextEntry={!peek}
+                style={{ paddingRight: 50 }}
+                label={'Enter your password'}
+                left={require('@/assets/images/icons/lock.png')}
+              />
+            </View>
 
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
-                borderWidth: .3,
-                borderColor: outlineColor,
-                height: 50,
-                borderRadius: 10,
-                borderCurve: 'continuous',
-                paddingHorizontal: 20,
-                gap: 20,
-                marginTop: 40
+                marginTop: 20,
               }}
             >
-              <ThemedText>+234</ThemedText>
-              <TextInput
-                value={phone}
-                onChangeText={handlePhoneChange}
-                keyboardType='phone-pad'
-                placeholderTextColor={colorScheme === 'dark' ? `${light}33` : `${dark}33`}
-                placeholder='Phone Number'
-                keyboardAppearance='default'
-                style={{
-                  flex: 1,
-                  height: '70%',
-                  borderLeftWidth: 1,
-                  paddingHorizontal: 20,
-                  borderLeftColor: `${outlineColor}33`,
-                  color: outlineColor,
+              <Checkbox
+                status={checked ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setChecked(!checked);
                 }}
+                color={theme == 'dark' ? light : accent}
+                uncheckedColor={theme == 'dark' ? light : black}
               />
+
+              <ThemedText type='body'>
+                I agree to the healthtok
+                <ThemedText
+                  lightColor={accent}
+                  type='body'
+                  style={{
+                    textDecorationLine: theme == 'dark' ? "underline" : "none"
+                  }}
+                >
+                  Terms of Service and Privacy Policy
+                </ThemedText>
+              </ThemedText>
             </View>
-            {errorMessage ? (
-              <ThemedText type='body' style={{ color: 'red', marginTop: 5 }}>{errorMessage}</ThemedText>
-            ) : null}
 
-            <AuthInputs
-              value={password}
-              updateValue={text => setPassword(text)}
-              placeholder='******'
-              label='* Password'
-              separation={30}
-              passwordMode={true}
-            />
-            {
-              password?.length >= 1 &&
-              <>
-                {
-                  !passwordRegex.test(password) &&
-                  <ThemedText style={{ opacity: 0.6, color: 'red' }}>
-                    Must have at least 6 characters, one special character, one number and only one uppercase
-                  </ThemedText>
-                }
-              </>
-            }
+            <TouchableOpacity
+              onPress={signUpUser}
+              disabled={!checked}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 10,
+                backgroundColor: accent,
+                width: '100%',
+                height: 50,
+                paddingHorizontal: 20,
+                borderRadius: 50,
+                marginTop: 20,
+                opacity: checked ? 1 : 0.5,
+              }}
+            >
+              {loading && <ActivityIndicator size={18} color={light} />}
+              <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Sign Up</ThemedText>
+            </TouchableOpacity>
 
-            <AuthInputs
-              value={confirmPassword}
-              updateValue={text => setConfirmPassword(text)}
-              placeholder='******'
-              label='* Confirm password'
-              separation={30}
-              passwordMode={true}
-            />
-            {
-              confirmPassword?.length >= 1 &&
-              <>
-                {
-                  password !== confirmPassword &&
-                  <ThemedText style={{ opacity: 0.6, color: 'red' }}>
-                    Must have at least 6 characters, one special character, one number and only one uppercase
-                  </ThemedText>
-                }
-              </>
-            }
-          </ScrollView>
-        </KeyboardAvoidingView>
-
-
-        <TouchableOpacity
-          onPress={next}
-          style={{
-            marginTop: 20,
-            height: 50,
-            borderRadius: 50,
-            borderCurve: 'continuous',
-            backgroundColor: buttonBackground,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <ThemedText style={{ color: buttonBackgroundText }}>Register</ThemedText>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity
-          onPress={() => router.navigate('/(auth)/login')}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 10,
-            height: 50,
-            marginTop: 20
-          }}
-        >
-          <ThemedText>Already have an account?</ThemedText><ThemedText style={{ color: amber }}>Login</ThemedText>
-        </TouchableOpacity>
-      </ThemedView>
+            <TouchableOpacity
+              onPress={() => router.navigate('/(auth)/login')}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 20,
+                gap: 10,
+              }}
+            >
+              <ThemedText type='body'>Already have an account? </ThemedText>
+              <ThemedText type='body' lightColor={accent}>Sign In</ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </PaperProvider>
   )
 }
-
-export default SignupScreen

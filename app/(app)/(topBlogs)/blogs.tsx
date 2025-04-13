@@ -1,31 +1,68 @@
-import { View, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { ThemedText } from '../ThemedText'
+import { Appbar, PaperProvider } from 'react-native-paper'
+import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { accent, appDark, black, light } from '@/utils/colors'
-import { Image } from 'expo-image'
-import { useColorScheme } from '@/hooks/useColorScheme'
 import { router } from 'expo-router'
+import { Image } from 'expo-image'
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
 
-export function TopBlogs() {
+export default function blogs () {
   const theme = useColorScheme()
 
   return (
-    <View style={{ paddingHorizontal: 20, flex: 1 }}>
-      <View
+    <PaperProvider>
+      <Appbar.Header
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          backgroundColor: theme == 'dark' ? appDark : light,
         }}
       >
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{
+            width: 50,
+            height: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Image
+            source={require('@/assets/images/icons/arrow_left.png')}
+            style={{
+              tintColor: theme == 'dark' ? light : appDark,
+              width: 25,
+              height: 25,
+            }}
+          />
+        </TouchableOpacity>
+
         <ThemedText type='subtitle' font='Poppins-Bold'>Top Blogs</ThemedText>
 
-        <TouchableOpacity onPress={() => router.navigate('/(app)/(topBlogs)/blogs')}>
-          <ThemedText type='body' font='Poppins-Bold' lightColor={accent}>See all</ThemedText>
+        <TouchableOpacity
+          style={{
+            width: 50,
+            height: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Image
+            source={require('@/assets/images/icons/dots_vertical.png')}
+            contentFit='contain'
+            style={{
+              tintColor: theme == 'dark' ? light : appDark,
+              width: 20,
+              height: 20,
+            }}
+          />
         </TouchableOpacity>
-      </View>
+      </Appbar.Header>
 
-      <View style={{ gap: 20, marginTop: 20 }}>
+      <ThemedView style={{ flex: 1, padding: 20 }}>
         <TouchableOpacity
           style={{
             backgroundColor: theme == 'dark' ? appDark : light,
@@ -100,7 +137,7 @@ export function TopBlogs() {
             <ThemedText type='body' font='Poppins-Medium'>By Dr Steve</ThemedText>
           </View>
         </TouchableOpacity>
-      </View>
-    </View>
+      </ThemedView>
+    </PaperProvider>
   )
 }

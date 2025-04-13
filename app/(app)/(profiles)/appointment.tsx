@@ -302,7 +302,7 @@ export default function appointment () {
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
-                backgroundColor: `${accent}33`,
+                backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                 alignSelf: 'flex-start',
                 paddingHorizontal: 10,
                 paddingVertical: 3,
@@ -614,14 +614,15 @@ export default function appointment () {
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: `${accent}33`,
-              borderRadius: '50%'
+              borderRadius: 100
             }}
           >
             <Image
               source={require('@/assets/images/icons/check.png')}
               style={{
                 width: 80,
-                height: 80
+                height: 80,
+                tintColor: accent
               }}
             />
           </View>

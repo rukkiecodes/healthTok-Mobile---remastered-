@@ -57,7 +57,7 @@ export function QuickAccess () {
           style={{
             width: 150,
             height: 150,
-            borderRadius: '50%',
+            borderRadius: 100,
             position: 'absolute',
             right: 20,
             bottom: 0
@@ -113,7 +113,7 @@ export function QuickAccess () {
           style={{
             width: 150,
             height: 150,
-            borderRadius: '50%',
+            borderRadius: 100,
             position: 'absolute',
             right: 20,
             bottom: 0

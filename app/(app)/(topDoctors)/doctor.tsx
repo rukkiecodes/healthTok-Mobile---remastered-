@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
@@ -7,7 +7,7 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
 import { db } from '@/utils/fb'
 import { ThemedText } from '@/components/ThemedText'
 import { FlashList } from '@shopify/flash-list';
-import { accent, appDark, dark, green, light } from '@/utils/colors'
+import { accent, appDark, black, dark, green, light, transparent } from '@/utils/colors'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { Image } from 'expo-image'
 
@@ -96,7 +96,7 @@ const doctor = () => {
                   style={{
                     width: 120,
                     height: 120,
-                    borderRadius: '50%',
+                    borderRadius: 100,
                     overflow: 'hidden'
                   }}
                 >

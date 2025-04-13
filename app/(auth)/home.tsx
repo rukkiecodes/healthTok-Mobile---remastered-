@@ -19,7 +19,7 @@ const WelcomeScreen = () => {
     <PaperProvider>
       <ThemedView style={{ flex: 1, position: 'relative' }}>
         <Image
-          source={require('@/assets/images/images/step1.png')}
+          source={require('@/assets/images/images/step1.jpg')}
           contentFit='cover'
           style={{
             width: width,

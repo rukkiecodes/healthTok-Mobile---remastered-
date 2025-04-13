@@ -54,7 +54,7 @@ export default function profile () {
             style={{
               width: 100,
               height: 100,
-              borderRadius: '50%',
+              borderRadius: 100,
               backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
               justifyContent: 'center',
               alignItems: 'center'
@@ -116,7 +116,7 @@ export default function profile () {
               backgroundColor: theme == 'dark' ? appDark : light,
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: '50%',
+              borderRadius: 100,
               position: 'relative'
             }}
           >
@@ -127,7 +127,7 @@ export default function profile () {
                 backgroundColor: theme == 'dark' ? appDark : light,
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: '50%',
+                borderRadius: 100,
                 overflow: 'hidden'
               }}
             >
@@ -152,7 +152,7 @@ export default function profile () {
                 height: 25,
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: '50%',
+                borderRadius: 100,
                 position: 'absolute',
                 bottom: 5,
                 right: 5
@@ -205,7 +205,7 @@ export default function profile () {
                   height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: '50%',
+                  borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
@@ -255,7 +255,7 @@ export default function profile () {
                   height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: '50%',
+                  borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
@@ -305,7 +305,7 @@ export default function profile () {
                   height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: '50%',
+                  borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
@@ -355,7 +355,7 @@ export default function profile () {
                   height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: '50%',
+                  borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
@@ -406,7 +406,7 @@ export default function profile () {
                   height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: '50%',
+                  borderRadius: 100,
                   backgroundColor: `${red}33`
                 }}
               >

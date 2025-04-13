@@ -115,10 +115,13 @@ export default function _layout () {
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  router.push({
-                    pathname: '/(app)/(topDoctors)/doctor',
-                    params: { item }
-                  })
+                  if (item == 'Mood Tracker')
+                    router.navigate('/(app)/(moodTracker)/home')
+                  else
+                    router.push({
+                      pathname: '/(app)/(topDoctors)/doctor',
+                      params: { item }
+                    })
                   bottomSheetRef.current?.close()
                 }}
                 style={{
