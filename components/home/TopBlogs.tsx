@@ -20,7 +20,7 @@ export function TopBlogs() {
       >
         <ThemedText type='subtitle' font='Poppins-Bold'>Top Blogs</ThemedText>
 
-        <TouchableOpacity onPress={() => router.navigate('/(app)/(topBlogs)/blogs')}>
+        <TouchableOpacity onPress={() => router.navigate('/(app)/(patient)/(topBlogs)/blogs')}>
           <ThemedText type='body' font='Poppins-Bold' lightColor={accent}>See all</ThemedText>
         </TouchableOpacity>
       </View>

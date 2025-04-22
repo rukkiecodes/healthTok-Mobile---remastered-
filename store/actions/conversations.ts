@@ -19,7 +19,6 @@ const fetchProfileByUID = async (uid: string): Promise<Profile | null> => {
     const snapshot = await getDoc(ref);
     return snapshot.exists() ? (snapshot.data() as Profile) : null;
   } catch (error) {
-    console.error(`Error fetching profile for uid ${uid}:`, error);
     return null;
   }
 };

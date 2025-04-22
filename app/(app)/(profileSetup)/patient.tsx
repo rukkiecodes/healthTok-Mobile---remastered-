@@ -11,6 +11,7 @@ import { ThemedView } from '@/components/ThemedView'
 import { auth, db } from '@/utils/fb'
 import { doc, updateDoc } from 'firebase/firestore'
 import { RootState } from '@/store/store'
+// import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 export default function patient () {
   const dispatch = useDispatch()
@@ -25,6 +26,27 @@ export default function patient () {
   const [referralCode, setReferralCode] = useState<string>(profile?.referralCode || '')
   const [checked, setChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [open, setOpen] = useState(false)
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
+
+  // const showMode = (currentMode) => {
+  //   DateTimePickerAndroid.open({
+  //     value: date,
+  //     onChange,
+  //     mode: currentMode,
+  //     is24Hour: true,
+  //   });
+  // };
+
+  // const showDatepicker = () => {
+  //   showMode('date');
+  // };
 
   const setupProfile = async () => {
     const { uid }: any = auth.currentUser
@@ -166,6 +188,7 @@ export default function patient () {
               }
 
               <TouchableOpacity
+                // onPress={showDatepicker}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',

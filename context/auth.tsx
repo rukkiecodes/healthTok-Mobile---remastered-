@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { User } from "@/utils/types";
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { User } from "@/store/types/types";
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import { setUser } from '@/features/userSlice';
+import { setUser } from '@/store/slices/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedView } from '@/components/ThemedView';
 import { ActivityIndicator } from 'react-native-paper';
@@ -32,23 +32,23 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
   const [loading, setLoading] = useState(true);
   const [authState, setAuthState] = useState(false);
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      // Set up Firebase auth state persistence
-      const unsubscribe = setupAuthStatePersistence((firebaseUser) => {
-        if (firebaseUser) {
-          setAuthState(true);
-          dispatch(setUser(firebaseUser));
-        } else {
-          setAuthState(false);
-          dispatch(setUser(null));
-        }
-        setLoading(false); // Set loading to false once auth state is determined
-      });
+  const initializeAuth = async () => {
+    // Set up Firebase auth state persistence
+    const unsubscribe = setupAuthStatePersistence((firebaseUser) => {
+      if (firebaseUser) {
+        setAuthState(true);
+        dispatch(setUser(firebaseUser));
+      } else {
+        setAuthState(false);
+        dispatch(setUser(null));
+      }
+      setLoading(false); // Set loading to false once auth state is determined
+    });
 
-      return unsubscribe; // Cleanup on component unmount
-    };
-
+    return unsubscribe; // Cleanup on component unmount
+  };
+  
+  useLayoutEffect(() => {
     initializeAuth();
   }, [dispatch]);
 
@@ -57,7 +57,7 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
       if (!authState)
         router.replace("/(auth)/home");
       else
-        router.replace("/(app)/(tabs)/home");
+        router.replace("/(app)/(split)");
     }
   }, [authState, loading]);
 

@@ -9,8 +9,6 @@ export const fetchProfile: any = () => async (dispatch: AppDispatch) => {
     const { uid }: any = auth.currentUser
     if(!uid) return
 
-    if (!uid) return;
-
     const unsub = onSnapshot(doc(db, "users", uid), (docSnapshot) => {
       if (docSnapshot.exists()) {
         const profileData: any = docSnapshot.data();
