@@ -1,22 +1,21 @@
 import { Dimensions, ScrollView, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Appbar, Divider, PaperProvider } from 'react-native-paper'
+import { ActivityIndicator, Appbar, Divider, Modal, PaperProvider, Portal } from 'react-native-paper'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { accent, appDark, light, transparent } from '@/utils/colors'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setAppointment, setDoctorProfile } from '@/store/slices/appointmentSlice'
-import { Paystack } from 'react-native-paystack-webview'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
 import { convertUSDToNGN } from '@/libraries/convertUSDToNGN';
 import { formatCurrency } from '@/libraries/formatMoney'
-const { width } = Dimensions.get('window')
+import { WebView } from 'react-native-webview';
 
 
 type DayObject = {
@@ -26,25 +25,35 @@ type DayObject = {
   year: number;
 };
 
+interface PaymentProp {
+  reference?: string
+  status?: string
+}
+
 
 export default function appointment () {
+  const webviewRef = useRef(null);
   const theme = useColorScheme()
   const { doctorUID }: any = useLocalSearchParams()
   const dispatch = useDispatch()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const successBottomSheetRef = useRef<BottomSheet>(null)
 
-  const { doctorProfile, selectedDate, selectedTime, appointment } = useSelector((state: RootState) => state.appointment)
+  const { doctorProfile, selectedDate, selectedTime, appointment }: any = useSelector((state: RootState) => state.appointment)
   const { profile } = useSelector((state: RootState) => state.profile)
 
   const [startPayment, setStartPayment] = useState(false)
   const [dateString, setDateString] = useState(null)
   const [amount, setAmount] = useState(32)
   const [convertedAmount, setConvertedAmount] = useState(0)
+  const [visible, setVisible] = useState(false);
 
   const fetchDoctorProfile = async () => {
-    const profile: any = (await getDoc(doc(db, 'users', String(doctorUID)))).data()
-    dispatch(setDoctorProfile(profile))
+    const profile: any = await getDoc(doc(db, 'users', String(doctorUID)))
+    dispatch(setDoctorProfile({
+      id: profile.id,
+      ...profile.data()
+    }))
   }
 
   function convertToFormattedDateString (obj: DayObject): string | null {
@@ -119,12 +128,41 @@ export default function appointment () {
     />
   ), []);
 
-  const proccessPayment = async (payment: any) => {
-    if (payment.data.transactionRef?.status != 'success') return
-    successBottomSheetRef.current?.expand()
+  const htmlContent = `
+    <meta name="viewport" content="width=device-width">
+    <html>
+      <head>
+        <script src="https://js.paystack.co/v1/inline.js"></script>
+      </head>
+      <body onload="payWithPaystack()">
+        <script>
+          function payWithPaystack(){
+            var handler = PaystackPop.setup({
+              key: 'pk_test_514af104c122b28a6581b6d5371ca893a82c0c98',
+              email: '${String(auth.currentUser?.email)}',
+              amount: ${convertedAmount * 100},
+              currency: 'NGN',
+              callback: function(response){
+                window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'success', reference: response.reference }));
+              },
+              onClose: function(){
+                window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'cancelled' }));
+              }
+            });
+            handler.openIframe();
+          }
+        </script>
+      </body>
+    </html>
+  `;
 
-    await addDoc(collection(db, 'users', String(auth.currentUser?.uid), 'transactions'), {
-      transaction: payment.data.transactionRef,
+  const proccessPayment = async (event: any) => {
+    const data: PaymentProp = JSON.parse(event.nativeEvent.data);
+
+    if (data?.status != 'success') return
+
+    const dataToSave = {
+      transaction: data,
       doctor: doctorProfile,
       appointment: {
         appointment,
@@ -132,7 +170,15 @@ export default function appointment () {
         selectedDate
       },
       timestamp: serverTimestamp()
-    })
+    }
+
+    setStartPayment(false)
+    successBottomSheetRef.current?.expand()
+
+    const { id } = await addDoc(collection(db, 'users', String(auth.currentUser?.uid), 'transactions'), dataToSave)
+
+    await setDoc(doc(db, 'users', String(auth.currentUser?.uid), 'sent_appointments', id), dataToSave)
+    await setDoc(doc(db, 'users', String(doctorProfile?.id), 'received_appointments', id), dataToSave)
   }
 
   const startChatWithDoctor = async () => {
@@ -183,10 +229,6 @@ export default function appointment () {
         chatDocRef = doc(db, 'chats', existingChatId!);
       }
 
-      // Fetch the messages in the chat
-      const messagesSnapshot = await getDocs(collection(chatDocRef, 'messages'));
-      const messages = messagesSnapshot.docs.map((doc) => doc.data());
-
       // Navigate to the chat screen with preloaded messages
       router.push({
         pathname: '/(app)/(patient)/(chats)/[chatId]',
@@ -220,6 +262,29 @@ export default function appointment () {
 
   return (
     <PaperProvider>
+      <Portal>
+        <Modal
+          visible={startPayment}
+          onDismiss={() => setStartPayment(false)}
+          contentContainerStyle={{
+            backgroundColor: 'white',
+            marginHorizontal: 20,
+            height: 600,
+            borderRadius: 20,
+            overflow: 'hidden'
+          }}
+        >
+          <WebView
+            ref={webviewRef}
+            originWhitelist={['*']}
+            source={{ html: htmlContent }}
+            onMessage={proccessPayment}
+            startInLoadingState
+            style={{ flex: 1 }}
+          />
+        </Modal>
+      </Portal>
+
       <Appbar.Header
         style={{
           flexDirection: 'row',
@@ -229,7 +294,7 @@ export default function appointment () {
         }}
       >
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.dismissTo('/(app)/(patient)/(tabs)/home')}
           style={{
             width: 50,
             height: 50,
@@ -500,18 +565,6 @@ export default function appointment () {
             </View>
           </View>
         </View>
-
-        {startPayment && (
-          <Paystack
-            paystackKey="pk_test_514af104c122b28a6581b6d5371ca893a82c0c98"
-            amount={convertedAmount}
-            billingEmail={String(auth.currentUser?.email)}
-            activityIndicatorColor={accent}
-            onCancel={() => { }}
-            onSuccess={(res) => proccessPayment(res)}
-            autoStart={true}
-          />
-        )}
       </ScrollView>
 
       <View

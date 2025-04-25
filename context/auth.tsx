@@ -3,7 +3,6 @@ import { User } from "@/store/types/types";
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/store/slices/userSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedView } from '@/components/ThemedView';
 import { ActivityIndicator } from 'react-native-paper';
 import { accent } from '@/utils/colors';
@@ -47,7 +46,7 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
 
     return unsubscribe; // Cleanup on component unmount
   };
-  
+
   useLayoutEffect(() => {
     initializeAuth();
   }, [dispatch]);
@@ -59,7 +58,7 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
       else
         router.replace("/(app)/(split)");
     }
-  }, [authState, loading]);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -72,25 +71,20 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
     );
   }
 
+  const signIn = () => setAuthState(true)
+
+  const signOut = async (): Promise<void> => {
+    try {
+      await firebaseSignOut(auth); // Firebase logout
+      setAuthState(false);
+      router.replace("/(auth)/home"); // Navigate back to the login screen
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  }
+
   return (
-    <AuthContext.Provider
-      value={{
-        authState,
-        signIn: async () => {
-          setAuthState(true);
-        },
-        signOut: async (): Promise<void> => {
-          try {
-            await firebaseSignOut(auth); // Firebase logout
-            setAuthState(false);
-            await AsyncStorage.removeItem("healthTok_user"); // Clear any user-related AsyncStorage data
-            router.replace("/(auth)/home"); // Navigate back to the login screen
-          } catch (error) {
-            console.error("Error signing out:", error);
-          }
-        }
-      }}
-    >
+    <AuthContext.Provider value={{ authState, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

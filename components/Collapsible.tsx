@@ -6,19 +6,15 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { black, light } from '@/utils/colors';
 
-export function Collapsible ({ children, title, opacity }: PropsWithChildren & { title: string; opacity?: number }) {
+export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useColorScheme() ?? 'light';
-
-  const outlineColor = useThemeColor({ light: black, dark: light }, 'background');
 
   return (
     <ThemedView>
       <TouchableOpacity
-        style={{ ...styles.heading, borderColor: `${outlineColor}${opacity || 99}` }}
+        style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
         activeOpacity={0.8}>
         <IconSymbol

@@ -5,6 +5,8 @@ import profileSlice from "@/store/slices/profileSlice";
 import appointmentSlice from "@/store/slices/appointmentSlice";
 import conversationsSlice from "@/store/slices/conversationsSlice";
 
+import doctorAppointmentSlice from "@/store/slices/doctor/appointments";
+
 export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
@@ -14,7 +16,9 @@ export const store = configureStore({
         user: userSlice,
         profile: profileSlice,
         appointment: appointmentSlice,
-        conversations: conversationsSlice
+        conversations: conversationsSlice,
+
+        doctorAppointment: doctorAppointmentSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

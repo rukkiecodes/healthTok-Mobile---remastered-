@@ -51,6 +51,42 @@ export default function _layout () {
           tabBarLabel: ({ color }) => null
         }}
       />
+      
+      <Tabs.Screen
+        name='(conversations)'
+        options={{
+          title: '',
+          tabBarIcon: ({ focused, color }) =>
+            <Image
+              source={focused ? require('@/assets/images/icons/messageFilled.png') : require('@/assets/images/icons/message.png')}
+              tintColor={color}
+              contentFit='contain'
+              style={{
+                width: 30,
+                height: 30
+              }}
+            />,
+          tabBarLabel: ({ color }) => null
+        }}
+      />
+
+      <Tabs.Screen
+        name='(appointments)'
+        options={{
+          title: '',
+          tabBarIcon: ({ focused, color }) =>
+            <Image
+              source={focused ? require('@/assets/images/icons/calendarFilled.png') : require('@/assets/images/icons/calendar.png')}
+              tintColor={color}
+              contentFit='contain'
+              style={{
+                width: 30,
+                height: 30
+              }}
+            />,
+          tabBarLabel: ({ color }) => null
+        }}
+      />
     </Tabs>
   )
 }

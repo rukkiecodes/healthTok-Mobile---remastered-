@@ -5,23 +5,17 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Provider } from 'react-redux';
-import { store } from '@/store/store';
 import { LogBox } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import { AuthenticationProvider } from '@/context/auth';
 import * as NavigationBar from 'expo-navigation-bar';
 import { appDark, light } from '@/utils/colors';
+import { store } from '@/store/store';
+import { Provider } from 'react-redux';
+import { AuthenticationProvider } from '@/context/auth';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout () {
@@ -39,7 +33,7 @@ export default function RootLayout () {
 
   useEffect(() => {
     customizeNavigation()
-  }, [])
+  }, [colorScheme])
 
   useEffect(() => {
     if (loaded) {
@@ -52,14 +46,16 @@ export default function RootLayout () {
   }
 
   return (
-    <Provider store={store}>
-      <StatusBar style="auto" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <StatusBar style="auto" />
 
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AuthenticationProvider>
-          <Slot />
-        </AuthenticationProvider>
-      </ThemeProvider>
-    </Provider>
+          <AuthenticationProvider>
+            <Slot />
+          </AuthenticationProvider>
+        </ThemeProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

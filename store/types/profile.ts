@@ -1,3 +1,8 @@
+export interface ProfileState {
+  profile: Profile | null;
+  setupTab: string
+  modal: boolean
+}
 export interface Profile {
   uid: string;
   photoURL?: string;

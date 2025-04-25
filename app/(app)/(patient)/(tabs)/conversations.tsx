@@ -34,14 +34,14 @@ export default function conversations () {
 
   const renderItem = ({ item }: { item: any }) => {
     const { otherProfile, id, lastMessage, createdAt } = item
-    
+
     const navigateToChat = async () => {
       router.push({
         pathname: '/(app)/(patient)/(chats)/[chatId]',
         params: { chatId: id, doctor: otherProfile?.uid }
       })
     }
-    
+
     return (
       <TouchableOpacity
         onPress={() => navigateToChat()}
@@ -90,8 +90,8 @@ export default function conversations () {
 
   return (
     <PaperProvider>
-      <Appbar.Header>
-        <Appbar.Content title="Conversations" />
+      <Appbar.Header style={{ paddingHorizontal: 20, backgroundColor: theme == 'dark' ? appDark : light }}>
+        <ThemedText type='subtitle' font='Poppins-Bold'>Conversations</ThemedText>
       </Appbar.Header>
 
       <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
@@ -117,13 +117,12 @@ export default function conversations () {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           onEndReached={() => {
-            // Load more data when user reaches the end
             if (!loading) {
               dispatch(fetchConversations(false))
             }
           }}
-          onEndReachedThreshold={0.5}  // Trigger fetching more when 50% of the list is visible
-          estimatedItemSize={100}  // Adjust this based on the size of your list items
+          onEndReachedThreshold={0.5}
+          estimatedItemSize={100}
         />
       </ThemedView>
     </PaperProvider>

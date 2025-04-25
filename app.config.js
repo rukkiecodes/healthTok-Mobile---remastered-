@@ -4,17 +4,12 @@ export default {
   expo: {
     name: "healthTok",
     slug: "healthTok",
-    version: "0.0.1",
-    appVersion: 1,
+    version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "healthTok",
+    scheme: "myapp",
     userInterfaceStyle: "automatic",
-    splash: {
-      image: "./assets/images/splash.png",
-      resizeMode: "contain",
-      backgroundColor: "#ffffff",
-    },
+    newArchEnabled: true,
     ios: {
       supportsTablet: true,
       googleServicesFile: "./GoogleService-Info.plist",
@@ -24,11 +19,6 @@ export default {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      versionCode: 1,
-      permissions: [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-      ],
       package: "com.rukkiecodes.healthTok",
       googleServicesFile: "./google-services.json",
     },
@@ -40,19 +30,12 @@ export default {
     plugins: [
       "expo-router",
       [
-        "expo-camera",
+        "expo-splash-screen",
         {
-          cameraPermission: "Allow healthTok to access your camera",
-          microphonePermission: "Allow healthTok to access your microphone",
-          recordAudioAndroid: true,
-        },
-      ],
-      "expo-font",
-      [
-        "expo-image-picker",
-        {
-          photosPermission:
-            "The app accesses your photos to let you share them with your friends.",
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
         },
       ],
       [
@@ -67,9 +50,6 @@ export default {
       typedRoutes: true,
     },
     extra: {
-      router: {
-        origin: false,
-      },
       eas: {
         projectId: "b475ed64-6eee-4860-b269-1ce6449591a8",
       },
