@@ -7,6 +7,8 @@ import { useColorScheme } from '@/hooks/useColorScheme.web';
 import Avatar from './Avatar';
 import Name from './Name';
 import { formatMessageTime } from '@/libraries/formatTime';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 
 interface MessageProps {
@@ -32,7 +34,7 @@ const MessageBubble = ({
     <View
       style={{
         flexDirection: sender == auth.currentUser?.uid ? 'row-reverse' : 'row',
-        marginBottom: 10
+        marginBottom: 20
       }}
     >
       <View
@@ -52,10 +54,7 @@ const MessageBubble = ({
               marginBottom: 10
             }}
           >
-            <Avatar
-              user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : doctor}
-              size={40}
-            />
+            <Avatar user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : doctor} size={30} />
 
             {
               sender != auth.currentUser?.uid &&

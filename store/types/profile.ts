@@ -18,4 +18,5 @@ export interface Profile {
   profilePicture?: string
   specialization?: string
   accountType: string
+  address?: string
 }

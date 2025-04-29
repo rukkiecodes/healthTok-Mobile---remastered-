@@ -51,7 +51,7 @@ export default function login () {
       const userCredential = await signInWithCredential(auth, googleCredential);
       const user = userCredential.user;
 
-      router.replace('/(app)/(patient)/(tabs)')
+      router.replace('/(app)/(split)/(patient)/(tabs)')
 
       const q = query(collection(db, "users"), where("uid", "==", user.uid));
       const userSnapshot = await getDocs(q);
@@ -75,7 +75,7 @@ export default function login () {
       setLoading(true);
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      router.replace('/(app)/(patient)/(tabs)')
+      router.replace('/(app)/(split)/(patient)/(tabs)')
 
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,

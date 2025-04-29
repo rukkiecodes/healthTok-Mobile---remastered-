@@ -7,4 +7,5 @@ export interface Conversation {
   createdAt: Timestamp;
   lastMessage ?: string;
   participantProfiles: { [uid: string]: Profile }; // Optional: to cache user info
+  isConsultionOpen?: boolean
 }

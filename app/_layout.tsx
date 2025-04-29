@@ -12,8 +12,8 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { appDark, light } from '@/utils/colors';
 import { store } from '@/store/store';
 import { Provider } from 'react-redux';
-import { AuthenticationProvider } from '@/context/auth';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthenticationProvider } from '@/context/auth';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
