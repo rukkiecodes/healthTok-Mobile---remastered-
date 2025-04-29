@@ -1,16 +1,16 @@
-import { ThemedText } from '@/components/ThemedText'
-import { ThemedView } from '@/components/ThemedView'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { RootState } from '@/store/types/types'
+import { View, Text, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { useColorScheme } from '@/hooks/useColorScheme.web'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/utils/fb'
+import { Divider, Modal, PaperProvider, Portal } from 'react-native-paper'
+import { StatusBar } from 'expo-status-bar'
 import { accent, appDark, dark, light, red } from '@/utils/colors'
 import { Image } from 'expo-image'
-import { StatusBar } from 'expo-status-bar'
-import { useState } from 'react'
-import { TouchableOpacity, View } from 'react-native'
-import { Appbar, Divider, Modal, PaperProvider, Portal } from 'react-native-paper'
-import { useSelector } from 'react-redux'
-import { signOut } from 'firebase/auth';
-import { auth } from '@/utils/fb'
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
 import { router } from 'expo-router'
 
 export default function profile () {
@@ -18,7 +18,6 @@ export default function profile () {
   const { profile } = useSelector((state: RootState) => state.profile)
 
   const [visible, setVisible] = useState(false);
-
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
@@ -173,7 +172,6 @@ export default function profile () {
           <ThemedText type='subtitle' font='Poppins-Bold' lightColor={light}>{profile?.name}</ThemedText>
         </View>
 
-
         <ThemedView
           style={{
             position: 'absolute',
@@ -221,156 +219,6 @@ export default function profile () {
               </View>
 
               <ThemedText type='default' font='Poppins-Medium'>My Saved</ThemedText>
-            </View>
-
-            <Image
-              source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
-            />
-          </TouchableOpacity>
-
-          <Divider style={{ marginVertical: 20 }} />
-
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 20
-              }}
-            >
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 100,
-                  backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/document.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
-                />
-              </View>
-
-              <ThemedText type='default' font='Poppins-Medium'>Appointmnet</ThemedText>
-            </View>
-
-            <Image
-              source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
-            />
-          </TouchableOpacity>
-
-          <Divider style={{ marginVertical: 20 }} />
-
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 20
-              }}
-            >
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 100,
-                  backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/wallet.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
-                />
-              </View>
-
-              <ThemedText type='default' font='Poppins-Medium'>Payment Method</ThemedText>
-            </View>
-
-            <Image
-              source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
-            />
-          </TouchableOpacity>
-
-          <Divider style={{ marginVertical: 20 }} />
-
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 20
-              }}
-            >
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 100,
-                  backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/chat.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
-                />
-              </View>
-
-              <ThemedText type='default' font='Poppins-Medium'>FAQs</ThemedText>
             </View>
 
             <Image

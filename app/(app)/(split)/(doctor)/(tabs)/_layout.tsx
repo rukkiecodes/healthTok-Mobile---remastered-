@@ -51,7 +51,7 @@ export default function _layout () {
           tabBarLabel: ({ color }) => null
         }}
       />
-      
+
       <Tabs.Screen
         name='(conversations)'
         options={{
@@ -77,6 +77,24 @@ export default function _layout () {
           tabBarIcon: ({ focused, color }) =>
             <Image
               source={focused ? require('@/assets/images/icons/calendarFilled.png') : require('@/assets/images/icons/calendar.png')}
+              tintColor={color}
+              contentFit='contain'
+              style={{
+                width: 30,
+                height: 30
+              }}
+            />,
+          tabBarLabel: ({ color }) => null
+        }}
+      />
+
+      <Tabs.Screen
+        name='profile'
+        options={{
+          title: '',
+          tabBarIcon: ({ focused, color }) =>
+            <Image
+              source={focused ? require('@/assets/images/icons/profileFilled.png') : require('@/assets/images/icons/profile.png')}
               tintColor={color}
               contentFit='contain'
               style={{

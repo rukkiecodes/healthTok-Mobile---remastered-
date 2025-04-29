@@ -18,15 +18,13 @@ const { webClientId, iosClientId } = Constants.expoConfig?.extra?.expoPublic || 
 
 GoogleSignin.configure({
   webClientId: webClientId,
-  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
-  hostedDomain: '', // specifies a hosted domain restriction
-  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-  accountName: '', // [Android] specifies an account name on the device that should be used
   iosClientId: iosClientId,
-  googleServicePlistPath: '/GoogleService-Info.plist', // [iOS] The path to the GoogleService-Info.plist file in your project. This is used to configure the Google Sign-In SDK.
-  openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-  profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  hostedDomain: '',
+  forceCodeForRefreshToken: false,
+  accountName: '',
 });
+
 
 export default function login () {
   const theme = useColorScheme()
@@ -35,23 +33,22 @@ export default function login () {
   const [password, setPassword] = useState('')
   const [peek, setPeek] = useState(false)
   const [loading, setLoading] = useState(false)
-  
+
   const googleAuth = async () => {
     try {
+      await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices();
       const result = await GoogleSignin.signIn();
 
       const { idToken }: any = result?.data;
 
-      if (!idToken) {
-        return;
-      }
+      if (!idToken) return;
 
       const googleCredential = GoogleAuthProvider.credential(idToken);
       const userCredential = await signInWithCredential(auth, googleCredential);
       const user = userCredential.user;
 
-      router.replace('/(app)/(split)/(patient)/(tabs)')
+      router.replace('/(app)/(split)')
 
       const q = query(collection(db, "users"), where("uid", "==", user.uid));
       const userSnapshot = await getDocs(q);
@@ -61,6 +58,7 @@ export default function login () {
           uid: user.uid,
           email: user.email,
           name: user.displayName,
+          accountType: 'patient',
           profilePicture: user.photoURL,
           createdAt: serverTimestamp(),
         });
@@ -75,7 +73,7 @@ export default function login () {
       setLoading(true);
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      router.replace('/(app)/(split)/(patient)/(tabs)')
+      router.replace('/(app)/(split)')
 
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
