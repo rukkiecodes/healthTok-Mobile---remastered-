@@ -1,11 +1,11 @@
 import { View, TouchableOpacity, Platform, Keyboard } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { ActivityIndicator, Appbar, Checkbox, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { router } from 'expo-router'
 import { Image } from 'expo-image'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { accent, appDark, black, dark, light } from '@/utils/colors'
+import { accent, appDark, black, light } from '@/utils/colors'
 import { ThemedText } from '@/components/ThemedText'
 import { Input } from '@/components/auth/Input'
 import { KeyboardAvoidingView } from 'react-native'
@@ -13,60 +13,86 @@ import { TouchableWithoutFeedback } from 'react-native'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '@/utils/fb'
 import { collection, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+import { setAcceptTerms, setEmail, setName, setPassword } from '@/store/slices/signup'
+import axios from 'axios'
 
 export default function Signup () {
   const theme = useColorScheme()
+  const dispatch = useDispatch()
+  const { name, email, password, acceptTerms } = useSelector((state: RootState) => state.signup)
 
-  const [name, setName] = React.useState('')
-  const [email, setEmail] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [peek, setPeek] = React.useState(false)
-  const [checked, setChecked] = React.useState(false);
-  const [loading, setLoading] = React.useState(false)
+  const [peek, setPeek] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const signUpUser = async () => {
-    if (!name || !email || !password) {
-      alert('Please fill all fields')
-      return
-    }
+  // const signUpUser = async () => {
+  //   if (!name || !email || !password) {
+  //     alert('Please fill all fields')
+  //     return
+  //   }
+
+  //   try {
+  //     setLoading(true)
+  //     const { user } = await createUserWithEmailAndPassword(auth, email, password)
+
+  //     const q = query(collection(db, "users"), where("uid", "==", user.uid));
+  //     const userSnapshot = await getDocs(q);
+
+  //     if (userSnapshot.empty) saveUser(user.uid, name, email)
+  //     setLoading(false)
+  //   } catch (error: any) {
+  //     switch (error.code) {
+  //       case 'auth/email-already-in-use':
+  //         alert('Email already in use')
+  //         break
+  //       case 'auth/invalid-email':
+  //         alert('Invalid email')
+  //         break
+  //       case 'auth/weak-password':
+  //         alert('Weak password')
+  //         break
+  //       default:
+  //         alert('Error signing up')
+  //         break
+  //     }
+
+  //     setLoading(false)
+  //   }
+  // }
+
+  // const saveUser = async (uid: string, name: string, email: string) => {
+  //   await setDoc(doc(db, "users", uid), {
+  //     uid: uid,
+  //     email,
+  //     name,
+  //     profilePicture: null,
+  //     createdAt: serverTimestamp(),
+  //   });
+  // }
+
+  const done = async () => {
+    setLoading(true)
 
     try {
-      setLoading(true)
-      const { user } = await createUserWithEmailAndPassword(auth, email, password)
-
-      const q = query(collection(db, "users"), where("uid", "==", user.uid));
-      const userSnapshot = await getDocs(q);
-
-      if (userSnapshot.empty) saveUser(user.uid, name, email)
+      const response = await axios.post("https://mailservice-e4b2cc7b9ef8.herokuapp.com/healthTok/OTP", {
+        email
+      });
       setLoading(false)
-    } catch (error: any) {
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          alert('Email already in use')
-          break
-        case 'auth/invalid-email':
-          alert('Invalid email')
-          break
-        case 'auth/weak-password':
-          alert('Weak password')
-          break
-        default:
-          alert('Error signing up')
-          break
-      }
-
-      setLoading(false)
+      router.push({
+        pathname: '/(auth)/(signup)/(OTP)/OTP',
+        params: { _uid: JSON.stringify(response.data.user._id) }
+      })
+    } catch (error) {
+      console.log('Error sending OTP', error)
+    } finally {
+      setLoading(false);
     }
   }
 
-  const saveUser = async (uid: string, name: string, email: string) => {
-    await setDoc(doc(db, "users", uid), {
-      uid: uid,
-      email,
-      name,
-      profilePicture: null,
-      createdAt: serverTimestamp(),
-    });
+  const validateInputs = () => {
+    if (!name || !email || !password || !acceptTerms) return false
+    else return true
   }
 
   return (
@@ -100,7 +126,7 @@ export default function Signup () {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Sign up</ThemedText>
 
-        <View style={{ width: 60 }} />
+        <View style={{ width: 50 }} />
       </Appbar.Header>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -109,7 +135,7 @@ export default function Signup () {
             <View style={{ marginTop: 50 }}>
               <Input
                 value={name}
-                updateValue={setName}
+                updateValue={(text) => dispatch(setName(text))}
                 label={'Enter your name'}
                 left={require('@/assets/images/icons/user_alt.png')}
               />
@@ -117,7 +143,7 @@ export default function Signup () {
               <Input
                 gap={20}
                 value={email}
-                updateValue={setEmail}
+                updateValue={(text) => dispatch(setEmail(text))}
                 label={'Enter your email'}
                 left={require('@/assets/images/icons/mail.png')}
               />
@@ -126,7 +152,7 @@ export default function Signup () {
                 gap={20}
                 peek={peek}
                 setPeek={setPeek}
-                updateValue={setPassword}
+                updateValue={(text) => dispatch(setPassword(text))}
                 right={true}
                 value={password}
                 secureTextEntry={!peek}
@@ -145,9 +171,9 @@ export default function Signup () {
               }}
             >
               <Checkbox
-                status={checked ? 'checked' : 'unchecked'}
+                status={acceptTerms ? 'checked' : 'unchecked'}
                 onPress={() => {
-                  setChecked(!checked);
+                  dispatch(setAcceptTerms(!acceptTerms))
                 }}
                 color={theme == 'dark' ? light : accent}
                 uncheckedColor={theme == 'dark' ? light : black}
@@ -168,10 +194,9 @@ export default function Signup () {
             </View>
 
             <TouchableOpacity
-              onPress={signUpUser}
-              disabled={!checked}
+              onPress={done}
+              disabled={!validateInputs()}
               style={{
-                flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 10,
@@ -181,11 +206,13 @@ export default function Signup () {
                 paddingHorizontal: 20,
                 borderRadius: 50,
                 marginTop: 20,
-                opacity: checked ? 1 : 0.5,
+                opacity: validateInputs() ? 1 : 0.5,
               }}
             >
-              {loading && <ActivityIndicator size={18} color={light} />}
-              <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Sign Up</ThemedText>
+              {
+                loading ? <ActivityIndicator color={light} /> :
+                  <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Next</ThemedText>
+              }
             </TouchableOpacity>
 
             <TouchableOpacity

@@ -3,12 +3,9 @@ import { User } from "@/store/types/types";
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/store/slices/userSlice';
-import { ThemedView } from '@/components/ThemedView';
-import { ActivityIndicator } from 'react-native-paper';
-import { accent } from '@/utils/colors';
-import { ThemedText } from '@/components/ThemedText';
 import { auth, setupAuthStatePersistence } from '@/utils/fb';
 import { signOut as firebaseSignOut } from "firebase/auth";
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface AuthContextType {
   user: User | null;
@@ -61,14 +58,7 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
   }, [loading]);
 
   if (loading) {
-    return (
-      <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={accent} />
-        <ThemedText font="Poppins-Regular">
-          Loading...
-        </ThemedText>
-      </ThemedView>
-    );
+    return <LoadingScreen />
   }
 
   const signIn = () => setAuthState(true)

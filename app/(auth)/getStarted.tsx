@@ -48,8 +48,8 @@ export default function GetStared () {
         />
 
         <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>Let's get started!</ThemedText>
-        <ThemedText type='body' style={{ textAlign: 'center', marginTop: 20 }} font='Poppins-Regular'>
-          Login to get access the best medical features we have made to improve a healthy living.
+        <ThemedText type='default' style={{ textAlign: 'center', marginBottom: 20 }} font='Poppins-Regular'>
+          {`Login to get access the best medical\nfeatures we have made to improve a healthy living.`}
         </ThemedText>
 
         <TouchableOpacity
@@ -67,7 +67,7 @@ export default function GetStared () {
           <ThemedText lightColor={light} type='body' font='Poppins-Bold' style={{ textAlign: 'center' }}>Login</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => router.push('/(auth)/signup')}
+          onPress={() => router.push('/(auth)/(signup)/home')}
           style={{
             backgroundColor: transparent,
             borderWidth: 1,

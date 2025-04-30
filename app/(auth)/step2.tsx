@@ -1,151 +1,79 @@
-import { View, Dimensions, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
-import { Image } from 'expo-image'
+import { Image, ImageBackground } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
-import { accent, light } from '@/utils/colors'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { BlurView } from 'expo-blur'
+import { accent, appDark, light } from '@/utils/colors'
 import { router } from 'expo-router'
-
-const { width, height } = Dimensions.get('window')
+import { LinearGradient } from 'expo-linear-gradient';
+import HapticWrapper from '@/components/Harptic'
 
 export default function Step2 () {
-  const theme = useColorScheme()
-
   return (
     <PaperProvider>
-      <ThemedView style={{ flex: 1, position: 'relative' }}>
-        <Image
-          source={require('@/assets/images/images/step2.png')}
-          contentFit='cover'
-          style={{
-            width: width,
-            height: height / 1.2,
-            position: 'absolute',
-            top: 0,
-          }}
-        />
-
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={{
-            position: 'absolute',
-            top: 50,
-            left: 30,
-          }}
-        >
-          <Image
-            source={require('@/assets/images/icons/arrow_left.png')}
+      <ThemedView style={{ flex: 1 }}>
+        <ImageBackground source={require('@/assets/images/images/step2.png')} style={{ flex: 1 }}>
+          <LinearGradient
+            colors={[`${appDark}33`, appDark]}
             style={{
-              tintColor: theme == 'dark' ? light : accent,
-              width: 25,
-              height: 25,
-            }}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push('/(auth)/getStarted')}
-          style={{
-            position: 'absolute',
-            top: 50,
-            right: 30
-          }}
-        >
-          <ThemedText font='Poppins-Bold'>Skip</ThemedText>
-        </TouchableOpacity>
-
-        <BlurView
-          intensity={100}
-          style={{
-            backgroundColor: `${accent}63`,
-            width: width / 1.2,
-            paddingVertical: 40,
-            borderRadius: 50,
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'absolute',
-            bottom: 50,
-            left: 50,
-            right: 50,
-            overflow: 'hidden',
-          }}
-        >
-          <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>
-            Schedule and book an appointment with registered medical practioners
-          </ThemedText>
-
-          <TouchableOpacity
-            onPress={() => router.navigate('/(auth)/step3')}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: accent,
-              width: width / 1.5,
-              height: 50,
-              paddingHorizontal: 20,
-              borderRadius: 50,
-              marginTop: 20,
+              flex: 1,
+              justifyContent: 'flex-end',
+              padding: 20,
+              paddingTop: 100
             }}
           >
-            <Image
-              source={require('@/assets/images/icons/arrow_right.png')}
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/getStarted')}
               style={{
-                width: 20,
-                height: 20,
-                opacity: 0,
+                position: 'absolute',
+                top: 50,
+                right: 30
               }}
-            />
+            >
+              <ThemedText font='Poppins-Bold'>Skip</ThemedText>
+            </TouchableOpacity>
 
-            <ThemedText font='Poppins-Bold' type='subtitle' lightColor={light}>Next</ThemedText>
+            <View>
+              <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>
+                {'Schedule and book an\nappointment with registered\nmedical practioners'}
+              </ThemedText>
 
-            <Image
-              source={require('@/assets/images/icons/arrow_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-          </TouchableOpacity>
+              <HapticWrapper
+                onPress={() => router.navigate('/(auth)/step3')}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: accent,
+                  width: '100%',
+                  height: 50,
+                  paddingHorizontal: 20,
+                  borderRadius: 50,
+                  marginTop: 20,
+                }}
+              >
+                <Image
+                  source={require('@/assets/images/icons/arrow_right.png')}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    opacity: 0,
+                  }}
+                />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: 30,
-              gap: 10,
-            }}
-          >
-            <View
-              style={{
-                width: 30,
-                height: 5,
-                backgroundColor: theme == 'dark' ? light : accent,
-                borderRadius: 50,
-                opacity: 0.5,
-              }}
-            />
-            <View
-              style={{
-                width: 30,
-                height: 5,
-                backgroundColor: theme == 'dark' ? light : accent,
-                borderRadius: 50,
-              }}
-            />
-            <View
-              style={{
-                width: 30,
-                height: 5,
-                backgroundColor: theme == 'dark' ? light : accent,
-                borderRadius: 50,
-                opacity: 0.5,
-              }}
-            />
-          </View>
-        </BlurView>
+                <ThemedText font='Poppins-Bold' type='subtitle' lightColor={light}>Next</ThemedText>
+
+                <Image
+                  source={require('@/assets/images/icons/arrow_right.png')}
+                  style={{
+                    width: 20,
+                    height: 20,
+                  }}
+                />
+              </HapticWrapper>
+            </View>
+          </LinearGradient>
+        </ImageBackground>
       </ThemedView>
     </PaperProvider>
   )

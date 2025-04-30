@@ -199,7 +199,7 @@ export default function login () {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.push('/(auth)/signup')}
+              onPress={() => router.push('/(auth)/(signup)/home')}
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',

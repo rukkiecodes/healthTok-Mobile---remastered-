@@ -1,3 +1,4 @@
+import LoadingScreen from '@/components/LoadingScreen';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { RootState } from '@/store/store';
@@ -20,9 +21,10 @@ export default function index () {
       try {
         if (isMounted) {
           if (profile) {
-            if (profile?.accountType === 'patient') setActiveRoute('patient')
+            if (profile?.accountType == 'patient') setActiveRoute('patient')
             else setActiveRoute('doctor')
           } else {
+            setActiveRoute('')
           }
           setLoading(false);
         }
@@ -39,21 +41,11 @@ export default function index () {
   }, [profile, db])
 
   if (loading) {
-    return (
-      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={accent} />
-        <ThemedText font="Poppins-Regular">Loading...</ThemedText>
-      </ThemedView>
-    );
+    return <LoadingScreen text='Loadin Profile' />
   }
 
   if (!activeRoute) {
-    return (
-      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={accent} />
-        <ThemedText font="Poppins-Regular">Loading...</ThemedText>
-      </ThemedView>
-    )
+    return <LoadingScreen text='Loadin Profile' />
   } else {
     if (activeRoute == 'patient') {
       return <Redirect href='/(app)/(split)/(patient)/(tabs)/home' />;
