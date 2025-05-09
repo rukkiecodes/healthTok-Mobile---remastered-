@@ -7,12 +7,13 @@ import { auth, db } from '@/utils/fb'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { useState } from 'react'
 import { View, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
 import Constants from "expo-constants";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const { webClientId, iosClientId } = Constants.expoConfig?.extra?.expoPublic || {};
 
@@ -48,21 +49,22 @@ export default function login () {
       const userCredential = await signInWithCredential(auth, googleCredential);
       const user = userCredential.user;
 
-      router.replace('/(app)/(split)')
+      // router.replace('/(app)/(split)')
+      // await AsyncStorage.setItem('healthTok_sign', 'patient')
 
-      const q = query(collection(db, "users"), where("uid", "==", user.uid));
-      const userSnapshot = await getDocs(q);
+      // const q = query(collection(db, "guests"), where("uid", "==", user.uid));
+      // const userSnapshot = await getDocs(q);
 
-      if (userSnapshot.empty) {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          accountType: 'patient',
-          profilePicture: user.photoURL,
-          createdAt: serverTimestamp(),
-        });
-      }
+      // if (userSnapshot.empty) {
+      //   await setDoc(doc(db, "users", user.uid), {
+      //     uid: user.uid,
+      //     email: user.email,
+      //     name: user.displayName,
+      //     authMethod: 'google',
+      //     profilePicture: user.photoURL,
+      //     createdAt: serverTimestamp(),
+      //   });
+      // }
     } catch (error) {
       console.log('Error signing in', error);
     }
@@ -73,15 +75,31 @@ export default function login () {
       setLoading(true);
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      router.replace('/(app)/(split)')
+      const collections = ['guest', 'patient', 'doctors'];
 
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName,
-        profilePicture: user.photoURL,
-        createdAt: serverTimestamp(),
-      });
+      // Create an array of promises to get documents in parallel
+      const docChecks = collections.map((collection) =>
+        getDoc(doc(db, collection, user.uid))
+      );
+
+      const snapshots = await Promise.all(docChecks);
+
+      // Find the first snapshot that exists
+      const index = snapshots.findIndex((docSnap) => docSnap.exists());
+
+      if (index === -1) {
+        alert('User record not found in any collection');
+        setLoading(false);
+        return;
+      }
+
+      const userCollection = collections[index];
+
+      console.log(`User found in collection: ${userCollection}`);
+      console.log(`User ID: ${user.uid}`);
+
+      await AsyncStorage.setItem('healthTok_collection', userCollection)
+      router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
 
       setLoading(false);
     }

@@ -1,57 +1,82 @@
 import { View, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { ThemedText } from '../ThemedText'
-import { accent, appDark, black, green, light } from '@/utils/colors'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, PaperProvider } from 'react-native-paper'
+import { ThemedView } from '@/components/ThemedView'
+import { router, useLocalSearchParams } from 'expo-router'
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
+import { db } from '@/utils/fb'
+import { ThemedText } from '@/components/ThemedText'
+import { FlashList } from '@shopify/flash-list';
+import { accent, appDark, black, dark, green, light, transparent } from '@/utils/colors'
+import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { Image } from 'expo-image'
-import { ThemedView } from '../ThemedView'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { router } from 'expo-router'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/store/types/types'
-import { Doctor } from '@/store/types/patient/doctor'
 
-export function TopDoctors () {
+const doctor = () => {
   const theme = useColorScheme()
+  const { item } = useLocalSearchParams()
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { doctors } = useSelector((state: RootState) => state.doctors)
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      let q;
 
-  const [topDoctors] = useState<object[] | null>(doctors.slice(0, 5))
+      if (item === 'All') {
+        q = query(collection(db, "users"), where("accountType", "==", "doctor"));
+      } else {
+        q = query(
+          collection(db, "users"),
+          where("accountType", "==", "doctor"),
+          where("specialization", "==", item),
+          orderBy('name', 'desc')
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+      const docs: any[] = [];
+      querySnapshot.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
+      setDoctors(docs);
+    } catch (err) {
+      console.error("Failed to fetch doctors", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDoctors();
+  }, [item]);
 
   return (
-    <View style={{ paddingHorizontal: 20, display: topDoctors?.length ? 'flex' : 'none' }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <ThemedText type='subtitle' font='Poppins-Bold'>Top Doctors</ThemedText>
-        <TouchableOpacity
-          onPress={() => router.push({
-            pathname: '/(app)/(patient)/(topDoctors)/doctor',
-            params: { item: 'All' }
-          })}
-        >
-          <ThemedText type='body' font='Poppins-Bold' lightColor={accent}>See all</ThemedText>
-        </TouchableOpacity>
-      </View>
-
-      <View style={{ gap: 20, marginTop: 20 }}>
+    <PaperProvider>
+      <ThemedView style={{ flex: 1 }}>
         {
-          topDoctors?.map((item: Doctor, index) => {
-            return (
+          item != 'All' &&
+          <View style={{ padding: 20 }}>
+            <ThemedText type='title' font='Poppins-Bold'>{item}</ThemedText>
+          </View>
+        }
+
+        {loading ? (
+          <ActivityIndicator size="large" style={{ marginTop: 50 }} />
+        ) : (
+          <FlashList
+            data={doctors}
+            keyExtractor={(item) => item.id}
+            estimatedItemSize={100}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                key={index}
                 onPress={() => {
                   router.push({
                     pathname: '/(app)/(patient)/(profiles)/doctorProfile',
-                    params: { doctorUID: item?.uid }
+                    params: { doctorUID: item.uid }
                   })
                 }}
                 style={{
                   backgroundColor: theme == 'dark' ? appDark : light,
-                  shadowColor: black,
+                  shadowColor: dark,
                   shadowOffset: {
                     width: 0,
                     height: 5,
@@ -77,19 +102,12 @@ export function TopDoctors () {
                 >
                   <Image
                     source={item?.displayImage ? item?.displayImage?.image : item?.profilePicture}
-                    placeholder={require('@/assets/images/images/avatar.png')}
-                    placeholderContentFit='cover'
                     contentFit='contain'
                     style={{ width: 120, height: 120 }}
                   />
                 </View>
 
-                <View
-                  style={{
-                    flex: 1,
-                    height: 100
-                  }}
-                >
+                <View style={{ flex: 1, height: 100 }}>
                   <View
                     style={{
                       flex: 1,
@@ -175,10 +193,12 @@ export function TopDoctors () {
                   </ThemedView>
                 </View>
               </TouchableOpacity>
-            )
-          })
-        }
-      </View>
-    </View>
+            )}
+          />
+        )}
+      </ThemedView>
+    </PaperProvider>
   )
 }
+
+export default doctor

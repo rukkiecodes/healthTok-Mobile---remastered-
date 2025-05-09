@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "928186515153",
+    "project_id": "bluezone-624ce",
+    "storage_bucket": "bluezone-624ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928186515153:android:c093f5f76a7722c4de4ff0",
+        "android_client_info": {
+          "package_name": "com.rukkiecodes.healthTok"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "928186515153-bkbah41ot7qjl1a842to7ftvu8v3f4vl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rukkiecodes.healthTok",
+            "certificate_hash": "6410211f4cfd7f4c0160aa1befc79afaf8102397"
+          }
+        },
+        {
+          "client_id": "928186515153-a7s4roe4mnrsnolcjf80elbdrfed1fqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBks2MI-ox_JTOuY8ARzf5jt0UBwA_5lDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "928186515153-a7s4roe4mnrsnolcjf80elbdrfed1fqh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "928186515153-5nobl8eaka5vaarglbcpjaug9ehokqfi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rukkiecodes.healthTok"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

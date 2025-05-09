@@ -30,11 +30,11 @@ const WelcomeScreen = () => {
                 right: 30
               }}
             >
-              <ThemedText font='Poppins-Bold'>Skip</ThemedText>
+              <ThemedText font='Poppins-Bold' lightColor={light}>Skip</ThemedText>
             </TouchableOpacity>
 
             <View>
-              <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>
+              <ThemedText type='title' font='Poppins-Bold' lightColor={light} style={{ textAlign: 'center' }}>
                 {'Consult professional\nmedical practitioners'}
               </ThemedText>
 

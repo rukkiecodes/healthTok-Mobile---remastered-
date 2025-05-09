@@ -30,11 +30,11 @@ export default function Step2 () {
                 right: 30
               }}
             >
-              <ThemedText font='Poppins-Bold'>Skip</ThemedText>
+              <ThemedText font='Poppins-Bold' lightColor={light}>Skip</ThemedText>
             </TouchableOpacity>
 
             <View>
-              <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>
+              <ThemedText type='title' font='Poppins-Bold' lightColor={light} style={{ textAlign: 'center' }}>
                 {'Schedule and book an\nappointment with registered\nmedical practioners'}
               </ThemedText>
 

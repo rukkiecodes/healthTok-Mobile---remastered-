@@ -1,16 +1,12 @@
-import { View, Dimensions, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { Image, ImageBackground } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { accent, appDark, light } from '@/utils/colors'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { BlurView } from 'expo-blur'
 import { router } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient';
 import HapticWrapper from '@/components/Harptic'
-
-const { width, height } = Dimensions.get('window')
 
 export default function Step3 () {
   return (
@@ -34,11 +30,11 @@ export default function Step3 () {
                 right: 30
               }}
             >
-              <ThemedText font='Poppins-Bold'>Skip</ThemedText>
+              <ThemedText font='Poppins-Bold' lightColor={light}>Skip</ThemedText>
             </TouchableOpacity>
 
             <View>
-              <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>
+              <ThemedText type='title' font='Poppins-Bold' lightColor={light} style={{ textAlign: 'center' }}>
                 {'Initiate secure\nvideo consultations.'}
               </ThemedText>
 

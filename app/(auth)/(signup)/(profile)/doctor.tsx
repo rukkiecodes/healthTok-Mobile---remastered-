@@ -14,6 +14,7 @@ import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { router } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function doctor () {
     const theme = useColorScheme()
@@ -44,7 +45,8 @@ export default function doctor () {
       try {
         setLoading(true)
         const user = await createUserWithEmailAndPassword(auth, email, password)
-        router.navigate('/(app)/(split)')
+        router.navigate('/(app)/(doctor)/(tabs)/home')
+        await AsyncStorage.setItem('healthTok_collection', 'doctors')
         setLoading(false)
         saveUser(user.user.uid)
       } catch (error: any) {
@@ -70,14 +72,16 @@ export default function doctor () {
   
     const saveUser = async (uid: string) => {
       try {
-        await setDoc(doc(db, "users", uid), {
+        await setDoc(doc(db, "doctors", uid), {
           uid: uid,
           email,
           name,
           username,
           gender,
           birth,
-          accountType: 'doctor',
+          isApplicationSubmited: false,
+          isApplicationSuccessful: false,
+          specialization: "General Practitioner",
           origin,
           profilePicture: null,
           createdAt: serverTimestamp(),
@@ -131,10 +135,10 @@ export default function doctor () {
               paddingHorizontal: 20
             }}
           >
-            <ThemedText>Gender</ThemedText>
+            <ThemedText>Gender ({gender})</ThemedText>
 
             <Image
-              source={require('@/assets/images/icons/calendar.png')}
+              source={require('@/assets/images/icons/chevron_down.png')}
               style={{
                 width: 20,
                 height: 20,
@@ -197,7 +201,7 @@ export default function doctor () {
             <ThemedText>Date of Birth</ThemedText>
 
             <Image
-              source={require('@/assets/images/icons/chevron_down.png')}
+              source={require('@/assets/images/icons/calendar.png')}
               style={{
                 width: 20,
                 height: 20,
