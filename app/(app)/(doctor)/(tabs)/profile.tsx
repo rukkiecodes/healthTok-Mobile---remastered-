@@ -96,6 +96,39 @@ export default function profile () {
     }
   }
 
+  const buttons = [
+    {
+      action: () => router.navigate('/(app)/(doctor)/personalData'),
+      image: require('@/assets/images/icons/profile.png'),
+      title: 'Personal Data',
+      divide: true
+    },
+    {
+      action: () => router.navigate('/(app)/(doctor)/appointment'),
+      image: require('@/assets/images/icons/document.png'),
+      title: 'Appointment',
+      divide: true
+    },
+    {
+      action: () => router.navigate('/(app)/(doctor)/pricing'),
+      image: require('@/assets/images/icons/wallet.png'),
+      title: 'Pricing',
+      divide: true
+    },
+    {
+      action: () => router.navigate('/(app)/(doctor)/resources'),
+      image: require('@/assets/images/icons/file_dock_search.png'),
+      title: 'Resources',
+      divide: true
+    },
+    {
+      action: () => router.navigate('/(app)/(doctor)/FAQs'),
+      image: require('@/assets/images/icons/chat.png'),
+      title: 'FAQs',
+      divide: true
+    },
+  ]
+
   return (
     <PaperProvider>
       <StatusBar style='light' />
@@ -252,56 +285,62 @@ export default function profile () {
             borderTopRightRadius: 50
           }}
         >
-          <TouchableOpacity
-            onPress={() => router.navigate('/(app)/(doctor)/personalData')}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 20
-              }}
-            >
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 100,
-                  backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/profile.png')}
+          {
+            buttons.map((item, index) => (
+              <View key={index}>
+                <TouchableOpacity
+                  onPress={item.action}
                   style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                   }}
-                />
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      alignItems: 'center',
+                      gap: 20
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 50,
+                        height: 50,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 100,
+                        backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
+                      }}
+                    >
+                      <Image
+                        source={item.image}
+                        style={{
+                          width: 25,
+                          height: 25,
+                          tintColor: theme == 'dark' ? light : appDark
+                        }}
+                      />
+                    </View>
+
+                    <ThemedText type='default' font='Poppins-Medium'>{item.title}</ThemedText>
+                  </View>
+
+                  <Image
+                    source={require('@/assets/images/icons/chevron_right.png')}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      tintColor: theme == 'dark' ? light : appDark
+                    }}
+                  />
+                </TouchableOpacity>
+
+                {item.divide && <Divider style={{ marginVertical: 20 }} />}
               </View>
-
-              <ThemedText type='default' font='Poppins-Medium'>Personal Data</ThemedText>
-            </View>
-
-            <Image
-              source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
-            />
-          </TouchableOpacity>
-
-          <Divider style={{ marginVertical: 20 }} />
+            ))
+          }
 
           <TouchableOpacity
             onPress={showModal}

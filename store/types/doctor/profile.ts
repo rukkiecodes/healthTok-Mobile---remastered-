@@ -23,4 +23,5 @@ export interface Profile {
   isApplicationSubmited?: boolean
   phone?: string
   birth?: any
+  price?: string
 }
