@@ -69,7 +69,7 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
       else {
         (async () => {
           const collectionType = await AsyncStorage.getItem('healthTok_collection')
-          
+
           if (collectionType == 'patient')
             router.replace("/(app)/(patient)/(tabs)/home")
           else if (collectionType == 'doctors')
@@ -81,9 +81,9 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
         })()
       }
     }
-  }, [loading]);
+  }, [loading, profile]);
 
-  if (loading) {
+  if (loading || !profile) {
     return <LoadingScreen />
   }
 
