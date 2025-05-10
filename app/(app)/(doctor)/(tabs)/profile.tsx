@@ -253,6 +253,7 @@ export default function profile () {
           }}
         >
           <TouchableOpacity
+            onPress={() => router.navigate('/(app)/(doctor)/personalData')}
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -278,7 +279,7 @@ export default function profile () {
                 }}
               >
                 <Image
-                  source={require('@/assets/images/icons/heart.png')}
+                  source={require('@/assets/images/icons/profile.png')}
                   style={{
                     width: 25,
                     height: 25,
@@ -287,7 +288,7 @@ export default function profile () {
                 />
               </View>
 
-              <ThemedText type='default' font='Poppins-Medium'>My Saved</ThemedText>
+              <ThemedText type='default' font='Poppins-Medium'>Personal Data</ThemedText>
             </View>
 
             <Image

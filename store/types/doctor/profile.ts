@@ -21,4 +21,6 @@ export interface Profile {
   accountType: string
   address?: string
   isApplicationSubmited?: boolean
+  phone?: string
+  birth?: any
 }
