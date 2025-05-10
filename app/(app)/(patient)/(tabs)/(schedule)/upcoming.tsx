@@ -12,7 +12,7 @@ import { formatCustomDate } from '@/libraries/formatDate'
 import HapticWrapper from '@/components/Harptic'
 import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
-import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { setSelectedDate, setSelectedTime } from '@/store/slices/appointmentSlice'
 const { width } = Dimensions.get('window')
 
