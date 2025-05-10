@@ -15,6 +15,9 @@ import doctorsSlice from "@/store/slices/patient/doctors";
 import blogsSlice from "@/store/slices/patient/blogs";
 import groupChatSlice from "@/store/slices/patient/groupChat";
 import communitiesSlice from "@/store/slices/patient/communitiesSlice";
+import patientAppointmentSlice from "@/store/slices/patient/appointments";
+import patientCanceledAppointmentsSlice from "@/store/slices/patient/canceled_appointments";
+import patientCompletedAppointmentsSlice from "@/store/slices/patient/completed_appointments";
 // patient slices (END)
 
 // doctor slices (START)
@@ -41,6 +44,9 @@ export const store = configureStore({
         blogs: blogsSlice,
         groupChat: groupChatSlice,
         communities: communitiesSlice,
+        patientAppointment: patientAppointmentSlice,
+        patientCanceledAppointments: patientCanceledAppointmentsSlice,
+        patientCompletedAppointments: patientCompletedAppointmentsSlice,
 
         doctorProfile: doctorProfileSlice
     },

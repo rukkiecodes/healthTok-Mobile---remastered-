@@ -10,8 +10,8 @@ export interface Appointment {
   selectedDate?: {
     day?: number
     dayName?: string
-    month?: string
-    year?: string
+    month?: string | any
+    year?: string | any
   } | null
 
   selectedTime?: {

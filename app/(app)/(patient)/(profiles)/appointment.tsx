@@ -16,6 +16,10 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetVie
 import { convertUSDToNGN } from '@/libraries/convertUSDToNGN';
 import { formatCurrency } from '@/libraries/formatMoney'
 import { WebView } from 'react-native-webview';
+import Rating from '@/components/home/Rating'
+import Address from '@/components/profile/Address'
+import { getOrCreateChat } from '@/libraries/getOrCreateChat'
+import HapticWrapper from '@/components/Harptic'
 
 
 type DayObject = {
@@ -40,19 +44,13 @@ export default function appointment () {
   const successBottomSheetRef = useRef<BottomSheet>(null)
 
   const { doctorProfile, selectedDate, selectedTime, appointment }: any = useSelector((state: RootState) => state.appointment)
-  
+  const { profile }: any = useSelector((state: RootState) => state.patientProfile)
+
   const [startPayment, setStartPayment] = useState(false)
   const [dateString, setDateString] = useState(null)
-  const [amount, setAmount] = useState(32)
+  const [amount, setAmount] = useState(calculateTotal(doctorProfile?.price))
   const [convertedAmount, setConvertedAmount] = useState(0)
-
-  const fetchDoctorProfile = async () => {
-    const profile: any = await getDoc(doc(db, 'users', String(doctorUID)))
-    dispatch(setDoctorProfile({
-      id: profile.id,
-      ...profile.data()
-    }))
-  }
+  const [loading, setLoading] = useState(false)
 
   function convertToFormattedDateString (obj: DayObject): string | null {
     const fullMonthNames = [
@@ -154,81 +152,51 @@ export default function appointment () {
     </html>
   `;
 
+  const dataToSave: any = {
+    doctor: doctorProfile,
+    patient: profile,
+    appointment: {
+      appointment,
+      selectedTime,
+      selectedDate
+    },
+    timestamp: serverTimestamp()
+  }
+
   const proccessPayment = async (event: any) => {
     const data: PaymentProp = JSON.parse(event.nativeEvent.data);
 
     if (data?.status != 'success') return
 
-    const dataToSave = {
-      transaction: data,
-      doctor: doctorProfile,
-      appointment: {
-        appointment,
-        selectedTime,
-        selectedDate
-      },
-      timestamp: serverTimestamp()
-    }
-
     setStartPayment(false)
     successBottomSheetRef.current?.expand()
 
-    const { id } = await addDoc(collection(db, 'users', String(auth.currentUser?.uid), 'transactions'), dataToSave)
+    const { id } = await addDoc(collection(db, 'patient', String(auth.currentUser?.uid), 'transactions'), { ...dataToSave, transaction: data })
 
-    await setDoc(doc(db, 'users', String(auth.currentUser?.uid), 'sent_appointments', id), dataToSave)
-    await setDoc(doc(db, 'users', String(doctorProfile?.id), 'received_appointments', id), dataToSave)
+    await setDoc(doc(db, 'patient', String(auth.currentUser?.uid), 'appointments', id), { ...dataToSave, transaction: data, })
+    await setDoc(doc(db, 'doctors', String(doctorProfile?.id), 'appointments', id), { ...dataToSave, transaction: data, })
   }
 
   const startChatWithDoctor = async () => {
-    const user = auth.currentUser;
-
-    if (!auth.currentUser?.uid || !doctorUID) return;
-
     try {
-      // Check if a chat already exists between patient and doctor
-      const chatQuery = query(
-        collection(db, 'chats'),
-        where('participants', 'array-contains', auth.currentUser?.uid)
+      const userId: any = auth.currentUser?.uid;
+
+      const chatRef = await getOrCreateChat(
+        userId,
+        String(doctorProfile?.id),
+        dataToSave,
+        doctorProfile,
+        profile
       );
 
-      const querySnapshot = await getDocs(chatQuery);
-      let chatExists = false;
-      let existingChatId: string | null = null;
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.participants.includes(doctorUID)) {
-          chatExists = true;
-          existingChatId = doc.id;
-        }
-      });
-
-      let chatDocRef;
-
-      if (!chatExists) {
-        // Create a new chat document
-        chatDocRef = await addDoc(collection(db, 'chats'), {
-          participants: [auth.currentUser?.uid, doctorUID],
-          createdAt: serverTimestamp(),
-          lastMessage: null,
-          isConsultionOpen: true,
-          appointment: {
-            appointment,
-            selectedTime,
-            selectedDate
-          },
-        });
-      } else {
-        chatDocRef = doc(db, 'chats', existingChatId!);
-      }
-
-      // Navigate to the chat screen with preloaded messages
-      router.push({
+      router.dismissTo({
         pathname: '/(app)/(patient)/(chats)/[chatId]',
-        params: { chatId: chatDocRef.id },
+        params: { chatId: chatRef.id },
       });
     } catch (error) {
       console.error('Error starting chat:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -241,8 +209,6 @@ export default function appointment () {
       const input: any = { ...selectedDate };
       const result: any = convertToFormattedDateString(input);
       setDateString(result)
-
-      fetchDoctorProfile()
     })()
   }, [doctorUID, selectedDate])
 
@@ -252,6 +218,14 @@ export default function appointment () {
       setConvertedAmount(money)
     })()
   }, []);
+
+  function calculateTenPercent (value: number): number {
+    return value * 0.1;
+  }
+
+  function calculateTotal (value: number): number {
+    return value + calculateTenPercent(value)
+  }
 
   return (
     <PaperProvider>
@@ -379,15 +353,16 @@ export default function appointment () {
                 }}
               />
 
-              <ThemedText type='caption' style={{ marginTop: 5 }}>4,7</ThemedText>
+              {doctorProfile && <Rating item={doctorProfile} />}
             </ThemedView>
 
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 5
+                alignItems: 'flex-start',
+                gap: 5,
+                maxWidth: 300
               }}
             >
               <Image
@@ -401,7 +376,7 @@ export default function appointment () {
                 }}
               />
 
-              <ThemedText type='body' font='Poppins-Bold'>Benin City, Nigeria.</ThemedText>
+              <Address item={doctorProfile} />
             </View>
           </View>
         </View>
@@ -527,7 +502,7 @@ export default function appointment () {
               }}
             >
               <ThemedText>Consultation</ThemedText>
-              <ThemedText>$30.00</ThemedText>
+              <ThemedText>{formatCurrency(doctorProfile?.price)}</ThemedText>
             </View>
             <View
               style={{
@@ -536,7 +511,7 @@ export default function appointment () {
               }}
             >
               <ThemedText>Admin Fee</ThemedText>
-              <ThemedText>$02.00</ThemedText>
+              <ThemedText>{formatCurrency(calculateTenPercent(doctorProfile?.price))}</ThemedText>
             </View>
             <View
               style={{
@@ -554,7 +529,7 @@ export default function appointment () {
               }}
             >
               <ThemedText font='Poppins-Bold'>Total</ThemedText>
-              <ThemedText font='Poppins-Bold' lightColor={accent}>$32.00</ThemedText>
+              <ThemedText font='Poppins-Bold' lightColor={accent}>{formatCurrency(calculateTotal(doctorProfile?.price))}</ThemedText>
             </View>
           </View>
         </View>
@@ -678,7 +653,7 @@ export default function appointment () {
             Your payment has been successful, you can have a consultation session with your trusted doctor
           </ThemedText>
 
-          <TouchableOpacity
+          <HapticWrapper
             onPress={() => startChatWithDoctor()}
             style={{
               paddingHorizontal: 40,
@@ -690,7 +665,7 @@ export default function appointment () {
             }}
           >
             <ThemedText type='body' font='Poppins-Bold' lightColor={light}>Chat Doctor</ThemedText>
-          </TouchableOpacity>
+          </HapticWrapper>
         </BottomSheetView>
       </BottomSheet>
     </PaperProvider>

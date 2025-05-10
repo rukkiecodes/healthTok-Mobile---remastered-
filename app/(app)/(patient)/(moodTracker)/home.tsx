@@ -200,7 +200,7 @@ export default function home () {
 
     const currentDate = new Date().toDateString()
 
-    await setDoc(doc(db, 'users', String(auth.currentUser?.uid), 'moods', String(currentDate)), {
+    await setDoc(doc(db, 'patient', String(auth.currentUser?.uid), 'moods', String(currentDate)), {
       mood: item,
       createdAt: serverTimestamp()
     })

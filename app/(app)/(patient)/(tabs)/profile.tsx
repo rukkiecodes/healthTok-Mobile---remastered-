@@ -7,21 +7,26 @@ import { Image } from 'expo-image'
 import { StatusBar } from 'expo-status-bar'
 import { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
-import { Appbar, Divider, Modal, PaperProvider, Portal } from 'react-native-paper'
+import { ActivityIndicator, Appbar, Divider, Modal, PaperProvider, Portal } from 'react-native-paper'
 import { useSelector } from 'react-redux'
 import { signOut } from 'firebase/auth';
-import { auth } from '@/utils/fb'
+import { auth, db } from '@/utils/fb'
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage'
+import { doc, updateDoc } from 'firebase/firestore'
+import * as ImagePicker from 'expo-image-picker'
 
 export default function profile () {
   const theme = useColorScheme()
-  const { profile } = useSelector((state: RootState) => state.profile)
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
 
   const [visible, setVisible] = useState(false);
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
+
+  const [imageLoading, setImageLoading] = useState<boolean>(false)
 
   const handleLogout = async () => {
     try {
@@ -33,6 +38,66 @@ export default function profile () {
       console.log('❌ Error signing out:', error);
     }
   };
+
+  const pickImage = async () => {
+    const id = auth.currentUser?.uid;
+
+    const storage = getStorage()
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result?.canceled) {
+      setImageLoading(true)
+
+      const blob: any = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.onload = () => resolve(xhr.response)
+
+        xhr.responseType = 'blob'
+        xhr.open('GET', result.assets[0].uri, true)
+        xhr.send(null)
+      })
+
+      const oldRef = ref(storage, profile?.displayImage?.path)
+      const photoRef = ref(storage, `patient_avatars/${id}/${new Date()}_avatar.jpg`)
+
+      // Delete the file
+      const uploadImage = () => {
+        uploadBytes(photoRef, blob)
+          .then(snapshot => {
+            getDownloadURL(snapshot?.ref)
+              .then(async downloadURL => {
+                await updateDoc(doc(db, 'patient', String(id)), {
+                  displayImage: {
+                    image: downloadURL,
+                    path: photoRef.fullPath
+                  }
+                })
+              })
+          })
+          .finally(() => {
+            setImageLoading(false)
+          })
+      }
+
+      // Delete the file
+      if (profile?.displayImage)
+        deleteObject(oldRef)
+          .then(() => {
+            uploadImage()
+          }).catch((error) => {
+            alert('Error uploading display picture')
+            setImageLoading(false)
+          });
+
+      else uploadImage()
+    }
+  }
 
   return (
     <PaperProvider>
@@ -148,7 +213,8 @@ export default function profile () {
               />
             </View>
 
-            <View
+            <TouchableOpacity
+              onPress={pickImage}
               style={{
                 backgroundColor: light,
                 width: 25,
@@ -161,15 +227,18 @@ export default function profile () {
                 right: 5
               }}
             >
-              <Image
-                source={require('@/assets/images/icons/camera.png')}
-                style={{
-                  width: 16,
-                  height: 16,
-                  tintColor: accent
-                }}
-              />
-            </View>
+              {
+                imageLoading ? <ActivityIndicator color={accent} size={16} /> :
+                  <Image
+                    source={require('@/assets/images/icons/camera.png')}
+                    style={{
+                      width: 16,
+                      height: 16,
+                      tintColor: accent
+                    }}
+                  />
+              }
+            </TouchableOpacity>
           </View>
 
           <ThemedText type='subtitle' font='Poppins-Bold' lightColor={light}>{profile?.name}</ThemedText>

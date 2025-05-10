@@ -61,7 +61,7 @@ export default function profile () {
       })
 
       const oldRef = ref(storage, profile?.displayImage?.path)
-      const photoRef = ref(storage, `driver_avatars/${id}/${new Date()}_avatar.jpg`)
+      const photoRef = ref(storage, `doctors_avatars/${id}/${new Date()}_avatar.jpg`)
 
       // Delete the file
       const uploadImage = () => {

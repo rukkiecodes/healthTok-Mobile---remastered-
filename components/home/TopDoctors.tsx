@@ -9,11 +9,14 @@ import { router } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/types/types'
 import { Doctor } from '@/store/types/patient/doctor'
+import { getDistanceFromLatLonInKm } from '@/libraries/distance'
+import Rating from './Rating'
 
 export function TopDoctors () {
   const theme = useColorScheme()
 
   const { doctors } = useSelector((state: RootState) => state.doctors)
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
 
   const [topDoctors] = useState<object[] | null>(doctors.slice(0, 5))
 
@@ -84,12 +87,7 @@ export function TopDoctors () {
                   />
                 </View>
 
-                <View
-                  style={{
-                    flex: 1,
-                    height: 100
-                  }}
-                >
+                <View style={{ flex: 1, height: 100 }}>
                   <View
                     style={{
                       flex: 1,
@@ -146,7 +144,7 @@ export function TopDoctors () {
                         }}
                       />
 
-                      <ThemedText style={{ marginTop: 5 }}>4,7</ThemedText>
+                      <Rating item={item} />
                     </ThemedView>
 
                     <ThemedView
@@ -170,7 +168,7 @@ export function TopDoctors () {
                         }}
                       />
 
-                      <ThemedText style={{ marginTop: 5 }}>300m away</ThemedText>
+                      <ThemedText style={{ marginTop: 5 }}>{getDistanceFromLatLonInKm(Number(profile?.coords?.latitude), Number(profile?.coords?.longitude), Number(item?.coords?.latitude), Number(item?.coords?.longitude)).toFixed(1)}km away</ThemedText>
                     </ThemedView>
                   </ThemedView>
                 </View>

@@ -1,25 +1,34 @@
 import { Dimensions, ScrollView, TouchableOpacity, View } from 'react-native'
-import React, { useEffect } from 'react'
-import { Appbar, Divider, PaperProvider } from 'react-native-paper'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Appbar, Divider, PaperProvider } from 'react-native-paper'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
-import { accent, appDark, light, transparent } from '@/utils/colors'
+import { accent, amber, appDark, light, transparent } from '@/utils/colors'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '@/utils/fb'
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { auth, db } from '@/utils/fb'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setDoctorProfile, setSelectedDate, setSelectedTime } from '@/store/slices/appointmentSlice'
+import Rating from '@/components/home/Rating'
+import Address from '@/components/profile/Address'
+import CountPatients from '@/components/profile/CountPatients'
+import CountReviews from '@/components/profile/CountReviews'
+import HapticWrapper from '@/components/Harptic'
 
 const { width } = Dimensions.get('window')
-
 
 
 const INFO_CARDS = (width / 4) - 35
 const DAYS_CARDS = (width / 7) - 15
 const TIME_CARDS = (width / 3) - 30
+
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 export default function doctorProfile () {
   const theme = useColorScheme()
@@ -28,46 +37,66 @@ export default function doctorProfile () {
 
   const { doctorProfile, selectedDate, selectedTime } = useSelector((state: RootState) => state.appointment)
 
+  const [loadBookingButton, setLoadBookingButton] = useState(true)
+
   const fetchDoctorProfile = async () => {
-    const profile: any = (await getDoc(doc(db, 'users', String(doctorUID)))).data()
-    dispatch(setDoctorProfile(profile))
+    const profile: any = await getDoc(doc(db, 'doctors', String(doctorUID)))
+    dispatch(setDoctorProfile({ id: profile?.id, ...profile.data() }))
   }
 
-  const getCurrentWeekDays = () => {
+  const checkIfAlreadyBooked = async () => {
+    try {
+      const q = query(collection(db, 'patient', String(auth.currentUser?.uid), 'appointments'), where('doctor.id', "==", doctorUID))
+      const snapshot = await getDocs(q)
+
+      setLoadBookingButton(snapshot.docs.length > 0 ? true : false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getRemainingMonthDays = () => {
     const today = new Date();
-    const currentDay = today.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-    const diffToMonday = (currentDay + 6) % 7; // Shift so Monday is 0
+    today.setHours(0, 0, 0, 0);
 
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - diffToMonday);
+    const year = today.getFullYear();
+    const month = today.getMonth();
 
-    const weekDays = [];
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
 
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
+    const days = [];
 
-      weekDays.push({
+    for (let day = today.getDate(); day <= lastDayOfMonth; day++) {
+      const date = new Date(year, month, day);
+      date.setHours(0, 0, 0, 0);
+
+      const isToday = date.getTime() === today.getTime();
+      const expired = date < today;
+
+      days.push({
         dayName: dayNames[date.getDay()],
         day: date.getDate(),
-        month: monthNames[date.getMonth()],
-        year: date.getFullYear().toString(),
+        month: monthNames[month],
+        year: year.toString(),
+        expired,
+        isToday,
       });
     }
 
-    return weekDays;
+    return days;
   };
 
-  const getTimeSlots = () => {
+
+
+  const getTimeSlots = (selectedDate: Date) => {
     const startHour = 7;
     const endHour = 20;
     const excludeHours = [12, 17]; // 12PM and 5PM
+
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
 
     const slots = [];
 
@@ -78,9 +107,14 @@ export default function doctorProfile () {
       const displayHour = hour % 12 === 0 ? 12 : hour % 12;
       const period = isPM ? 'PM' : 'AM';
 
+      const slotTime = new Date(selectedDate);
+      slotTime.setHours(hour, 0, 0, 0);
+
+      const isPast = isToday && slotTime < now;
+
       slots.push({
         time: `${displayHour}:00 ${period}`,
-        active: true,
+        active: !isPast,
       });
     }
 
@@ -88,9 +122,27 @@ export default function doctorProfile () {
   };
 
 
+
+
+
   useEffect(() => {
     fetchDoctorProfile()
+    checkIfAlreadyBooked()
   }, [doctorUID])
+
+  if (!doctorProfile) {
+    return (
+      <ThemedView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <ActivityIndicator color={theme == 'dark' ? light : accent} />
+      </ThemedView>
+    )
+  }
 
   return (
     <PaperProvider>
@@ -123,25 +175,7 @@ export default function doctorProfile () {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Doctor’s Details</ThemedText>
 
-        <TouchableOpacity
-          style={{
-            width: 50,
-            height: 50,
-            justifyContent: 'center',
-            alignItems: 'center',
-            opacity: 0
-          }}
-        >
-          <Image
-            source={require('@/assets/images/icons/dots_vertical.png')}
-            contentFit='contain'
-            style={{
-              tintColor: theme == 'dark' ? light : appDark,
-              width: 20,
-              height: 20,
-            }}
-          />
-        </TouchableOpacity>
+        <View style={{ width: 50 }} />
       </Appbar.Header>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
@@ -162,6 +196,8 @@ export default function doctorProfile () {
           >
             <Image
               source={doctorProfile?.displayImage ? doctorProfile?.displayImage?.image : doctorProfile?.profilePicture}
+              placeholder={require('@/assets/images/images/avatar.png')}
+              placeholderContentFit='cover'
               contentFit='contain'
               style={{ width: 150, height: 150 }}
             />
@@ -195,15 +231,16 @@ export default function doctorProfile () {
                 }}
               />
 
-              <ThemedText type='caption' style={{ marginTop: 5 }}>4,7</ThemedText>
+              {doctorProfile && <Rating item={doctorProfile} />}
             </ThemedView>
 
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: 5
+                alignItems: 'flex-start',
+                gap: 5,
+                maxWidth: 300
               }}
             >
               <Image
@@ -217,7 +254,7 @@ export default function doctorProfile () {
                 }}
               />
 
-              <ThemedText type='body' font='Poppins-Bold'>Benin City, Nigeria.</ThemedText>
+              <Address item={doctorProfile} />
             </View>
           </View>
         </View>
@@ -259,8 +296,8 @@ export default function doctorProfile () {
               />
             </View>
 
-            <ThemedText type='default' font='Poppins-Bold' lightColor={accent}>3.500+</ThemedText>
-            <ThemedText type='body'>Patients</ThemedText>
+            <CountPatients item={doctorProfile} />
+            <ThemedText type='caption'>Patients</ThemedText>
           </View>
 
 
@@ -293,8 +330,8 @@ export default function doctorProfile () {
               />
             </View>
 
-            <ThemedText type='default' font='Poppins-Bold' lightColor={accent}>10+</ThemedText>
-            <ThemedText type='body'>Years Exp.</ThemedText>
+            <ThemedText type='body' font='Poppins-Bold' lightColor={accent}>10+</ThemedText>
+            <ThemedText type='caption'>Years Exp.</ThemedText>
           </View>
 
 
@@ -327,8 +364,8 @@ export default function doctorProfile () {
               />
             </View>
 
-            <ThemedText type='default' font='Poppins-Bold' lightColor={accent}>09097038888</ThemedText>
-            <ThemedText type='body'>Call</ThemedText>
+            <ThemedText type='body' font='Poppins-Bold' lightColor={accent}>{doctorProfile?.phone}</ThemedText>
+            <ThemedText type='caption'>Call</ThemedText>
           </View>
 
 
@@ -361,18 +398,18 @@ export default function doctorProfile () {
               />
             </View>
 
-            <ThemedText type='default' font='Poppins-Bold' lightColor={accent}>2,450</ThemedText>
-            <ThemedText type='body'>Reviews</ThemedText>
+            <CountReviews item={doctorProfile} />
+            <ThemedText type='caption'>Reviews</ThemedText>
           </View>
         </View>
 
-        <View style={{ marginTop: 40, gap: 20 }}>
-          <ThemedText type='subtitle' font='Poppins-Bold'>About</ThemedText>
-          <ThemedText type='body' font='Poppins-Regular'>
-            Graduated from the National University of Ireland in 1998 with Bachelor of Medicine and Bachelor of Surgery degrees. ... Obtained post-graduate qualification...
-            <ThemedText lightColor={accent} type='body' font='Poppins-Bold'>Read more</ThemedText>
-          </ThemedText>
-        </View>
+        {
+          doctorProfile?.about &&
+          <View style={{ marginTop: 40, gap: 20 }}>
+            <ThemedText type='subtitle' font='Poppins-Bold'>About</ThemedText>
+            <ThemedText type='body' font='Poppins-Regular'>{doctorProfile?.about}</ThemedText>
+          </View>
+        }
 
         <View style={{ marginTop: 40 }}>
           <ThemedText type='subtitle' font='Poppins-Bold'>Date</ThemedText>
@@ -380,30 +417,34 @@ export default function doctorProfile () {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              gap: 10,
+              flexWrap: 'wrap'
             }}
           >
             {
-              getCurrentWeekDays().map((item, index) => (
+              getRemainingMonthDays().map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   onPress={() => dispatch(setSelectedDate(item))}
+                  disabled={loadBookingButton}
                   style={{
                     width: DAYS_CARDS,
                     borderWidth: 1.5,
                     borderRadius: 20,
-                    borderColor: item.day == selectedDate?.day ? transparent : (theme == 'dark' ? `${light}33` : `${accent}33`),
+                    borderColor: item.day == selectedDate?.day ? transparent : (item.isToday ? (theme == 'dark' ? amber : accent) : `${theme == 'dark' ? light : appDark}33`),
                     backgroundColor: item.day == selectedDate?.day ? accent : transparent,
                     paddingVertical: 15,
                     justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    opacity: item.expired ? 0.2 : 1
                   }}
                 >
-                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='body'>
+                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='caption' font='Poppins-Medium'>
                     {item.dayName}
                   </ThemedText>
-                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='subtitle' font='Poppins-Bold'>
+                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='default' font='Poppins-Bold'>
                     {item.day}
                   </ThemedText>
                 </TouchableOpacity>
@@ -412,47 +453,50 @@ export default function doctorProfile () {
           </View>
         </View>
 
-        <Divider style={{ marginVertical: 40 }} />
+        {selectedDate && (
+          <>
+            <Divider style={{ marginVertical: 40 }} />
 
-        <View>
-          <ThemedText type='subtitle' font='Poppins-Bold'>Working Hours</ThemedText>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 20
-            }}
-          >
-            {
-              getTimeSlots().map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => dispatch(setSelectedTime(item))}
-                  disabled={!item.active}
-                  style={{
-                    width: TIME_CARDS,
-                    height: 50,
-                    borderWidth: 1.5,
-                    borderRadius: 20,
-                    borderColor: item.time == selectedTime?.time ? transparent : (theme == 'dark' ? `${light}33` : `${accent}33`),
-                    backgroundColor: item.time == selectedTime?.time ? accent : transparent,
-                    paddingVertical: 15,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    opacity: item.active ? 1 : 0.5,
-                  }}
-                >
-                  <ThemedText lightColor={item.time == selectedTime?.time ? light : appDark} type="default">
-                    {item.time}
-                  </ThemedText>
-                </TouchableOpacity>
-              ))
-            }
-          </View>
-        </View>
+            <View>
+              <ThemedText type='subtitle' font='Poppins-Bold'>Working Hours</ThemedText>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 20,
+                }}
+              >
+                {getTimeSlots(new Date(selectedDate.year, monthNames.indexOf(selectedDate.month), selectedDate.day)).map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => dispatch(setSelectedTime(item))}
+                    disabled={!item.active || loadBookingButton}
+                    style={{
+                      width: TIME_CARDS,
+                      height: 50,
+                      borderWidth: 1.5,
+                      borderRadius: 20,
+                      borderColor: item.time == selectedTime?.time ? transparent : (theme == 'dark' ? `${light}33` : `${accent}33`),
+                      backgroundColor: item.time == selectedTime?.time ? accent : transparent,
+                      paddingVertical: 15,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      opacity: item.active ? 1 : 0.5,
+                    }}
+                  >
+                    <ThemedText lightColor={item.time == selectedTime?.time ? light : appDark} type="body">
+                      {item.time}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </>
+        )}
       </ScrollView>
 
       <View
@@ -464,24 +508,37 @@ export default function doctorProfile () {
           gap: 20
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            router.push({
-              pathname: '/(app)/(patient)/(profiles)/appointment',
-              params: { doctorUID }
-            })
-          }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: accent,
-            borderRadius: 20,
-            height: 50
-          }}
-        >
-          <ThemedText lightColor={light} font='Poppins-Bold' type='body'>Book Apointment</ThemedText>
-        </TouchableOpacity>
+        {
+          !loadBookingButton ?
+            <HapticWrapper
+              onPress={() => {
+                router.push({
+                  pathname: '/(app)/(patient)/(profiles)/appointment',
+                  params: { doctorUID }
+                })
+              }}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: accent,
+                borderRadius: 20,
+                height: 50
+              }}
+            >
+              <ThemedText lightColor={light} font='Poppins-Bold' type='body'>Book Apointment</ThemedText>
+            </HapticWrapper> :
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 5
+              }}
+            >
+              <ThemedText type='body' font='Poppins-Bold'>Already Booked</ThemedText>
+              <ThemedText type='caption' font='Poppins-Medium' style={{ textAlign: 'center' }}>You have alredy book {doctorProfile?.name}. Please finish your already existing session before you can rebook</ThemedText>
+            </View>
+        }
       </View>
     </PaperProvider>
   )

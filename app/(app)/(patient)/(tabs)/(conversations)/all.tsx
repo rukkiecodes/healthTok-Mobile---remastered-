@@ -31,7 +31,7 @@ export default function all () {
   const conversationsToDisplay = searchQuery ? filteredConversations : conversations
 
   const renderItem = ({ item }: { item: any }) => {
-    const { otherProfile, id, lastMessage, createdAt } = item
+    const { id, lastMessage, createdAt, doctor } = item
 
     const navigateToChat = async () => {
       router.push({
@@ -52,7 +52,11 @@ export default function all () {
         }}
       >
         <Image
-          source={otherProfile?.profilePicture}
+          source={doctor?.photoURL}
+          placeholder={require('@/assets/images/images/avatar.png')}
+          contentFit='cover'
+          placeholderContentFit='cover'
+          transition={500}
           style={{
             width: 60,
             height: 60,
@@ -68,7 +72,7 @@ export default function all () {
               alignItems: 'center'
             }}
           >
-            <ThemedText type='subtitle' font='Poppins-Bold'>{otherProfile?.name}</ThemedText>
+            <ThemedText type='subtitle' font='Poppins-Bold'>{doctor?.name}</ThemedText>
             <ThemedText type='body' lightColor={accent}>{formatMessageTime(createdAt)}</ThemedText>
           </View>
           <View

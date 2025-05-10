@@ -6,4 +6,8 @@ export interface Doctor {
   profilePicture?: string
   name?: string
   specialization?: string
+  coords?: {
+    latitude?: number
+    longitude?: number
+  }
 }

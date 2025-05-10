@@ -22,9 +22,7 @@ interface Message {
   createdAt: { seconds: number };
 }
 
-interface Conversation {
-  isConsultionOpen?: boolean
-}
+interface Conversation { [key: string]: any }
 
 export default function ChatScreen () {
   const theme = useColorScheme()
@@ -180,7 +178,7 @@ export default function ChatScreen () {
           }}
         >
           <TouchableOpacity
-            onPress={router.back}
+            onPress={() => router.dismissTo('/(app)/(patient)/(tabs)/home')}
             style={{
               width: 50,
               height: 50,
@@ -197,7 +195,7 @@ export default function ChatScreen () {
               }}
             />
           </TouchableOpacity>
-          <Name user={String(doctor)} />
+          <ThemedText type='default' font={'Poppins-Bold'}>{conversationData?.doctor?.name}</ThemedText>
         </View>
 
         <View
@@ -209,6 +207,11 @@ export default function ChatScreen () {
           }}
         >
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
+            // onPress={() => router.push({
+            //   pathname: '/(app)/(patient)/(chats)/videoCall',
+            //   params: { chatId }
+            // })}
             style={{
               width: 50,
               height: 50,
@@ -226,6 +229,11 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
+            // onPress={() => router.push({
+            //   pathname: '/(app)/(patient)/(chats)/voiceCall',
+            //   params: { chatId }
+            // })}
             style={{
               width: 50,
               height: 50,
@@ -243,6 +251,7 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
             onPress={() => bottomSheetRef.current?.expand()}
             style={{
               width: 50,
@@ -278,8 +287,8 @@ export default function ChatScreen () {
         <ThemedText
           type='subtitle'
           font='Poppins-Bold'
-          lightColor={conversationData?.isConsultionOpen ? accent : red}
-          darkColor={conversationData?.isConsultionOpen ? light : red}
+          lightColor={conversationData?.isAppointmentsOpen ? accent : red}
+          darkColor={conversationData?.isAppointmentsOpen ? light : red}
         >
           Consultion Start
         </ThemedText>
@@ -320,6 +329,7 @@ export default function ChatScreen () {
           value={input}
           mode='outlined'
           style={{ flex: 1, height: 50, backgroundColor: transparent }}
+          editable={conversationData?.isAppointmentsOpen}
           onChangeText={(text: string) => {
             setInput(text)
             setTextInput(text)
@@ -331,19 +341,22 @@ export default function ChatScreen () {
           outlineStyle={{
             borderRadius: 50,
             borderWidth: 1.5,
-            borderColor: theme == 'dark' ? `${light}33` : `${accent}33`
+            borderColor: theme == 'dark' ? `${light}33` : `${accent}33`,
+            opacity: conversationData?.isAppointmentsOpen ? 1 : 0.6
           }}
         />
 
         <TouchableOpacity
           onPress={sendMessage}
+          disabled={!conversationData?.isAppointmentsOpen}
           style={{
             height: 50,
             paddingHorizontal: 20,
             borderRadius: 50,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme == 'dark' ? light : accent
+            backgroundColor: theme == 'dark' ? light : accent,
+            opacity: conversationData?.isAppointmentsOpen ? 1 : 0.6
           }}
         >
           <ThemedText type='body' font='Poppins-Medium' lightColor={light} darkColor={accent}>Send</ThemedText>

@@ -19,4 +19,7 @@ export interface Profile {
   specialization?: string
   accountType: string
   address?: string
+  phone?: string
+  about?: string
+  price?: string
 }

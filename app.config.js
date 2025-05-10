@@ -45,6 +45,13 @@ export default {
           reservedClientId: process.env.EXPO_PUBLIC_REVERSED_CLIENT_ID,
         },
       ],
+      [
+        "expo-location",
+        {
+          locationAlwaysAndWhenInUsePermission:
+            "Allow HealthTok to use your location.",
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,

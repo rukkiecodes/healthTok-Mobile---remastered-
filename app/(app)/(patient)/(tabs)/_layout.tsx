@@ -72,7 +72,7 @@ const MainAppTabsLayout = () => {
       />
 
       <Tabs.Screen
-        name='schedule'
+        name='(schedule)'
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>

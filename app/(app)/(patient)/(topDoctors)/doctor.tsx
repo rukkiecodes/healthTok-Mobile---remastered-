@@ -10,6 +10,10 @@ import { FlashList } from '@shopify/flash-list';
 import { accent, appDark, black, dark, green, light, transparent } from '@/utils/colors'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { Image } from 'expo-image'
+import Rating from '@/components/home/Rating'
+import { getDistanceFromLatLonInKm } from '@/libraries/distance'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
 
 const doctor = () => {
   const theme = useColorScheme()
@@ -17,17 +21,19 @@ const doctor = () => {
   const [doctors, setDoctors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
+
   const fetchDoctors = async () => {
     try {
       setLoading(true);
       let q;
 
       if (item === 'All') {
-        q = query(collection(db, "users"), where("accountType", "==", "doctor"));
+        q = query(collection(db, "doctors"), where("isApplicationSuccessful", "==", true), orderBy("createdAt", "desc"));
       } else {
         q = query(
-          collection(db, "users"),
-          where("accountType", "==", "doctor"),
+          collection(db, "doctors"),
+          where("isApplicationSuccessful", "==", true),
           where("specialization", "==", item),
           orderBy('name', 'desc')
         );
@@ -102,6 +108,8 @@ const doctor = () => {
                 >
                   <Image
                     source={item?.displayImage ? item?.displayImage?.image : item?.profilePicture}
+                    placeholder={require('@/assets/images/images/avatar.png')}
+                    placeholderContentFit='cover'
                     contentFit='contain'
                     style={{ width: 120, height: 120 }}
                   />
@@ -164,7 +172,7 @@ const doctor = () => {
                         }}
                       />
 
-                      <ThemedText style={{ marginTop: 5 }}>4,7</ThemedText>
+                      <Rating item={item} />
                     </ThemedView>
 
                     <ThemedView
@@ -188,7 +196,7 @@ const doctor = () => {
                         }}
                       />
 
-                      <ThemedText style={{ marginTop: 5 }}>300m away</ThemedText>
+                      <ThemedText style={{ marginTop: 5 }}>{getDistanceFromLatLonInKm(Number(profile?.coords?.latitude), Number(profile?.coords?.longitude), Number(item?.coords?.latitude), Number(item?.coords?.longitude)).toFixed(1)}km away</ThemedText>
                     </ThemedView>
                   </ThemedView>
                 </View>

@@ -24,4 +24,8 @@ export interface Profile {
   phone?: string
   birth?: any
   price?: string
+  coords?: {
+    latitude?: number
+    longitude?: number
+  }
 }

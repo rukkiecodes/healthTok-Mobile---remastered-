@@ -19,4 +19,8 @@ export interface Profile {
   specialization?: string
   accountType: string
   address?: string
+  coords?: {
+    latitude?: number
+    longitude?: number
+  }
 }
