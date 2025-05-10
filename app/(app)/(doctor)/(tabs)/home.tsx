@@ -230,11 +230,16 @@ export default function home () {
             gap: 20
           }}
         >
-          <Image
-            source={require('@/assets/images/imgs/johnDoe.png')}
+          <Image 
+            source={profile?.displayImage ? profile?.displayImage?.image : (profile?.profilePicture ? profile?.profilePicture : require('@/assets/images/imgs/johnDoe.png'))}
+            placeholder={require('@/assets/images/imgs/johnDoe.png')}
+            contentFit='cover'
+            placeholderContentFit='cover'
+            transition={500}
             style={{
               width: 50,
-              height: 50
+              height: 50,
+              borderRadius: 50
             }}
           />
 
