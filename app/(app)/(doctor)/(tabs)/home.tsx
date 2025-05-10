@@ -290,26 +290,26 @@ export default function home () {
           <ThemedText type='body' font='Poppins-Light'>Search...</ThemedText>
         </TouchableOpacity>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            margin: 20
-          }}
-        >
-          <ThemedText type='title' font='Poppins-Bold'>Upcoming Appointments</ThemedText>
-
-          <TouchableOpacity onPress={() => router.navigate('/(app)/(doctor)/(appointments)/upcoming')}>
-            <ThemedText type='body' font='Poppins-Medium'>See All</ThemedText>
-          </TouchableOpacity>
-        </View>
-
         <FlashList
           data={appointments}
           renderItem={renderItem}
           keyExtractor={(item: any) => item.id}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={() => (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <ThemedText type='subtitle' font='Poppins-Bold'>Upcoming Appointments</ThemedText>
+
+              <TouchableOpacity onPress={() => router.navigate('/(app)/(doctor)/(appointments)/upcoming')}>
+                <ThemedText type='body' font='Poppins-Medium'>See All</ThemedText>
+              </TouchableOpacity>
+            </View>
+          )}
           estimatedItemSize={20}
           contentContainerStyle={{
             padding: 20

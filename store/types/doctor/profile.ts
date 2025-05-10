@@ -3,6 +3,7 @@ export interface ProfileState {
   setupTab: string
   modal: boolean
 }
+
 export interface Profile {
   uid: string;
   photoURL?: string;
