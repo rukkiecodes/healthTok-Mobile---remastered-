@@ -1,5 +1,5 @@
 import { View, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
@@ -8,13 +8,14 @@ import { accent, appDark, light } from '@/utils/colors'
 import { ThemedText } from '@/components/ThemedText'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
-import { Redirect, router } from 'expo-router'
+import { router } from 'expo-router'
 import { FlashList } from '@shopify/flash-list'
 import { Appointment } from '@/store/types/doctor/appointments'
 import { formatCustomDate } from '@/libraries/formatDate'
 import HapticWrapper from '@/components/Harptic'
-import { auth, db } from '@/utils/fb'
-import { addDoc, collection, doc, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
+import { auth } from '@/utils/fb'
+import { calculateAge } from '@/libraries/calculateAge'
+import { getOrCreateChat } from '@/libraries/getOrCreateChat'
 
 export default function home () {
   const theme = useColorScheme()
@@ -24,54 +25,28 @@ export default function home () {
   const [loading, setLoading] = useState(false)
 
   const startChatWithPatient = async (item: Appointment) => {
-    const user = auth.currentUser;
-
-    if (!user?.uid || !item?.doctor?.id) return;
-
-    setLoading(true)
-
     try {
-      // Check if a chat already exists between patient and doctor
-      const chatQuery = query(
-        collection(db, 'chats'),
-        where('participants', 'array-contains', user.uid)
+      const userId: any = auth.currentUser?.uid;
+      
+      setLoading(true)
+
+      const chatRef = await getOrCreateChat(
+        String(item?.patient?.uid),
+        userId,
+        item,
+        profile,
+        item.patient
       );
 
-      const querySnapshot = await getDocs(chatQuery);
-      let chatExists = false;
-      let existingChatId: string | null = null;
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.participants.includes(item?.doctor?.id)) {
-          chatExists = true;
-          existingChatId = doc.id;
-        }
-      });
-
-      let chatDocRef;
-
-      if (!chatExists) {
-        // Create a new chat document
-        chatDocRef = await addDoc(collection(db, 'chats'), {
-          participants: [user.uid, item?.doctor?.id],
-          createdAt: serverTimestamp(),
-          lastMessage: null,
-          isConsultionOpen: true,
-        });
-      } else {
-        chatDocRef = doc(db, 'chats', existingChatId!);
-      }
-
       setLoading(false)
-
-      // Navigate to the chat screen with preloaded messages
       router.push({
         pathname: '/(app)/(doctor)/(chats)/[chatId]',
-        params: { chatId: chatDocRef.id },
+        params: { chatId: chatRef.id },
       });
     } catch (error) {
       console.error('Error starting chat:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -94,7 +69,11 @@ export default function home () {
           }}
         >
           <Image
-            source={item?.doctor?.profilePicture}
+            source={item?.patient?.displayImage?.image}
+            placeholder={require('@/assets/images/images/avatar.png')}
+            contentFit='cover'
+            placeholderContentFit='cover'
+            transition={500}
             style={{
               width: 50,
               height: 50,
@@ -103,9 +82,9 @@ export default function home () {
           />
 
           <View>
-            <ThemedText type='subtitle' font='Poppins-Bold'>{item?.doctor?.name}</ThemedText>
+            <ThemedText type='subtitle' font='Poppins-Bold'>{item?.patient?.name}</ThemedText>
             <ThemedText type='body' font='Poppins-Regular'>{item?.appointment?.appointment?.reason}</ThemedText>
-            <ThemedText type='body' font='Poppins-Regular'>{30}</ThemedText>
+            <ThemedText type='body' font='Poppins-Regular'>{calculateAge(item?.patient?.birth)}</ThemedText>
           </View>
         </View>
 
@@ -230,7 +209,7 @@ export default function home () {
             gap: 20
           }}
         >
-          <Image 
+          <Image
             source={profile?.displayImage ? profile?.displayImage?.image : (profile?.profilePicture ? profile?.profilePicture : require('@/assets/images/imgs/johnDoe.png'))}
             placeholder={require('@/assets/images/imgs/johnDoe.png')}
             contentFit='cover'
@@ -305,7 +284,8 @@ export default function home () {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                marginBottom: 20
               }}
             >
               <ThemedText type='subtitle' font='Poppins-Bold'>Upcoming Appointments</ThemedText>
@@ -317,7 +297,7 @@ export default function home () {
           )}
           estimatedItemSize={20}
           contentContainerStyle={{
-            padding: 20
+            padding: 20,
           }}
         />
       </ThemedView>

@@ -5,7 +5,12 @@ import profileSlice from "@/store/slices/profileSlice";
 import appointmentSlice from "@/store/slices/appointmentSlice";
 import signupSlice from "@/store/slices/signup";
 
+// doctor (start)
+import doctorProfileSlice from "@/store/slices/doctor/profile";
 import doctorAppointmentSlice from "@/store/slices/doctor/appointments";
+import doctorCanceledAppointmentsSlice from "@/store/slices/doctor/canceled_appointments";
+import doctorCompletedAppointmentsSlice from "@/store/slices/doctor/completed_appointments";
+// doctor (end)
 
 // patient slices (START)
 import conversationsSlice from "@/store/slices/patient/conversationsSlice";
@@ -20,10 +25,6 @@ import patientCanceledAppointmentsSlice from "@/store/slices/patient/canceled_ap
 import patientCompletedAppointmentsSlice from "@/store/slices/patient/completed_appointments";
 // patient slices (END)
 
-// doctor slices (START)
-import doctorProfileSlice from "@/store/slices/doctor/profile";
-// doctor slices (END)
-
 export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
@@ -36,8 +37,14 @@ export const store = configureStore({
         appointment: appointmentSlice,
         conversations: conversationsSlice,
 
+        // Doctor (start)
+        doctorProfile: doctorProfileSlice,
         doctorAppointment: doctorAppointmentSlice,
-        
+        doctorCanceledAppointments: doctorCanceledAppointmentsSlice,
+        doctorCompletedAppointments: doctorCompletedAppointmentsSlice,
+        // Doctor (end)
+
+        // Patient (start)
         patientProfile: patientProfileSlice,
         quickResponse: quickResponseSlice,
         doctors: doctorsSlice,
@@ -47,8 +54,7 @@ export const store = configureStore({
         patientAppointment: patientAppointmentSlice,
         patientCanceledAppointments: patientCanceledAppointmentsSlice,
         patientCompletedAppointments: patientCompletedAppointmentsSlice,
-
-        doctorProfile: doctorProfileSlice
+        // Patient (end)
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

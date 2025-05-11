@@ -1,4 +1,4 @@
-import { View, useColorScheme } from 'react-native'
+import { Alert, View, useColorScheme } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
@@ -14,6 +14,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { FlashList } from '@shopify/flash-list';
 import MessageBubble from '@/components/doctorMessages/MessageBubble';
 import { getOtherParticipant } from '@/libraries/extractUID';
+import { checkAndEndConsultation } from '@/libraries/endConsultation';
+import { useConsultationTimer } from '@/libraries/parseConsultationDateTime';
 
 interface Message {
   id: string;
@@ -24,7 +26,7 @@ interface Message {
 
 export default function ChatScreen () {
   const theme = useColorScheme()
-  const { chatId } = useLocalSearchParams()
+  const { chatId }: any = useLocalSearchParams()
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -145,9 +147,8 @@ export default function ChatScreen () {
   }
 
   const endConsultion = async () => {
-    await updateDoc(doc(db, 'chats', String(chatId)), {
-      isConsultionOpen: false
-    })
+    const appointment = conversationData?.appointmentsData?.appointment;
+    await checkAndEndConsultation(chatId, appointment);
   }
 
   useEffect(() => {
@@ -214,6 +215,11 @@ export default function ChatScreen () {
           }}
         >
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
+            // onPress={() => router.push({
+            //   pathname: '/(app)/(doctor)/(chats)/videoCall',
+            //   params: { chatId }
+            // })}
             style={{
               width: 50,
               height: 50,
@@ -231,6 +237,11 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
+            // onPress={() => router.push({
+            //   pathname: '/(app)/(doctor)/(chats)/voiceCall',
+            //   params: { chatId }
+            // })}
             style={{
               width: 50,
               height: 50,
@@ -248,6 +259,7 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!conversationData?.isAppointmentsOpen}
             onPress={() => bottomSheetRef.current?.expand()}
             style={{
               width: 50,
@@ -269,6 +281,10 @@ export default function ChatScreen () {
         </View>
       </Appbar.Header>
 
+      <>
+        {useConsultationTimer(conversationData?.appointmentsData?.appointment, chatId)}
+      </>
+
       <View
         style={{
           margin: 20,
@@ -283,8 +299,8 @@ export default function ChatScreen () {
         <ThemedText
           type='subtitle'
           font='Poppins-Bold'
-          lightColor={conversationData?.isConsultionOpen ? accent : red}
-          darkColor={conversationData?.isConsultionOpen ? light : red}
+          lightColor={conversationData?.isAppointmentsOpen ? accent : red}
+          darkColor={conversationData?.isAppointmentsOpen ? light : red}
         >
           Consultion Start
         </ThemedText>
@@ -326,6 +342,7 @@ export default function ChatScreen () {
           value={input}
           mode='outlined'
           style={{ flex: 1, height: 50, backgroundColor: transparent }}
+          editable={conversationData?.isAppointmentsOpen}
           onChangeText={(text: string) => {
             setInput(text)
             setTextInput(text)
@@ -337,12 +354,14 @@ export default function ChatScreen () {
           outlineStyle={{
             borderRadius: 50,
             borderWidth: 1.5,
-            borderColor: theme == 'dark' ? `${light}33` : `${accent}33`
+            borderColor: theme == 'dark' ? `${light}33` : `${accent}33`,
+            opacity: conversationData?.isAppointmentsOpen ? 1 : 0.6
           }}
         />
 
         <TouchableOpacity
           onPress={sendMessage}
+          disabled={!conversationData?.isAppointmentsOpen}
           style={{
             height: 50,
             paddingHorizontal: 20,
@@ -352,7 +371,7 @@ export default function ChatScreen () {
             backgroundColor: theme == 'dark' ? light : accent
           }}
         >
-          <ThemedText type='body' font='Poppins-Bold' lightColor={light} darkColor={accent}>Send</ThemedText>
+          <ThemedText type='body' font='Poppins-Medium' lightColor={light} darkColor={accent}>Send</ThemedText>
         </TouchableOpacity>
       </View>
 

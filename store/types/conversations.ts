@@ -8,4 +8,11 @@ export interface Conversation {
   lastMessage ?: string;
   participantProfiles: { [uid: string]: Profile }; // Optional: to cache user info
   isConsultionOpen?: boolean
+  isAppointmentsOpen?: boolean
+  appointmentsData?: {
+    appointment?: {
+      selectedDate?: any
+      selectedTime?: any
+    }
+  }
 }

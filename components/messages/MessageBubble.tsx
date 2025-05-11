@@ -7,8 +7,6 @@ import { useColorScheme } from '@/hooks/useColorScheme.web';
 import Avatar from './Avatar';
 import Name from './Name';
 import { formatMessageTime } from '@/libraries/formatTime';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 
 
 interface MessageProps {

@@ -8,6 +8,8 @@ import { fetchDoctorsProfile } from '@/store/actions/doctor/profile'
 import { getUserCoordinates } from '@/libraries/getUserCoordinated'
 import { updateUser } from '@/libraries/updateUserDocument'
 import { auth, db } from '@/utils/fb'
+import { fetchCanceledAppointments } from '@/store/actions/doctor/canceled_appointments'
+import { fetchCompletedAppointments } from '@/store/actions/doctor/completed_appointments'
 
 export default function _layout () {
   const theme = useColorScheme()
@@ -24,6 +26,8 @@ export default function _layout () {
     const unsubscribes = [
       dispatch(fetchDoctorsProfile()),
       dispatch(fetchAppointments()),
+      dispatch(fetchCanceledAppointments()),
+      dispatch(fetchCompletedAppointments()),
     ];
 
     return () => {

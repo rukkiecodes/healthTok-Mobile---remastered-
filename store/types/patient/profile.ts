@@ -20,7 +20,9 @@ export interface Profile {
   accountType: string
   address?: string
   coords?: {
-    latitude?: number
-    longitude?: number
+    latitude?: number | any
+    longitude?: number | any
   }
+  birth?: any
+  allergies?: any[] | any
 }

@@ -17,9 +17,7 @@ export default function sent () {
   const theme = useColorScheme()
   const { chatId, conversationData } = useLocalSearchParams<{ chatId: string; conversationData: string }>()
 
-  const parsParams = () => {
-    return JSON.parse(conversationData)
-  }
+  const parsParams = () => JSON.parse(conversationData)
 
   const [presriptions, setPresriptions] = useState<object[]>([])
 
@@ -27,7 +25,7 @@ export default function sent () {
     try {
       const uid = getOtherParticipant(parsParams()?.participants, String(auth.currentUser?.uid))
 
-      const q = query(collection(db, "users", uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions'), orderBy("timestamp", "desc"));
+      const q = query(collection(db, "patient", uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions'), orderBy("timestamp", "desc"));
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const data = querySnapshot.docs.map((doc) => ({
@@ -52,7 +50,7 @@ export default function sent () {
       {
         text: 'Delete Presription',
         style: 'destructive',
-        onPress: async () => await deleteDoc(doc(db, 'users', uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions', item.id))
+        onPress: async () => await deleteDoc(doc(db, 'patient', uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions', item.id))
       }
     ])
   }

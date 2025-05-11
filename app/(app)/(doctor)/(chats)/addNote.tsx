@@ -6,7 +6,7 @@ import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { accent, appDark, light, transparent } from '@/utils/colors'
 import { Image } from 'expo-image'
 import { getOtherParticipant } from '@/libraries/extractUID'
-import { addDoc, collection, doc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import { ThemedView } from '@/components/ThemedView'
 import { ThemedText } from '@/components/ThemedText'
@@ -19,33 +19,40 @@ export default function note () {
   const theme = useColorScheme()
   const { chatId, conversationData } = useLocalSearchParams<{ chatId: string; conversationData: string }>()
 
-  const { profile } = useSelector((state: RootState) => state.profile)
+  const { profile } = useSelector((state: RootState) => state.doctorProfile)
   const [loading, setLoading] = useState<boolean>(false)
   const [note, setNote] = useState<string>('')
 
-  const parsParams = () => {
-    return {
-      conversationData: JSON.parse(conversationData)
-    }
-  }
+  const parsParams = () => JSON.parse(conversationData)
 
   const saveNote = async () => {
     try {
-      if(!note) return
-      
+      if (!note) return
+
       setLoading(true)
-      const uid = getOtherParticipant(parsParams().conversationData?.participants, String(auth.currentUser?.uid))
+      const uid = getOtherParticipant(parsParams()?.participants, String(auth.currentUser?.uid))
 
-      await addDoc(collection(db, 'users', uid, 'records', String(auth.currentUser?.uid), 'notes'), {
-        note: note,
-        author: profile,
-        createdAt: new Date(),
-        timestamp: serverTimestamp()
-      })
+      const q = await getDocs(collection(db, 'patient', uid, 'records'))
 
-      setNote('')
-      router.back()
-      setLoading(false)
+      const saveNote = async () => {
+        await addDoc(collection(db, 'patient', uid, 'records', String(auth.currentUser?.uid), 'notes'), {
+          note: note,
+          author: profile,
+          createdAt: new Date(),
+          timestamp: serverTimestamp()
+        })
+
+        setNote('')
+        router.back()
+        setLoading(false)
+      }
+
+      if (q.empty) {
+        await setDoc(doc(db, 'patient', uid, 'records', String(auth.currentUser?.uid)), {
+          timestamp: serverTimestamp()
+        })
+        saveNote()
+      } else saveNote()
     } catch (error) {
       setLoading(false)
       console.log('Error saving note', error)
@@ -87,8 +94,8 @@ export default function note () {
             <Image
               source={require('@/assets/images/icons/arrow_left.png')}
               style={{
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 tintColor: theme == 'dark' ? light : appDark
               }}
             />

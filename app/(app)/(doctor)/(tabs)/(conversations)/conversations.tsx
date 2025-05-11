@@ -52,7 +52,7 @@ export default function conversations () {
         }}
       >
         <Image
-          source={otherProfile?.profilePicture}
+          source={item?.patient?.photoURL}
           placeholder={require('@/assets/images/images/avatar.png')}
           contentFit='cover'
           placeholderContentFit='cover'
@@ -72,7 +72,7 @@ export default function conversations () {
               alignItems: 'center'
             }}
           >
-            <ThemedText type='subtitle' font='Poppins-Bold'>{otherProfile?.name}</ThemedText>
+            <ThemedText type='subtitle' font='Poppins-Bold'>{item?.patient?.name}</ThemedText>
             <ThemedText type='body' lightColor={accent}>{formatMessageTime(createdAt)}</ThemedText>
           </View>
           <View
@@ -92,7 +92,7 @@ export default function conversations () {
   return (
     <PaperProvider>
       <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
-        <Searchbar
+        {/* <Searchbar
           value={searchQuery}
           onChangeText={handleSearchChange}
           placeholder="Search conversations..."
@@ -105,7 +105,7 @@ export default function conversations () {
             backgroundColor: transparent,
             fontFamily: 'Poppins-Regular'
           }}
-        />
+        /> */}
 
         <FlashList
           data={conversationsToDisplay}

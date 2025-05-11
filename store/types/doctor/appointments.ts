@@ -10,6 +10,16 @@ export interface Appointment {
       image?: string
     }
   }
+  patient?: {
+    profilePicture?: string
+    name?: string
+    id?: string
+    uid?: string
+    displayImage?: {
+      image?: string
+    }
+    birth?: any
+  }
   appointment?: {
     appointment?: {
       reason?: string

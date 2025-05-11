@@ -189,7 +189,7 @@ export default function appointment () {
         profile
       );
 
-      router.dismissTo({
+      router.push({
         pathname: '/(app)/(patient)/(chats)/[chatId]',
         params: { chatId: chatRef.id },
       });

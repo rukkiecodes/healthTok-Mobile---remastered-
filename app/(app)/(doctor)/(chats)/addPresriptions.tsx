@@ -18,7 +18,7 @@ import { ThemedView } from '@/components/ThemedView'
 import HapticWrapper from '@/components/Harptic'
 import { getOtherParticipant } from '@/libraries/extractUID'
 import { auth, db } from '@/utils/fb'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, getDocs, serverTimestamp, setDoc } from 'firebase/firestore'
 
 export default function addPresriptions () {
   const theme = useColorScheme()
@@ -34,11 +34,7 @@ export default function addPresriptions () {
   const [duration, setDuration] = useState('')
   const [modalVisible, setModalVisible] = useState(false);
 
-  const parsParams = () => {
-    return {
-      conversationData: JSON.parse(conversationData)
-    }
-  }
+  const parsParams = () => JSON.parse(conversationData)
 
   const savePresriptions = async () => {
     // setModalVisible(true)
@@ -46,19 +42,30 @@ export default function addPresriptions () {
       if (!prescriptionType || !name || !dosage || !duration) return
 
       setLoading(true)
-      const uid = getOtherParticipant(parsParams().conversationData?.participants, String(auth.currentUser?.uid))
+      const uid = getOtherParticipant(parsParams()?.participants, String(auth.currentUser?.uid))
 
-      await addDoc(collection(db, 'users', uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions'), {
-        prescriptionType,
-        name,
-        dosage,
-        duration,
-        author: profile,
-        createdAt: new Date(),
-        timestamp: serverTimestamp()
-      })
-      setLoading(false)
-      setModalVisible(true)
+      const save = async () => {
+        await addDoc(collection(db, 'patient', uid, 'presriptions', String(auth.currentUser?.uid), 'presriptions'), {
+          prescriptionType,
+          name,
+          dosage,
+          duration,
+          author: profile,
+          createdAt: new Date(),
+          timestamp: serverTimestamp()
+        })
+        setLoading(false)
+        setModalVisible(true)
+      }
+
+      const q = await getDocs(collection(db, 'patient', uid, 'presriptions'))
+
+      if (q.empty) {
+        await setDoc(doc(db, 'patient', uid, 'presriptions', String(auth.currentUser?.uid)), {
+          timestamp: serverTimestamp()
+        })
+        save()
+      } else save()
     } catch (error) {
       console.log('Error adding prescription', error)
     }

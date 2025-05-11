@@ -1,12 +1,12 @@
-import { View, Text, TouchableOpacity, Platform, Keyboard } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Appbar, Divider, PaperProvider, TextInput } from 'react-native-paper'
+import { Appbar, Divider, PaperProvider } from 'react-native-paper'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
-import { accent, appDark, light, transparent } from '@/utils/colors'
+import { accent, appDark, light } from '@/utils/colors'
 import { Image } from 'expo-image'
 import { getOtherParticipant } from '@/libraries/extractUID'
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import { ThemedView } from '@/components/ThemedView'
 import { ThemedText } from '@/components/ThemedText'
@@ -19,17 +19,13 @@ export default function note () {
 
   const [notes, setNotes] = useState<object[]>([])
 
-  const parsParams = () => {
-    return {
-      conversationData: JSON.parse(conversationData)
-    }
-  }
+  const parsParams = () => JSON.parse(conversationData)
 
   const fetchNotes = async () => {
     try {
-      const uid = getOtherParticipant(parsParams().conversationData?.participants, String(auth.currentUser?.uid))
+      const uid = getOtherParticipant(parsParams()?.participants, String(auth.currentUser?.uid))
 
-      const q = query(collection(db, "users", uid, 'records', String(auth.currentUser?.uid), 'notes'), orderBy("timestamp", "desc"));
+      const q = query(collection(db, "patient", uid, 'records', String(auth.currentUser?.uid), 'notes'), orderBy("timestamp", "desc"));
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const data = querySnapshot.docs.map((doc) => ({
@@ -80,8 +76,8 @@ export default function note () {
             <Image
               source={require('@/assets/images/icons/arrow_left.png')}
               style={{
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 tintColor: theme == 'dark' ? light : appDark
               }}
             />
@@ -93,7 +89,7 @@ export default function note () {
           onPress={() => {
             router.push({
               pathname: '/(app)/(doctor)/(chats)/addNote',
-              params: { chatId: chatId, conversationData: JSON.stringify(parsParams().conversationData) }
+              params: { chatId: chatId, conversationData: JSON.stringify(parsParams()) }
             })
           }}
           style={{
