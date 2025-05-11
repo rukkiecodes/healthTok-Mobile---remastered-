@@ -434,6 +434,12 @@ export default function ChatScreen () {
             <ThemedText type='body' font='Poppins-Medium' lightColor={accent} darkColor={dark}>Medications</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: '/(app)/(patient)/(chats)/reviews',
+                params: { chatId: String(chatId), conversationData: JSON.stringify(conversationData) }
+              })
+            }}
             style={{
               width: '100%',
               height: 45,

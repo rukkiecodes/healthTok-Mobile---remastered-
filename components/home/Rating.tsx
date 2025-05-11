@@ -7,7 +7,7 @@ export default function Rating ({ item }: any) {
 
   useEffect(() => {
     (async () => {
-      const rating = await getAverageRating('doctors', item.id);
+      const rating = await getAverageRating(item.id);
       setRating(rating)
     })()
   }, [item])

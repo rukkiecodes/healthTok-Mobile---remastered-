@@ -10,11 +10,10 @@ import { getDocs, collection } from 'firebase/firestore';
  */
 export const getAverageRating = async (
   id: string,
-  parentCollection: string
 ): Promise<number> => {
   try {
-    const snapshot = await getDocs(collection(db, parentCollection, id, 'ratings'));
-    const values = snapshot.docs.map(doc => doc.data().value);
+    const snapshot = await getDocs(collection(db, 'doctors', id, 'ratings'));
+    const values = snapshot.docs.map(doc => doc.data().rating);
     const total = values.reduce((sum, val) => sum + val, 0);
 
     const average = values.length > 0 ? total / values.length : 0;
