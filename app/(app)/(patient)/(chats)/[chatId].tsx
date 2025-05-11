@@ -14,6 +14,8 @@ import { Image } from 'expo-image';
 import Name from '@/components/messages/Name';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import { useConsultationTimer } from '@/libraries/parseConsultationDateTime';
+import { checkAndEndConsultation } from '@/libraries/endConsultation';
 
 interface Message {
   id: string;
@@ -26,7 +28,7 @@ interface Conversation { [key: string]: any }
 
 export default function ChatScreen () {
   const theme = useColorScheme()
-  const { chatId, doctor } = useLocalSearchParams()
+  const { chatId, doctor }: any = useLocalSearchParams()
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -138,9 +140,8 @@ export default function ChatScreen () {
   }
 
   const endConsultion = async () => {
-    await updateDoc(doc(db, 'chats', String(chatId)), {
-      isConsultionOpen: false
-    })
+    const appointment = conversationData?.appointmentsData?.appointment;
+    await checkAndEndConsultation(chatId, appointment);
   }
 
   useEffect(() => {
@@ -273,6 +274,10 @@ export default function ChatScreen () {
         </View>
       </Appbar.Header>
 
+      <>
+        {useConsultationTimer(conversationData?.appointmentsData?.appointment, chatId)}
+      </>
+
       <View
         style={{
           margin: 20,
@@ -397,7 +402,7 @@ export default function ChatScreen () {
             onPress={() => {
               router.push({
                 pathname: '/(app)/(patient)/(chats)/followUpNote',
-                params: { chatId: String(chatId), doctor: String(doctor) }
+                params: { chatId: String(chatId), conversationData: JSON.stringify(conversationData) }
               })
             }}
             style={{
@@ -414,8 +419,8 @@ export default function ChatScreen () {
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: '/(app)/(patient)/(chats)/medications',
-                params: { chatId: String(chatId), doctor: String(doctor) }
+                pathname: '/(app)/(patient)/(chats)/(prescription)/injectables',
+                params: { chatId: String(chatId), conversationData: JSON.stringify(conversationData) }
               })
             }}
             style={{

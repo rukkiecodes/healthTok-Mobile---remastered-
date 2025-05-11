@@ -1,18 +1,49 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useRef } from 'react'
-import { Appbar, PaperProvider } from 'react-native-paper'
+import { View, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Appbar, Divider, PaperProvider } from 'react-native-paper'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { router, useLocalSearchParams } from 'expo-router'
-import BottomSheet from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
 import { appDark, light } from '@/utils/colors'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
+import { getOtherParticipant } from '@/libraries/extractUID'
+import { auth, db } from '@/utils/fb'
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { FlashList } from '@shopify/flash-list'
+import { formatMessageTime } from '@/libraries/formatTime'
 
 export default function followUpNote () {
   const theme = useColorScheme()
-  const { chatId, doctor } = useLocalSearchParams()
-  const bottomSheetRef = useRef<BottomSheet>(null)
+  const { chatId, conversationData } = useLocalSearchParams<{ chatId: string; conversationData: string }>()
+
+  const [notes, setNotes] = useState<object[]>([])
+
+  const parsParams = () => JSON.parse(conversationData)
+
+  const fetchNotes = async () => {
+    try {
+      const uid = getOtherParticipant(parsParams()?.participants, String(auth.currentUser?.uid))
+      const q = query(collection(db, "patient", String(auth.currentUser?.uid), 'records', uid, 'notes'), orderBy("timestamp", "desc"));
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+
+        setNotes(data)
+      });
+
+      return unsubscribe
+    } catch (error) {
+      console.log('Error saving note', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchNotes()
+  }, [chatId, db])
 
   return (
     <PaperProvider>
@@ -39,24 +70,42 @@ export default function followUpNote () {
         <ThemedText type='subtitle' font='Poppins-Bold'>Follow-up Note</ThemedText>
       </Appbar.Header>
 
-      <ThemedView
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        <Image
-          source={require('@/assets/images/images/note.png')}
-          style={{
-            width: 80,
-            height: 80,
-            marginBottom: 20,
-            tintColor: theme == 'dark' ? light : appDark
-          }}
-        />
+      <ThemedView style={{ flex: 1 }}>
+        <FlashList
+          data={notes}
+          estimatedItemSize={75}
+          keyExtractor={(item: any) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 20 }}
+          ItemSeparatorComponent={() => <Divider style={{ marginVertical: 40 }} />}
+          renderItem={({ item }: any) => (
+            <View>
+              <View
+                style={{
+                  padding: 20,
+                  borderWidth: 1,
+                  borderRadius: 12,
+                  borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`
+                }}
+              >
+                <ThemedText>{item?.note}</ThemedText>
+              </View>
 
-        <ThemedText font='Poppins-Medium' type='subtitle'>No Follow-up Notes Found</ThemedText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 10
+                }}
+              >
+                <ThemedText type='body' font='Poppins-Medium' opacity={0.8}>Time: {formatMessageTime(item?.createdAt)}</ThemedText>
+
+                <ThemedText type='body' font='Poppins-Medium' opacity={0.8}>Date: {new Date(item?.createdAt?.seconds * 1000).toDateString()}</ThemedText>
+              </View>
+            </View>
+          )}
+        />
       </ThemedView>
     </PaperProvider>
   )
