@@ -13,6 +13,9 @@ import { updateUser } from '@/libraries/updateUserDocument'
 import { fetchAppointments } from '@/store/actions/patient/appointments'
 import { fetchCanceledAppointments } from '@/store/actions/patient/canceled_appointments'
 import { fetchCompletedAppointments } from '@/store/actions/patient/completed_appointments'
+import { fetchConversations } from '@/store/actions/patient/conversations'
+import { fetchGroupChats } from '@/store/actions/patient/groupConversations'
+import { fetchUserCommunities } from '@/store/actions/patient/fetchUserCommunities'
 
 export default function _layout () {
   const theme = useColorScheme()
@@ -33,7 +36,10 @@ export default function _layout () {
       dispatch(fetchBlogs()),
       dispatch(fetchAppointments()),
       dispatch(fetchCanceledAppointments()),
-      dispatch(fetchCompletedAppointments())
+      dispatch(fetchCompletedAppointments()),
+      dispatch(fetchConversations(true)),
+      dispatch(fetchGroupChats()),
+      dispatch(fetchUserCommunities()),
     ];
 
     return () => {
@@ -41,7 +47,7 @@ export default function _layout () {
         if (typeof unsub === 'function') unsub();
       });
     };
-  }, [dispatch]);
+  }, [dispatch, auth]);
 
   return (
     <Stack

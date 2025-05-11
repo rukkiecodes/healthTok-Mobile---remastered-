@@ -10,7 +10,7 @@ import {
   setLastVisible,
   setLoading,
   setFilteredConversations
-} from '@/store/slices/patient/groupChat';
+} from '@/store/slices/doctor/groupChat';
 import { Profile } from '@/store/types/patient/profile';
 
 const fetchProfileByUID = async (uid: string): Promise<Profile | null> => {

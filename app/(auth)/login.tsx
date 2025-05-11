@@ -6,8 +6,8 @@ import { accent, appDark, dark, light } from '@/utils/colors'
 import { auth, db } from '@/utils/fb'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
-import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { deleteUser, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore'
 import { useState } from 'react'
 import { View, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
@@ -49,22 +49,33 @@ export default function login () {
       const userCredential = await signInWithCredential(auth, googleCredential);
       const user = userCredential.user;
 
-      // router.replace('/(app)/(split)')
-      // await AsyncStorage.setItem('healthTok_sign', 'patient')
+      const collections = ['guest', 'patient', 'doctors'];
 
-      // const q = query(collection(db, "guests"), where("uid", "==", user.uid));
-      // const userSnapshot = await getDocs(q);
+      const docChecks = collections.map((collection) =>
+        getDoc(doc(db, collection, user.uid))
+      );
 
-      // if (userSnapshot.empty) {
-      //   await setDoc(doc(db, "users", user.uid), {
-      //     uid: user.uid,
-      //     email: user.email,
-      //     name: user.displayName,
-      //     authMethod: 'google',
-      //     profilePicture: user.photoURL,
-      //     createdAt: serverTimestamp(),
-      //   });
-      // }
+      const snapshots = await Promise.all(docChecks);
+
+      // Find the first snapshot that exists
+      const index = snapshots.findIndex((docSnap) => docSnap.exists());
+
+      if (index === -1) {
+        alert("Sorry, it looks like you don’t have an account with us yet. Please sign up to continue");
+        setLoading(false);
+
+        await deleteUser(user)
+        await signOut(auth);
+        await GoogleSignin.signOut();
+        await AsyncStorage.removeItem('healthTok_collection')
+
+        return;
+      }
+
+      const userCollection = collections[index];
+
+      await AsyncStorage.setItem('healthTok_collection', userCollection)
+      router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
     } catch (error) {
       console.log('Error signing in', error);
     }
@@ -94,9 +105,6 @@ export default function login () {
       }
 
       const userCollection = collections[index];
-
-      console.log(`User found in collection: ${userCollection}`);
-      console.log(`User ID: ${user.uid}`);
 
       await AsyncStorage.setItem('healthTok_collection', userCollection)
       router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
@@ -283,31 +291,34 @@ export default function login () {
                 <ThemedText type='body' font='Poppins-Bold'>Sign in with Google</ThemedText>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  height: 50,
-                  borderWidth: 1,
-                  borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-                  borderRadius: 50
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/apple.png')}
+              {
+                Platform.OS == 'ios' &&
+                <TouchableOpacity
                   style={{
-                    width: 25,
-                    height: 25,
-                    marginRight: 10,
-                    tintColor: theme == 'dark' ? light : dark
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: 50,
+                    borderWidth: 1,
+                    borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
+                    borderRadius: 50
                   }}
-                />
-                <ThemedText type='body' font='Poppins-Bold'>Sign in with Apple</ThemedText>
-              </TouchableOpacity>
+                >
+                  <Image
+                    source={require('@/assets/images/icons/apple.png')}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      marginRight: 10,
+                      tintColor: theme == 'dark' ? light : dark
+                    }}
+                  />
+                  <ThemedText type='body' font='Poppins-Bold'>Sign in with Apple</ThemedText>
+                </TouchableOpacity>
+              }
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
@@ -328,7 +339,7 @@ export default function login () {
                   }}
                 />
                 <ThemedText type='body' font='Poppins-Bold'>Sign in with Facebook</ThemedText>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </ThemedView>
         </TouchableWithoutFeedback>

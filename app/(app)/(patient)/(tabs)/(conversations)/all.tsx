@@ -19,16 +19,12 @@ export default function all () {
 
   const [searchQuery, setSearchQuery] = useState('')
 
-  useEffect(() => {
-    dispatch(fetchConversations(true))  // Fetch initial set of conversations
-  }, [dispatch])
+  // const handleSearchChange = (text: string) => {
+  //   setSearchQuery(text)
+  //   dispatch(searchConversations(text))  // Filter conversations by search query
+  // }
 
-  const handleSearchChange = (text: string) => {
-    setSearchQuery(text)
-    dispatch(searchConversations(text))  // Filter conversations by search query
-  }
-
-  const conversationsToDisplay = searchQuery ? filteredConversations : conversations
+  // const conversationsToDisplay = searchQuery ? filteredConversations : conversations
 
   const renderItem = ({ item }: { item: any }) => {
     const { id, lastMessage, createdAt, doctor } = item
@@ -109,7 +105,7 @@ export default function all () {
         /> */}
 
         <FlashList
-          data={conversationsToDisplay}
+          data={conversations}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

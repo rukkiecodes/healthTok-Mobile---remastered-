@@ -148,7 +148,15 @@ export default function ChatScreen () {
 
   const endConsultion = async () => {
     const appointment = conversationData?.appointmentsData?.appointment;
-    await checkAndEndConsultation(chatId, appointment);
+    await checkAndEndConsultation(
+      chatId,
+      appointment,
+      String(conversationData?.appointmentsData?.patient?.uid),
+      String(auth?.currentUser?.uid),
+      String(conversationData?.appointmentsData?.id),
+      conversationData?.appointmentsData
+    );
+    // completed_appointments
   }
 
   useEffect(() => {

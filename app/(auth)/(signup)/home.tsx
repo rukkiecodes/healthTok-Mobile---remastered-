@@ -10,9 +10,6 @@ import { ThemedText } from '@/components/ThemedText'
 import { Input } from '@/components/auth/Input'
 import { KeyboardAvoidingView } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { auth, db } from '@/utils/fb'
-import { collection, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setAcceptTerms, setEmail, setName, setPassword } from '@/store/slices/signup'
@@ -25,51 +22,6 @@ export default function Signup () {
 
   const [peek, setPeek] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  // const signUpUser = async () => {
-  //   if (!name || !email || !password) {
-  //     alert('Please fill all fields')
-  //     return
-  //   }
-
-  //   try {
-  //     setLoading(true)
-  //     const { user } = await createUserWithEmailAndPassword(auth, email, password)
-
-  //     const q = query(collection(db, "users"), where("uid", "==", user.uid));
-  //     const userSnapshot = await getDocs(q);
-
-  //     if (userSnapshot.empty) saveUser(user.uid, name, email)
-  //     setLoading(false)
-  //   } catch (error: any) {
-  //     switch (error.code) {
-  //       case 'auth/email-already-in-use':
-  //         alert('Email already in use')
-  //         break
-  //       case 'auth/invalid-email':
-  //         alert('Invalid email')
-  //         break
-  //       case 'auth/weak-password':
-  //         alert('Weak password')
-  //         break
-  //       default:
-  //         alert('Error signing up')
-  //         break
-  //     }
-
-  //     setLoading(false)
-  //   }
-  // }
-
-  // const saveUser = async (uid: string, name: string, email: string) => {
-  //   await setDoc(doc(db, "users", uid), {
-  //     uid: uid,
-  //     email,
-  //     name,
-  //     profilePicture: null,
-  //     createdAt: serverTimestamp(),
-  //   });
-  // }
 
   const done = async () => {
     setLoading(true)
@@ -143,6 +95,8 @@ export default function Signup () {
               <Input
                 gap={20}
                 value={email}
+                inputMode='email'
+                autoCapitalize='none'
                 updateValue={(text) => dispatch(setEmail(text))}
                 label={'Enter your email'}
                 left={require('@/assets/images/icons/mail.png')}

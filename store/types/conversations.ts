@@ -10,9 +10,13 @@ export interface Conversation {
   isConsultionOpen?: boolean
   isAppointmentsOpen?: boolean
   appointmentsData?: {
+    id?: string
     appointment?: {
       selectedDate?: any
       selectedTime?: any
+    }
+    patient?: {
+      uid?: string
     }
   }
 }

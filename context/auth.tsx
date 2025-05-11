@@ -8,6 +8,8 @@ import { signOut as firebaseSignOut } from "firebase/auth";
 import LoadingScreen from '@/components/LoadingScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc, getDoc } from 'firebase/firestore';
+import { InteractionManager } from 'react-native';
+
 
 interface AuthContextType {
   user: User | null;
@@ -38,10 +40,12 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
       if (firebaseUser) {
         setAuthState(true);
         dispatch(setUser(firebaseUser));
+
         fetchProfile(firebaseUser)
       } else {
         setAuthState(false);
         dispatch(setUser(null));
+        setLoadProfile(false)
       }
       setLoading(false); // Set loading to false once auth state is determined
     });
@@ -50,12 +54,15 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
   };
 
   const fetchProfile = async (firebaseUser: any) => {
-    const collectionType = await AsyncStorage.getItem('healthTok_collection')
+    try {
+      const collectionType = await AsyncStorage.getItem('healthTok_collection')
+      const profile = (await getDoc(doc(db, String(collectionType), String(firebaseUser.uid)))).data()
 
-    const profile = (await getDoc(doc(db, String(collectionType), String(firebaseUser.uid)))).data()
-
-    setProfile(profile)
-    setLoadProfile(false)
+      setProfile(profile)
+      setLoadProfile(false)
+    } catch (error) {
+      setLoadProfile(false)
+    }
   }
 
   useLayoutEffect(() => {
@@ -63,27 +70,32 @@ export function AuthenticationProvider ({ children }: AuthenticationProviderProp
   }, [dispatch]);
 
   useEffect(() => {
-    if (!loading) {
-      if (!authState)
-        router.replace("/(auth)/home");
-      else {
+    if (!loading && !loadProfile) {
+      InteractionManager.runAfterInteractions(() => {
         (async () => {
-          const collectionType = await AsyncStorage.getItem('healthTok_collection')
+          if (!authState) {
+            router.replace("/(auth)/home");
+          } else {
+            const collectionType = await AsyncStorage.getItem('healthTok_collection');
 
-          if (collectionType == 'patient')
-            router.replace("/(app)/(patient)/(tabs)/home")
-          else if (collectionType == 'doctors')
-            if (!profile?.isApplicationSubmited)
-              router.replace('/(app)/(doctor)/doctorApplication')
+            if (!collectionType) return <LoadingScreen />
             else
-              router.replace("/(app)/(doctor)/(tabs)/home")
-          // TODO: add another condition for guest account
-        })()
-      }
+              if (collectionType === 'patient') {
+                router.replace("/(app)/(patient)/(tabs)/home");
+              } else if (collectionType === 'doctors') {
+                if (!profile) return <LoadingScreen />
+                else {
+                  if (!profile?.isApplicationSubmited) router.replace("/(app)/(doctor)/doctorApplication");
+                  else router.replace("/(app)/(doctor)/(tabs)/home");
+                }
+              }
+          }
+        })();
+      });
     }
-  }, [loading, profile]);
+  }, [loading, loadProfile, authState, profile, auth]);
 
-  if (loading || !profile) {
+  if (loading || loadProfile) {
     return <LoadingScreen />
   }
 

@@ -20,7 +20,7 @@ const initialState: CommunitiesState = {
   loading: false,
 };
 
-const patientCommunitiesSlice = createSlice({
+const doctorCommunitiesSlice = createSlice({
   name: 'patientCommunities',
   initialState,
   reducers: {
@@ -44,6 +44,6 @@ export const {
   addCommunity,
   removeCommunity,
   setLoading,
-} = patientCommunitiesSlice.actions;
+} = doctorCommunitiesSlice.actions;
 
-export default patientCommunitiesSlice.reducer;
+export default doctorCommunitiesSlice.reducer;

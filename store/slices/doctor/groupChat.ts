@@ -14,8 +14,8 @@ const initialState: GroupConversationState = {
   loading: false,
 };
 
-const patientGroupConversationSlice = createSlice({
-  name: 'patientGroupConversations',
+const doctorConversationSlice = createSlice({
+  name: 'doctorGroupConversations',
   initialState,
   reducers: {
     setConversations (state, action: PayloadAction<any[]>) {
@@ -44,6 +44,6 @@ export const {
   setFilteredConversations,
   setLastVisible,
   setLoading,
-} = patientGroupConversationSlice.actions;
+} = doctorConversationSlice.actions;
 
-export default patientGroupConversationSlice.reducer;
+export default doctorConversationSlice.reducer;

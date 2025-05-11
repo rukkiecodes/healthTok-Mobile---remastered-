@@ -12,7 +12,6 @@ import { TopBlogs } from '@/components/home/TopBlogs'
 export default function home () {
   const theme = useColorScheme()
   const { profile } = useSelector((state: RootState) => state.patientProfile)
-  const { doctors } = useSelector((state: RootState) => state.quickResponse)
 
   return (
     <PaperProvider>
@@ -25,7 +24,7 @@ export default function home () {
         <ThemedText type='body' font='Poppins-Regular'>Explore and get solutions to your desired health problems</ThemedText>
       </View>
 
-      <ScrollView style={{ flexGrow: 1, marginTop: 20 }} contentContainerStyle={{ gap: 40 }}>
+      <ScrollView style={{ marginTop: 20 }} contentContainerStyle={{ gap: 40 }}>
         <TouchableOpacity
           style={{
             flexDirection: 'row',

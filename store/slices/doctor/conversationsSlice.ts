@@ -1,21 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface GroupConversationState {
+interface ConversationState {
   conversations: any[];
   filteredConversations: any[];
   lastVisible: any | null;
   loading: boolean;
 }
 
-const initialState: GroupConversationState = {
+const initialState: ConversationState = {
   conversations: [],
   filteredConversations: [],
   lastVisible: null,
   loading: false,
 };
 
-const patientGroupConversationSlice = createSlice({
-  name: 'patientGroupConversations',
+const doctorConversationSlice = createSlice({
+  name: 'doctorConversations',
   initialState,
   reducers: {
     setConversations (state, action: PayloadAction<any[]>) {
@@ -44,6 +44,6 @@ export const {
   setFilteredConversations,
   setLastVisible,
   setLoading,
-} = patientGroupConversationSlice.actions;
+} = doctorConversationSlice.actions;
 
-export default patientGroupConversationSlice.reducer;
+export default doctorConversationSlice.reducer;

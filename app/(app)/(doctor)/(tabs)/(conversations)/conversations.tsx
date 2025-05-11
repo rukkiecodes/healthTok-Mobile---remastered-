@@ -11,11 +11,12 @@ import { formatMessageTime } from '@/libraries/formatTime'
 import { PaperProvider, Searchbar } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { FlashList } from '@shopify/flash-list'
+import { RootState } from '@/store/store'
 
 export default function conversations () {
   const dispatch = useDispatch()
   const theme = useColorScheme()
-  const { conversations, filteredConversations, loading } = useSelector((state: any) => state.conversations)
+  const { conversations, filteredConversations, loading } = useSelector((state: RootState) => state.doctorconversations)
 
   const [searchQuery, setSearchQuery] = useState('')
 

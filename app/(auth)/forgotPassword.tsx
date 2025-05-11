@@ -68,6 +68,8 @@ export default function ForgotPaswsord () {
               <Input
                 value={email}
                 updateValue={setEmail}
+                inputMode='email'
+                autoCapitalize='none'
                 label={'Enter your email'}
                 left={require('@/assets/images/icons/mail.png')}
               />

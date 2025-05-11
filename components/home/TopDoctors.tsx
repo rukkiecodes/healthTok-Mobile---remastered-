@@ -81,8 +81,8 @@ export function TopDoctors () {
                   <Image
                     source={item?.displayImage ? item?.displayImage?.image : item?.profilePicture}
                     placeholder={require('@/assets/images/images/avatar.png')}
+                    contentFit='cover'
                     placeholderContentFit='cover'
-                    contentFit='contain'
                     style={{ width: 120, height: 120 }}
                   />
                 </View>

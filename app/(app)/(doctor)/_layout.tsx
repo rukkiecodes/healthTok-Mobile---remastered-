@@ -10,6 +10,9 @@ import { updateUser } from '@/libraries/updateUserDocument'
 import { auth, db } from '@/utils/fb'
 import { fetchCanceledAppointments } from '@/store/actions/doctor/canceled_appointments'
 import { fetchCompletedAppointments } from '@/store/actions/doctor/completed_appointments'
+import { fetchConversations } from '@/store/actions/doctor/conversations'
+import { fetchGroupChats } from '@/store/actions/doctor/groupConversations'
+import { fetchUserCommunities } from '@/store/actions/doctor/fetchUserCommunities'
 
 export default function _layout () {
   const theme = useColorScheme()
@@ -28,6 +31,9 @@ export default function _layout () {
       dispatch(fetchAppointments()),
       dispatch(fetchCanceledAppointments()),
       dispatch(fetchCompletedAppointments()),
+      dispatch(fetchConversations()),
+      dispatch(fetchGroupChats()),
+      dispatch(fetchUserCommunities()),
     ];
 
     return () => {

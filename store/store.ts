@@ -10,6 +10,9 @@ import doctorProfileSlice from "@/store/slices/doctor/profile";
 import doctorAppointmentSlice from "@/store/slices/doctor/appointments";
 import doctorCanceledAppointmentsSlice from "@/store/slices/doctor/canceled_appointments";
 import doctorCompletedAppointmentsSlice from "@/store/slices/doctor/completed_appointments";
+import doctorconversationsSlice from "@/store/slices/doctor/conversationsSlice";
+import doctorGroupChat from "@/store/slices/doctor/groupChat";
+import doctorCommunitiesSlice from "@/store/slices/doctor/communitiesSlice";
 // doctor (end)
 
 // patient slices (START)
@@ -42,6 +45,9 @@ export const store = configureStore({
         doctorAppointment: doctorAppointmentSlice,
         doctorCanceledAppointments: doctorCanceledAppointmentsSlice,
         doctorCompletedAppointments: doctorCompletedAppointmentsSlice,
+        doctorGroupChat: doctorGroupChat,
+        doctorconversations: doctorconversationsSlice,
+        doctorCommunities: doctorCommunitiesSlice,
         // Doctor (end)
 
         // Patient (start)
