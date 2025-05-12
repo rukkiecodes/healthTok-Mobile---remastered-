@@ -18,6 +18,7 @@ import * as SecureStore from 'expo-secure-store';
 import { auth } from '@/utils/fb';
 import { StreamVideoClient, StreamVideo } from '@stream-io/video-react-native-sdk'
 import { OverlayProvider } from "stream-chat-expo"
+import { NotificationProvider } from '@/context/notification';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -100,9 +101,11 @@ export default function RootLayout () {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <StatusBar style="auto" />
 
-          <AuthenticationProvider>
-            <InitialLayout />
-          </AuthenticationProvider>
+          <NotificationProvider>
+            <AuthenticationProvider>
+              <InitialLayout />
+            </AuthenticationProvider>
+          </NotificationProvider>
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>

@@ -21,5 +21,7 @@ export interface Profile {
   address?: string
   phone?: string
   about?: string
-  price?: string
+  price?: any
+  expoPushNotificationToken?: any
+  id?: any
 }

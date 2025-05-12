@@ -28,4 +28,5 @@ export interface Profile {
     latitude?: number
     longitude?: number
   }
+  expoPushNotificationToken?: any
 }

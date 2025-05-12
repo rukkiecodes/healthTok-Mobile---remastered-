@@ -12,7 +12,7 @@ export interface Appointment {
     dayName?: string
     month?: string | any
     year?: string | any
-  } | null
+  } | any
 
   selectedTime?: {
     time?: string

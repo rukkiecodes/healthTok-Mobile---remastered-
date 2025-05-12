@@ -20,6 +20,9 @@ import Rating from '@/components/home/Rating'
 import Address from '@/components/profile/Address'
 import { getOrCreateChat } from '@/libraries/getOrCreateChat'
 import HapticWrapper from '@/components/Harptic'
+import { useNotification } from '@/context/notification'
+import { Profile } from '@/store/types/doctor/profile'
+import { formatCustomDate } from '@/libraries/formatDate'
 
 
 type DayObject = {
@@ -42,9 +45,10 @@ export default function appointment () {
   const dispatch = useDispatch()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const successBottomSheetRef = useRef<BottomSheet>(null)
+  const { scheduleNotification } = useNotification()
 
-  const { doctorProfile, selectedDate, selectedTime, appointment }: any = useSelector((state: RootState) => state.appointment)
-  const { profile }: any = useSelector((state: RootState) => state.patientProfile)
+  const { doctorProfile, selectedDate, selectedTime, appointment } = useSelector((state: RootState) => state.appointment)
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
 
   const [startPayment, setStartPayment] = useState(false)
   const [dateString, setDateString] = useState(null)
@@ -175,6 +179,31 @@ export default function appointment () {
 
     await setDoc(doc(db, 'patient', String(auth.currentUser?.uid), 'appointments', id), { ...dataToSave, transaction: data, })
     await setDoc(doc(db, 'doctors', String(doctorProfile?.id), 'appointments', id), { ...dataToSave, transaction: data, })
+    await setDoc(doc(db, 'appointments', id), { ...dataToSave, transaction: data, })
+
+    try {
+      const doctor: Profile | any = (await getDoc(doc(db, 'doctors', String(doctorProfile?.id)))).data()
+      if (!doctor?.expoPushNotificationToken) return
+
+      await scheduleNotification(
+        doctor?.expoPushNotificationToken,
+        profile?.name,
+        `Hello Dr. ${doctor?.name}\nYou have an appointments on the ${formatCustomDate(selectedDate)}, With ${profile?.name}`,
+        // conversationObject
+      )
+      console.log('Notification sent', doctorProfile?.expoPushNotificationToken, profile?.name)
+
+      await setDoc(doc(db, 'doctors', String(doctorProfile?.id), 'notifications', id),
+        {
+          ...dataToSave,
+          transaction: data,
+          message: `Hello Dr. ${doctor?.name}\nYou have an appointments on the ${formatCustomDate(selectedDate)}, With ${profile?.name}`
+        }
+      )
+      console.log('Notification sent', doctorProfile?.expoPushNotificationToken, profile?.name)
+    } catch (error) {
+      console.log('Error sending notification: ', error)
+    }
   }
 
   const startChatWithDoctor = async () => {

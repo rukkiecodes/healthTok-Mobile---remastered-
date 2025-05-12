@@ -17,6 +17,7 @@ import Address from '@/components/profile/Address'
 import CountPatients from '@/components/profile/CountPatients'
 import CountReviews from '@/components/profile/CountReviews'
 import HapticWrapper from '@/components/Harptic'
+import { getOrCreateChat } from '@/libraries/getOrCreateChat'
 
 const { width } = Dimensions.get('window')
 
@@ -36,6 +37,7 @@ export default function doctorProfile () {
   const dispatch = useDispatch()
 
   const { doctorProfile, selectedDate, selectedTime } = useSelector((state: RootState) => state.appointment)
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
 
   const [loadBookingButton, setLoadBookingButton] = useState(true)
 
@@ -121,6 +123,30 @@ export default function doctorProfile () {
     return slots;
   };
 
+  const startChatWithDoctor = async () => {
+    try {
+      const userId: any = auth.currentUser?.uid;
+
+      const q = query(collection(db, 'patient', String(auth.currentUser?.uid), 'appointments'), where('doctor.id', "==", doctorUID))
+      const snapshot = await getDocs(q)
+
+      const chatRef = await getOrCreateChat(
+        userId,
+        String(doctorProfile?.id),
+        snapshot.docs[0].data(),
+        doctorProfile,
+        profile
+      );
+
+      router.push({
+        pathname: '/(app)/(patient)/(chats)/[chatId]',
+        params: { chatId: chatRef.id },
+      });
+    } catch (error) {
+      console.error('Error starting chat:', error);
+    }
+  }
+
 
 
 
@@ -167,8 +193,8 @@ export default function doctorProfile () {
             source={require('@/assets/images/icons/arrow_left.png')}
             style={{
               tintColor: theme == 'dark' ? light : appDark,
-              width: 25,
-              height: 25,
+              width: 20,
+              height: 20,
             }}
           />
         </TouchableOpacity>
@@ -537,6 +563,21 @@ export default function doctorProfile () {
             >
               <ThemedText type='body' font='Poppins-Bold'>Already Booked</ThemedText>
               <ThemedText type='caption' font='Poppins-Medium' style={{ textAlign: 'center' }}>You have alredy book {doctorProfile?.name}. Please finish your already existing session before you can rebook</ThemedText>
+
+              <HapticWrapper
+                onPress={() => startChatWithDoctor()}
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: accent,
+                  borderRadius: 20,
+                  height: 50,
+                  marginTop: 10
+                }}
+              >
+                <ThemedText lightColor={light} font='Poppins-Bold' type='body'>Chat Doctor</ThemedText>
+              </HapticWrapper>
             </View>
         }
       </View>
