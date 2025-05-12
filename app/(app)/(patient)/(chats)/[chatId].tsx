@@ -216,10 +216,10 @@ export default function ChatScreen () {
         >
           <TouchableOpacity
             disabled={!conversationData?.isAppointmentsOpen}
-            // onPress={() => router.push({
-            //   pathname: '/(app)/(patient)/(chats)/videoCall',
-            //   params: { chatId }
-            // })}
+            onPress={() => router.push({
+              pathname: '/(app)/(patient)/(chats)/videoCall',
+              params: { chatId }
+            })}
             style={{
               width: 50,
               height: 50,

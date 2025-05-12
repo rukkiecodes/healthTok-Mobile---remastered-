@@ -15,6 +15,8 @@ import { auth, db } from '@/utils/fb'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import * as SecureStore from 'expo-secure-store';
 
 export default function doctor () {
     const theme = useColorScheme()
@@ -49,6 +51,13 @@ export default function doctor () {
         await AsyncStorage.setItem('healthTok_collection', 'doctors')
         setLoading(false)
         saveUser(user.user.uid)
+
+        const response = await axios.post("https://mailservice-e4b2cc7b9ef8.herokuapp.com/healthTok/registerStream", {
+          email,
+          id: user?.user?.uid
+        });
+
+        await SecureStore.setItemAsync(process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY!, response.data?.token)
       } catch (error: any) {
         switch (error.code) {
           case 'auth/email-already-in-use':

@@ -14,6 +14,8 @@ import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
 import Constants from "expo-constants";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import * as SecureStore from 'expo-secure-store';
 
 const { webClientId, iosClientId } = Constants.expoConfig?.extra?.expoPublic || {};
 
@@ -76,6 +78,13 @@ export default function login () {
 
       await AsyncStorage.setItem('healthTok_collection', userCollection)
       router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
+
+      const response = await axios.post("https://mailservice-e4b2cc7b9ef8.herokuapp.com/healthTok/registerStream", {
+        email,
+        id: user?.uid
+      });
+
+      await SecureStore.setItemAsync(process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY!, response.data?.token)
     } catch (error) {
       console.log('Error signing in', error);
     }
@@ -110,6 +119,13 @@ export default function login () {
       router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
 
       setLoading(false);
+      
+      const response = await axios.post("https://mailservice-e4b2cc7b9ef8.herokuapp.com/healthTok/registerStream", {
+        email,
+        id: user?.uid
+      });
+
+      await SecureStore.setItemAsync(process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY!, response.data?.token)
     }
     catch (error: any) {
       setLoading(false);

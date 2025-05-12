@@ -21,6 +21,18 @@ export default {
       },
       package: "com.rukkiecodes.healthTok",
       googleServicesFile: "./google-services.json",
+      permissions: [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "INTERNET",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "MODIFY_AUDIO_SETTINGS",
+        "VIBRATE",
+        "POST_NOTIFICATIONS",
+      ],
     },
     web: {
       bundler: "metro",
@@ -50,6 +62,43 @@ export default {
         {
           locationAlwaysAndWhenInUsePermission:
             "Allow HealthTok to use your location.",
+        },
+      ],
+      [
+        "expo-build-properties",
+        {
+          android: {
+            extraMavenRepos: [
+              "$rootDir/../../../node_modules/@notifee/react-native/android/libs",
+            ],
+          },
+        },
+      ],
+      "@stream-io/video-react-native-sdk",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          // add your explanations for camera and microphone
+          cameraPermission:
+            "$(PRODUCT_NAME) requires camera access in order to capture and transmit video",
+          microphonePermission:
+            "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio",
+        },
+      ],
+      [
+        "expo-secure-store",
+        {
+          configureAndroidBackup: true,
+          faceIDPermission:
+            "Allow $(PRODUCT_NAME) to access your Face ID biometric data.",
+        },
+      ],
+      "expo-video",
+      [
+        "expo-audio",
+        {
+          microphonePermission:
+            "Allow $(PRODUCT_NAME) to access your microphone.",
         },
       ],
     ],
