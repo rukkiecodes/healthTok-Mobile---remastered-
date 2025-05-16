@@ -24,7 +24,6 @@ const updateProfileWithPushToken = async (token: string) => {
       expoPushNotificationToken: token,
     });
 
-    console.log('Updated push notification token:', token);
   } catch (error) {
     console.error('Failed to update profile with push token:', error);
   }
@@ -47,7 +46,7 @@ export async function registerForPushNotificationsAsync (): Promise<string | und
   }
 
   if (!Device.isDevice) {
-    Alert.alert('Push Notification', 'Must use physical device for Push Notifications.');
+    // Alert.alert('Push Notification', 'Must use physical device for Push Notifications.');
     return;
   }
 

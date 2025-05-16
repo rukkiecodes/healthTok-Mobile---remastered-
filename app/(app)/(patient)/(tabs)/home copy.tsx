@@ -1,12 +1,10 @@
-import { View, ScrollView, TouchableOpacity } from 'react-native'
+import { View, useColorScheme, ScrollView, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { useColorScheme } from '@/hooks/useColorScheme.web'
+import { Appbar, PaperProvider } from 'react-native-paper'
+import { ThemedText } from '@/components/ThemedText'
+import { appDark, ice, light } from '@/utils/colors'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
-import { Appbar, PaperProvider } from 'react-native-paper'
-import { appDark, ice } from '@/utils/colors'
-import { ThemedText } from '@/components/ThemedText'
-import { Image } from 'expo-image'
 import { QuickAccess } from '@/components/home/QuickAccess'
 import { TopDoctors } from '@/components/home/TopDoctors'
 import { TopBlogs } from '@/components/home/TopBlogs'
@@ -17,7 +15,11 @@ export default function home () {
 
   return (
     <PaperProvider>
-      <View style={{ paddingHorizontal: 20, marginTop: 60 }}>
+      <Appbar.Header style={{ backgroundColor: theme == 'dark' ? appDark : light }}>
+        <View />
+      </Appbar.Header>
+
+      <View style={{ paddingHorizontal: 20 }}>
         <ThemedText type='subtitle' font='Poppins-Bold'>Hello, {profile?.name}</ThemedText>
         <ThemedText type='body' font='Poppins-Regular'>Explore and get solutions to your desired health problems</ThemedText>
       </View>

@@ -1,5 +1,5 @@
 import { View, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { ThemedText } from '../ThemedText'
 import { accent, appDark, black, green, light } from '@/utils/colors'
 import { Image } from 'expo-image'
@@ -18,7 +18,7 @@ export function TopDoctors () {
   const { doctors } = useSelector((state: RootState) => state.doctors)
   const { profile } = useSelector((state: RootState) => state.patientProfile)
 
-  const [topDoctors] = useState<object[] | null>(doctors.slice(0, 5))
+  const topDoctors = doctors.slice(0, 5)
 
   return (
     <View style={{ paddingHorizontal: 20, display: topDoctors?.length ? 'flex' : 'none' }}>
