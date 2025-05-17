@@ -1,65 +1,171 @@
-import React, { useEffect, useState } from 'react';
-import { router } from 'expo-router';
-import { PaperProvider, Avatar, Text } from 'react-native-paper';
-import { View, StyleSheet } from 'react-native';
-import { Call, StreamCall, useStreamVideoClient, CallContent } from '@stream-io/video-react-native-sdk';
-import { ThemedView } from '@/components/ThemedView';
-import CustomCallControls from './CustomCallControls'; // Reuse for mute/hangup etc.
+import React, { useEffect, useState } from 'react'
+import { PaperProvider } from 'react-native-paper'
+import { ThemedView } from '@/components/ThemedView'
+import { Call, StreamCall, useStreamVideoClient } from '@stream-io/video-react-native-sdk'
+import CustomCallControls from './CustomCallControls'
+import { View } from 'react-native'
+import { Image, ImageBackground } from 'expo-image'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { db } from '@/utils/fb'
+import { ThemedText } from '../ThemedText'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+import { Animated } from 'react-native'
+
+interface Conversation { [key: string]: any }
 
 export function VoiceCall ({ chatId }: any) {
-  const client = useStreamVideoClient();
-  const [call, setCall] = useState<Call | null>(null);
+  const client = useStreamVideoClient()
+
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
+  const [call, setCall] = useState<Call | null>(null)
+  const [connecting, setConnecting] = useState<boolean>(true)
+  const [conversationData, setConversationData] = useState<Conversation | null>(null)
+  const [fadeAnim] = useState(new Animated.Value(0))
+  const [loadingOpacity] = useState(new Animated.Value(1)) // Start fully visible
+
+  const getConversationData = async () => {
+    const unsub = onSnapshot(doc(db, "chats", String(chatId)), (doc: any) => {
+      setConversationData(doc.data())
+    });
+
+    return unsub
+  }
 
   useEffect(() => {
-    if (!client || call) return;
+    if (!client || call) return
 
-    const joinVoiceCall = async () => {
-      const call = client.call('default', chatId);
+    const joinCall = async () => {
+      getConversationData()
+      try {
+        setConnecting(true)
+        const call = client.call('default', chatId)
+        call.camera.disable()
+        call.microphone.enable()
+        await call.join({
+          create: true,
+          video: false,
+        })
+        setCall(call)
+        Animated.timing(loadingOpacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }).start(() => {
+          setConnecting(false) // Only hide loading after fade out finishes
+        })
+      } catch (err) {
+        console.error('Failed to join call:', err)
+      } finally {
+        setConnecting(false)
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }).start()
+      }
+    }
 
-      await call.join({
-        create: true,
-        audio: true,
-        video: false, // <-- important
-      });
+    joinCall()
+  }, [client])
 
-      setCall(call);
-    };
+  if (connecting || !call) {
+    return (
+      <Animated.View style={{ flex: 1, opacity: loadingOpacity }}>
+        <ImageBackground
+          source={require('@/assets/images/images/step3.png')}
+          blurRadius={50}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Image
+              source={conversationData?.appointmentsData?.doctor?.displayImage?.image}
+              placeholder={require('@/assets/images/images/avatar.png')}
+              contentFit='cover'
+              placeholderContentFit='cover'
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 100
+              }}
+            />
 
-    joinVoiceCall();
-  }, [client]);
-
-  if (!call) return null;
+            <ThemedText type='subtitle' font='Poppins-Bold'>{conversationData?.appointmentsData?.doctor?.name}</ThemedText>
+          </View>
+        </ImageBackground>
+      </Animated.View>
+    )
+  }
 
   return (
     <PaperProvider>
-      <ThemedView style={styles.container}>
+      <ThemedView style={{ flex: 1 }}>
         <StreamCall call={call}>
-          <View style={styles.content}>
-            {/* Placeholder for user info */}
-            <Avatar.Icon size={100} icon="account" />
-            <Text variant="titleLarge" style={{ marginTop: 16 }}>Voice Call</Text>
-          </View>
+          <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+            <ImageBackground
+              source={require('@/assets/images/images/step3.png')}
+              blurRadius={50}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: -50
+                  }}
+                >
+                  <Image
+                    source={conversationData?.appointmentsData?.doctor?.displayImage?.image}
+                    placeholder={require('@/assets/images/images/avatar.png')}
+                    contentFit='cover'
+                    placeholderContentFit='cover'
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 100
+                    }}
+                  />
+                  <Image
+                    source={profile?.displayImage?.image}
+                    placeholder={require('@/assets/images/images/avatar.png')}
+                    contentFit='cover'
+                    placeholderContentFit='cover'
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 100,
+                      position: 'absolute',
+                      left: 50
+                    }}
+                  />
+                </View>
+              </View>
 
-          <CallContent
-            onHangupCallHandler={router.back}
-            CallControls={() => <CustomCallControls call={call} />}
-            // No FloatingParticipantView for voice
-            showLocalVideo={false}
-            showRemoteVideo={false}
-          />
+              <CustomCallControls call={call} voice={true} />
+            </ImageBackground>
+          </Animated.View>
         </StreamCall>
       </ThemedView>
     </PaperProvider>
-  );
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-});

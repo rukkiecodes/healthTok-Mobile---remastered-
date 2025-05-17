@@ -223,7 +223,7 @@ export default function ChatScreen () {
           }}
         >
           <TouchableOpacity
-            disabled={!conversationData?.isAppointmentsOpen}
+            // disabled={!conversationData?.isAppointmentsOpen}
             onPress={() => router.push({
               pathname: '/(app)/(doctor)/(chats)/videoCall',
               params: { chatId }
@@ -245,11 +245,11 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={!conversationData?.isAppointmentsOpen}
-            // onPress={() => router.push({
-            //   pathname: '/(app)/(doctor)/(chats)/voiceCall',
-            //   params: { chatId }
-            // })}
+            // disabled={!conversationData?.isAppointmentsOpen}
+            onPress={() => router.push({
+              pathname: '/(app)/(doctor)/(chats)/voiceCall',
+              params: { chatId }
+            })}
             style={{
               width: 50,
               height: 50,

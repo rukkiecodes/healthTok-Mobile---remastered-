@@ -4,7 +4,7 @@ import { ThemedView } from '../ThemedView'
 import { Call, HangUpCallButton, ReactionsButton, ToggleAudioPublishingButton, ToggleCameraFaceButton, ToggleVideoPreviewButton } from '@stream-io/video-react-native-sdk'
 import { router } from 'expo-router'
 
-export default function CustomCallControls ({ call }: { call: Call }) {
+export default function CustomCallControls ({ call, voice }: { call: Call, voice: boolean }) {
   return (
     <ThemedView
       style={{
@@ -21,8 +21,8 @@ export default function CustomCallControls ({ call }: { call: Call }) {
     >
       <ReactionsButton />
       <ToggleAudioPublishingButton onPressHandler={() => call?.microphone?.toggle()} />
-      <ToggleVideoPreviewButton onPressHandler={() => call?.camera?.toggle()} />
-      <ToggleCameraFaceButton onPressHandler={() => call?.camera?.flip()} />
+      {!voice && <ToggleVideoPreviewButton onPressHandler={() => call?.camera?.toggle()} />}
+      {!voice && <ToggleCameraFaceButton onPressHandler={() => call?.camera?.flip()} />}
       <HangUpCallButton onPressHandler={() => {
         call?.endCall()
         router.back()
