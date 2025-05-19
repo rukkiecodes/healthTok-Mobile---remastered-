@@ -144,7 +144,7 @@ export default function doctor () {
               paddingHorizontal: 20
             }}
           >
-            <ThemedText>Gender ({gender})</ThemedText>
+            <ThemedText>Gender {gender}</ThemedText>
 
             <Image
               source={require('@/assets/images/icons/chevron_down.png')}

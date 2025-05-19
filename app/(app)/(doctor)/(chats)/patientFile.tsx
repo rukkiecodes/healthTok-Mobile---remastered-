@@ -143,7 +143,6 @@ export default function patientFile () {
               <ThemedText type='body' font='Poppins-Medium' opacity={0.8}>{parsParams()?.appointmentsData?.appointment?.appointment?.reason}</ThemedText>
             </View>
           }
-          {/* TODO: add Allergies to account signup */}
           {
             profile?.allergies?.length > 0 &&
             <View style={{ gap: 5 }}>

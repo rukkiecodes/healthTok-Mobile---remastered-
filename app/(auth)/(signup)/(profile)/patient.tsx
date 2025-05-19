@@ -1,5 +1,5 @@
-import { View, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, ScrollView, TouchableOpacity, Dimensions } from 'react-native'
+import React, { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setBirth, setGender, setName, setOrigin, setUsername } from '@/store/slices/signup'
@@ -17,14 +17,106 @@ import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+
+const { height } = Dimensions.get('window')
+
+const medicalAllergies = [
+  // Food Allergies
+  "Peanuts",
+  "Almonds",
+  "Walnuts",
+  "Cashews",
+  "Milk",
+  "Eggs",
+  "Wheat",
+  "Gluten",
+  "Soy",
+  "Salmon",
+  "Tuna",
+  "Shrimp",
+  "Crab",
+  "Lobster",
+  "Sesame",
+  "Corn",
+  "Oranges",
+  "Lemons",
+  "Limes",
+  "Grapefruits",
+
+  // Drug Allergies
+  "Penicillin",
+  "Amoxicillin",
+  "Cephalexin",
+  "Ceftriaxone",
+  "Sulfa drugs",
+  "Sulfamethoxazole",
+  "Aspirin",
+  "Ibuprofen",
+  "Naproxen",
+  "Codeine",
+  "Morphine",
+  "Fentanyl",
+  "Propofol (anesthesia)",
+  "Lidocaine (local anesthetic)",
+  "Phenytoin",
+  "Carbamazepine",
+  "Methotrexate",
+  "Cisplatin",
+
+  // Environmental Allergies
+  "Tree pollen",
+  "Grass pollen",
+  "Weed pollen",
+  "Dust mites",
+  "Mold spores",
+  "Cat dander",
+  "Dog dander",
+  "Cockroaches",
+  "Bee stings",
+  "Wasp stings",
+  "Hornet stings",
+  "Fire ant stings",
+  "Latex",
+
+  // Contact Allergies (Dermatitis)
+  "Nickel",
+  "Perfume/fragrance",
+  "Parabens",
+  "Formaldehyde",
+  "Hair dye",
+  "Black henna",
+  "Latex gloves",
+  "Household bleach",
+  "Disinfectants",
+
+  // Other Allergies
+  "Sunlight (photosensitivity)",
+  "Cold (cold urticaria)",
+  "Water (aquagenic urticaria)",
+  "Exercise-induced allergy",
+  "Chlorine",
+  "Alcohol",
+  "Red dye #40",
+  "Monosodium glutamate (MSG)",
+  "Aspartame",
+
+  // Vaccine Allergies
+  "Egg proteins (vaccine-related)",
+  "Gelatin",
+  "Thimerosal",
+  "Neomycin"
+];
 
 export default function patient () {
   const theme = useColorScheme()
+  const bottomSheetRef = useRef<BottomSheet>(null)
   const dispatch = useDispatch()
   const { name, email, password, username, gender, birth, origin } = useSelector((state: RootState) => state.signup)
   const [showGender, setShowGender] = useState(false)
   const [openDate, setOpenDate] = useState(false);
   const [loading, setLoading] = useState(false)
+  const [allergies, setAllergies] = useState<any[]>([])
 
   const onDismissSingle = React.useCallback(() => {
     setOpenDate(false);
@@ -56,7 +148,7 @@ export default function patient () {
         email,
         id: user?.user?.uid
       });
-      
+
       await SecureStore.setItemAsync(process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY!, response.data?.token)
     } catch (error: any) {
       switch (error.code) {
@@ -90,12 +182,22 @@ export default function patient () {
         birth,
         origin,
         profilePicture: null,
+        allergies,
         createdAt: serverTimestamp(),
       });
     } catch (error) {
       console.log(error)
     }
   }
+
+  const renderBackdrop = useCallback((props: any) => (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="close"
+    />
+  ), []);
 
 
   return (
@@ -141,7 +243,7 @@ export default function patient () {
               paddingHorizontal: 20
             }}
           >
-            <ThemedText>Gender ({gender})</ThemedText>
+            <ThemedText>Gender: {gender}</ThemedText>
 
             <Image
               source={require('@/assets/images/icons/chevron_down.png')}
@@ -233,8 +335,25 @@ export default function patient () {
             onChangeText={(text) => dispatch(setOrigin(text))}
             style={{ backgroundColor: transparent }}
           />
-        </View>
 
+          <TouchableOpacity
+            onPress={() => bottomSheetRef.current?.expand()}
+            style={{
+              backgroundColor: transparent,
+              height: 50,
+              width: '100%',
+              borderRadius: 20,
+              borderWidth: 1.5,
+              borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingHorizontal: 20
+            }}
+          >
+            <ThemedText>Allergies</ThemedText>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       <HapticWrapper
@@ -254,6 +373,67 @@ export default function patient () {
             <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Next</ThemedText>
         }
       </HapticWrapper>
+
+      <BottomSheet
+        index={-1}
+        ref={bottomSheetRef}
+        snapPoints={['90%']}
+        enablePanDownToClose
+        enableOverDrag
+        enableDynamicSizing={false}
+        animateOnMount
+        backdropComponent={renderBackdrop}
+      >
+        <BottomSheetScrollView
+          contentContainerStyle={{
+            padding: 30,
+            gap: 20,
+            flexGrow: 1
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 20
+            }}
+          >
+            {
+              medicalAllergies.map((item, index) => {
+                return (
+                  <HapticWrapper
+                    key={index}
+                    onPress={() => {
+                      if (allergies.includes(item)) {
+                        setAllergies(allergies.filter(a => a !== item));
+                      } else {
+                        setAllergies([...allergies, item]);
+                      }
+                    }}
+                    style={{
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 50,
+                      borderWidth: 1.5,
+                      borderColor: allergies.includes(item) ? transparent : `${accent}33`,
+                      backgroundColor: allergies.includes(item) ? accent : transparent
+                    }}
+                  >
+                    <ThemedText
+                      lightColor={allergies.includes(item) ? light : appDark}
+                      darkColor={allergies.includes(item) ? light : appDark}
+                      type='body'
+                      font='Poppins-Medium'
+                    >
+                      {item}
+                    </ThemedText>
+                  </HapticWrapper>
+                )
+              })
+            }
+          </View>
+        </BottomSheetScrollView>
+      </BottomSheet>
     </View>
   )
 }

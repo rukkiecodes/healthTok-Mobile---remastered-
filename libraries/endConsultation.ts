@@ -45,12 +45,12 @@ export const checkAndEndConsultation = async (chatId: string, appointment: any, 
 
 // TODO: Test this block
 const clearCollections = async (patient: string, doctor: string, appointment: string, appointmentData: any) => {
-  await setDoc(doc(db, 'doctors', doctor, 'completed_appointments', appointment), {
+  await setDoc(doc(db, 'doctors', doctor, 'concluded_appointments', appointment), {
     appointmentData,
     completedAt: serverTimestamp()
   })
 
-  await setDoc(doc(db, 'patient', patient, 'completed_appointments', appointment), {
+  await setDoc(doc(db, 'patient', patient, 'concluded_appointments', appointment), {
     appointmentData,
     completedAt: serverTimestamp()
   })
