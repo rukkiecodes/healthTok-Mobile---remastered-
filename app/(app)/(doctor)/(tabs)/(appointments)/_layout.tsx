@@ -27,6 +27,7 @@ export default function _layout () {
         <ThemedText type='subtitle' font='Poppins-Bold'>Appointment</ThemedText>
 
         <TouchableOpacity
+          onPress={() => router.navigate('/(app)/(doctor)/notification')}
           style={{
             width: 50,
             height: 50,

@@ -20,7 +20,8 @@ export const getOrCreateChat = async (
   otherUserId: string,
   appointmentsData?: any,
   doctorProfile?: any,
-  otherUserProfile?: any
+  otherUserProfile?: any,
+  appointmentId?: any
 ) => {
   if (!userId || !otherUserId) throw new Error('Both userId and otherUserId are required');
 
@@ -70,6 +71,7 @@ export const getOrCreateChat = async (
         name: otherUser?.name || '',
         photoURL: otherUser?.displayImage?.image || otherUser?.profilePicture || '',
       },
+      appointmentId
     });
 
     return newChatRef;

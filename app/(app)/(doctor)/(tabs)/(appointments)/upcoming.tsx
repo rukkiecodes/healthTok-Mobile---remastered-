@@ -200,6 +200,7 @@ export default function upcoming () {
     keyExtractor={(item: any) => item.id}
     showsVerticalScrollIndicator={false}
     estimatedItemSize={20}
+    ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
     contentContainerStyle={{
       padding: 20
     }}

@@ -8,6 +8,7 @@ export const transparent = "transparent"
 export const ice = "#E8EBF3"
 export const action = "#232B5D"
 export const lightAction = "#34448B"
+export const teal = "#199A8E"
 
 // dashboard colors
 export const dash1 = "#0367A6"

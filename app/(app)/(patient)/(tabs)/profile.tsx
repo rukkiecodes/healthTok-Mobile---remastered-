@@ -407,6 +407,7 @@ export default function profile () {
           <Divider style={{ marginVertical: 20 }} />
 
           <TouchableOpacity
+            onPress={() => router.navigate('/(app)/(patient)/(faq)/faq')}
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',

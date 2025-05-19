@@ -229,6 +229,7 @@ export default function home () {
         </View>
 
         <TouchableOpacity
+          onPress={() => router.navigate('/(app)/(doctor)/notification')}
           style={{
             width: 50,
             height: 50,

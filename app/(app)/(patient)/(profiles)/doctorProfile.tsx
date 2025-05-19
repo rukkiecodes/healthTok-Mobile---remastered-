@@ -40,6 +40,7 @@ export default function doctorProfile () {
   const { profile } = useSelector((state: RootState) => state.patientProfile)
 
   const [loadBookingButton, setLoadBookingButton] = useState(true)
+  const [appointmentId, setAppointmentId] = useState('')
 
   const fetchDoctorProfile = async () => {
     const profile: any = await getDoc(doc(db, 'doctors', String(doctorUID)))
@@ -50,6 +51,7 @@ export default function doctorProfile () {
     try {
       const q = query(collection(db, 'patient', String(auth.currentUser?.uid), 'appointments'), where('doctor.id', "==", doctorUID))
       const snapshot = await getDocs(q)
+      setAppointmentId(snapshot.docs[0]?.id)
 
       setLoadBookingButton(snapshot.docs.length > 0 ? true : false)
     } catch (error) {
@@ -135,7 +137,8 @@ export default function doctorProfile () {
         String(doctorProfile?.id),
         snapshot.docs[0].data(),
         doctorProfile,
-        profile
+        profile,
+        appointmentId
       );
 
       router.push({

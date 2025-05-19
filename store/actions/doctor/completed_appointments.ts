@@ -9,7 +9,7 @@ export const fetchCompletedAppointments: any = () => async (dispatch: AppDispatc
     const { uid }: any = auth.currentUser
     if (!uid) return
 
-    const q = query(collection(db, "doctors", uid, "completed_appointments"), orderBy("timestamp", "desc"));
+    const q = query(collection(db, "doctors", uid, "concluded_appointments"), orderBy("concludedAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data = querySnapshot.docs.map((doc) => ({

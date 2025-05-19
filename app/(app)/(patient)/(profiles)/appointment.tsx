@@ -55,6 +55,7 @@ export default function appointment () {
   const [amount, setAmount] = useState(calculateTotal(doctorProfile?.price))
   const [convertedAmount, setConvertedAmount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [appointmentId, setAppointmentId] = useState('')
 
   function convertToFormattedDateString (obj: DayObject): string | null {
     const fullMonthNames = [
@@ -177,6 +178,8 @@ export default function appointment () {
 
     const { id } = await addDoc(collection(db, 'patient', String(auth.currentUser?.uid), 'transactions'), { ...dataToSave, transaction: data })
 
+    setAppointmentId(id)
+
     await setDoc(doc(db, 'patient', String(auth.currentUser?.uid), 'appointments', id), { ...dataToSave, transaction: data, })
     await setDoc(doc(db, 'doctors', String(doctorProfile?.id), 'appointments', id), { ...dataToSave, transaction: data, })
     await setDoc(doc(db, 'appointments', id), { ...dataToSave, transaction: data, })
@@ -221,7 +224,8 @@ export default function appointment () {
         String(doctorProfile?.id),
         dataToSave,
         doctorProfile,
-        profile
+        profile,
+        appointmentId
       );
 
       router.push({

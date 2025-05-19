@@ -14,7 +14,7 @@ import { calculateAge } from '@/libraries/calculateAge'
 
 export default function canceled () {
   const theme = useColorScheme()
-  const { appointments } = useSelector((state: RootState) => state.patientCanceledAppointments)
+  const { appointments } = useSelector((state: RootState) => state.doctorCanceledAppointments)
 
   const renderItem = ({ item }: { item: Appointment }) => {
     return (
@@ -109,6 +109,7 @@ export default function canceled () {
     keyExtractor={(item: any) => item.id}
     showsVerticalScrollIndicator={false}
     estimatedItemSize={20}
+    ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
     contentContainerStyle={{
       padding: 20
     }}

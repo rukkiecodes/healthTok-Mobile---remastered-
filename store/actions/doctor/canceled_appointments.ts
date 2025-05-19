@@ -9,14 +9,14 @@ export const fetchCanceledAppointments: any = () => async (dispatch: AppDispatch
     const { uid }: any = auth.currentUser
     if (!uid) return
 
-    const q = query(collection(db, "doctors", uid, "canceled_appointments"), orderBy("timestamp", "desc"));
+    const q = query(collection(db, "doctors", uid, "canceled_appointments"), orderBy("canceledAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
       }))
-
+      
       dispatch(setAppointment(data))
     });
 

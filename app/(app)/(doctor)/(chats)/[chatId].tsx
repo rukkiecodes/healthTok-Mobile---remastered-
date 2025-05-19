@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Conversation } from '@/store/types/conversations';
-import { addDoc, collection, doc, getDocs, limit, onSnapshot, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc, startAfter, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from '@/utils/fb';
 import { Appbar, PaperProvider, TextInput } from 'react-native-paper';
 import { accent, appDark, dark, light, red, transparent } from '@/utils/colors';
@@ -14,7 +14,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { FlashList } from '@shopify/flash-list';
 import MessageBubble from '@/components/doctorMessages/MessageBubble';
 import { getOtherParticipant } from '@/libraries/extractUID';
-import { checkAndEndConsultation } from '@/libraries/endConsultation';
 import { useConsultationTimer } from '@/libraries/parseConsultationDateTime';
 
 interface Message {
@@ -148,15 +147,56 @@ export default function ChatScreen () {
 
   const endConsultion = async () => {
     const appointment = conversationData?.appointmentsData?.appointment;
-    await checkAndEndConsultation(
-      chatId,
-      appointment,
-      String(conversationData?.appointmentsData?.patient?.uid),
-      String(auth?.currentUser?.uid),
-      String(conversationData?.appointmentsData?.id),
-      conversationData?.appointmentsData
-    );
-    // completed_appointments
+    // await checkAndEndConsultation(
+    //   chatId,
+    //   appointment,
+    //   String(conversationData?.appointmentsData?.patient?.uid),
+    //   String(auth?.currentUser?.uid),
+    //   String(conversationData?.appointmentsData?.id),
+    //   conversationData?.appointmentsData
+    // );
+
+    cuncludeAppointment(String(conversationData?.appointmentId))
+  }
+
+  const cuncludeAppointment = async (appointmentId: string) => {
+    try {
+      await setDoc(doc(db, 'patient', String(conversationData?.appointmentsData?.patient?.uid), 'concluded_appointments', appointmentId), {
+        concluded: true,
+        ...conversationData?.appointmentsData,
+        concludedAt: serverTimestamp()
+      })
+      await setDoc(doc(db, 'doctors', String(conversationData?.appointmentsData?.doctor?.uid), 'concluded_appointments', appointmentId), {
+        concluded: true,
+        ...conversationData?.appointmentsData,
+        concludedAt: serverTimestamp()
+      })
+
+      await updateDoc(doc(db, 'appointments', appointmentId), {
+        concluded: true,
+        concludedAt: serverTimestamp()
+      })
+
+      await deleteDoc(doc(db, 'patient', String(conversationData?.appointmentsData?.patient?.uid), 'appointments', appointmentId))
+      await deleteDoc(doc(db, 'doctors', String(conversationData?.appointmentsData?.doctor?.uid), 'appointments', appointmentId))
+
+      deleteChat()
+    } catch (error) {
+      console.group('Error cuncluding cunsoltation: ', error)
+    }
+  }
+
+  const deleteChat = async () => {
+    try {
+      messages.forEach(async message => {
+        await deleteDoc(doc(db, 'chats', chatId, 'messages', message.id))
+      })
+
+      await deleteDoc(doc(db, 'chats', chatId))
+      router.back()
+    } catch (error) {
+      console.log('Error deleteing chats: ', error)
+    }
   }
 
   useEffect(() => {
@@ -267,7 +307,7 @@ export default function ChatScreen () {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={!conversationData?.isAppointmentsOpen}
+            // disabled={!conversationData?.isAppointmentsOpen}
             onPress={() => bottomSheetRef.current?.expand()}
             style={{
               width: 50,

@@ -115,14 +115,14 @@ export default function profile () {
       title: 'Pricing',
       divide: true
     },
+    // {
+    //   action: () => router.navigate('/(app)/(doctor)/resources'),
+    //   image: require('@/assets/images/icons/file_dock_search.png'),
+    //   title: 'Resources',
+    //   divide: true
+    // },
     {
-      action: () => router.navigate('/(app)/(doctor)/resources'),
-      image: require('@/assets/images/icons/file_dock_search.png'),
-      title: 'Resources',
-      divide: true
-    },
-    {
-      action: () => router.navigate('/(app)/(doctor)/FAQs'),
+      action: () => router.navigate('/(app)/(doctor)/(faq)/faq'),
       image: require('@/assets/images/icons/chat.png'),
       title: 'FAQs',
       divide: true
