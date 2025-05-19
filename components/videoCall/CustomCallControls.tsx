@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { ThemedView } from '../ThemedView'
 import { Call, HangUpCallButton, ReactionsButton, ToggleAudioPublishingButton, ToggleCameraFaceButton, ToggleVideoPreviewButton } from '@stream-io/video-react-native-sdk'

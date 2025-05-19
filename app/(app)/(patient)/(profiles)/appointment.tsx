@@ -187,16 +187,22 @@ export default function appointment () {
 
       await scheduleNotification(
         doctor?.expoPushNotificationToken,
-        profile?.name,
-        `Hello Dr. ${doctor?.name}\nYou have an appointments on the ${formatCustomDate(selectedDate)}, With ${profile?.name}`,
-        // conversationObject
+        `Hello Dr. ${doctor?.name}`,
+        `You have an appointments on the ${formatCustomDate(selectedDate)}, With ${profile?.name}`,
+        {
+          type: 'booking',
+          sound: 'notification',
+          route: '/(app)/(doctor)/(tabs)/(appointments)/upcoming',
+          ...dataToSave,
+          transaction: data,
+        }
       )
-      console.log('Notification sent', doctorProfile?.expoPushNotificationToken, profile?.name)
 
-      await setDoc(doc(db, 'doctors', String(doctorProfile?.id), 'notifications', id),
+      await addDoc(collection(db, 'doctors', String(doctorProfile?.id), 'notifications'),
         {
           ...dataToSave,
           transaction: data,
+          route: '/(app)/(doctor)/(tabs)/(appointments)/upcoming',
           message: `Hello Dr. ${doctor?.name}\nYou have an appointments on the ${formatCustomDate(selectedDate)}, With ${profile?.name}`
         }
       )

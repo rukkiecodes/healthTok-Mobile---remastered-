@@ -10,8 +10,8 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { LogBox } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { appDark, light } from '@/utils/colors';
-import { RootState, store } from '@/store/store';
-import { Provider, useSelector } from 'react-redux';
+import { store } from '@/store/store';
+import { Provider } from 'react-redux';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthenticationProvider } from '@/context/auth';
 import * as SecureStore from 'expo-secure-store';
@@ -19,6 +19,15 @@ import { auth } from '@/utils/fb';
 import { StreamVideoClient, StreamVideo } from '@stream-io/video-react-native-sdk'
 import { OverlayProvider } from "stream-chat-expo"
 import { NotificationProvider } from '@/context/notification';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -57,9 +66,7 @@ export default function RootLayout () {
     useEffect(() => {
       (async () => {
         const token = await SecureStore.getItemAsync(process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY!)
-        // console.log(token, user)
         if (auth.currentUser?.uid && token) {
-          // console.log('creating client')
           const user: any = { id: auth.currentUser?.uid! }
 
           try {
@@ -68,7 +75,6 @@ export default function RootLayout () {
               user,
               token
             });
-            // console.log('client: ', client)
             setClient(client)
           } catch (error) {
             console.log('Error creating client: ', error)
@@ -91,23 +97,22 @@ export default function RootLayout () {
           )
         }
       </>
-      // <Slot />
     )
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider store={store}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <StatusBar style="auto" />
+      <StatusBar style="auto" />
 
-          <NotificationProvider>
+      <NotificationProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Provider store={store}>
             <AuthenticationProvider>
               <InitialLayout />
             </AuthenticationProvider>
-          </NotificationProvider>
+          </Provider>
         </ThemeProvider>
-      </Provider>
+      </NotificationProvider>
     </GestureHandlerRootView>
   );
 }

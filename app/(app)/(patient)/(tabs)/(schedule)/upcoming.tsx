@@ -10,10 +10,11 @@ import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
 import { formatCustomDate } from '@/libraries/formatDate'
 import HapticWrapper from '@/components/Harptic'
-import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { setSelectedDate, setSelectedTime } from '@/store/slices/appointmentSlice'
+import { useNotification } from '@/context/notification'
 const { width } = Dimensions.get('window')
 
 const INFO_CARDS = (width / 4) - 35
@@ -29,8 +30,10 @@ export default function upcoming () {
   const theme = useColorScheme()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const dispatch = useDispatch()
+  const { scheduleNotification } = useNotification()
 
   const { appointments } = useSelector((state: RootState) => state.patientAppointment)
+  const { profile } = useSelector((state: RootState) => state.patientProfile)
   const { doctorProfile, selectedDate, selectedTime } = useSelector((state: RootState) => state.appointment)
 
   const [selectedAppointments, setSelectedAppointments] = useState<any>(null)
@@ -40,9 +43,33 @@ export default function upcoming () {
       ...item,
       canceledAt: serverTimestamp()
     })
+    
+    await setDoc(doc(db, 'doctors', String(item?.doctor?.uid), 'canceled_appointments', String(item?.id)), {
+      ...item,
+      canceledAt: serverTimestamp()
+    })
+    
 
     await deleteDoc(doc(db, 'patient', String(auth.currentUser?.uid), 'appointments', String(item?.id)))
-    await deleteDoc(doc(db, 'doctors', String(item?.doctor?.doctorid), 'appointments', String(item?.id)))
+    await deleteDoc(doc(db, 'doctors', String(item?.doctor?.uid), 'appointments', String(item?.id)))
+    
+    await addDoc(collection(db, 'doctors', String(item?.doctor?.uid), 'notifications'), {
+      ...item,
+      message: `Hello Dr. ${item?.doctor?.name}\nYour appointment with ${profile?.name} has ben canceled`,
+      route: '/(app)/(doctor)/(tabs)/(appointments)/canceled',
+      canceledAt: serverTimestamp()
+    })
+
+    await scheduleNotification(
+      item?.doctor?.expoPushNotificationToken,
+      `Hello Dr. ${item?.doctor?.name}`,
+      `Your appointment with ${profile?.name} has ben canceled`,
+      {
+        type: 'booking',
+        sound: 'cancel',
+        route: '/(app)/(doctor)/(tabs)/(appointments)/canceled'
+      }
+    )
   }
 
   const getRemainingMonthDays = () => {

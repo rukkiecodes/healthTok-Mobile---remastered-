@@ -24,6 +24,7 @@ const updateProfileWithPushToken = async (token: string) => {
       expoPushNotificationToken: token,
     });
 
+    // console.log('Updated push notification token:', token);
   } catch (error) {
     console.error('Failed to update profile with push token:', error);
   }
@@ -72,6 +73,7 @@ export async function registerForPushNotificationsAsync (): Promise<string | und
     }
 
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    console.log('token: ', token)
     await updateProfileWithPushToken(token);
   } catch (error) {
     console.error('Error during push notification registration:', error);
