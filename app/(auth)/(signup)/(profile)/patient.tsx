@@ -306,7 +306,7 @@ export default function patient () {
               paddingHorizontal: 20
             }}
           >
-            <ThemedText>Date of Birth</ThemedText>
+            <ThemedText>Date of Birth: {new Date(birth).toDateString()}</ThemedText>
 
             <Image
               source={require('@/assets/images/icons/calendar.png')}
@@ -353,6 +353,24 @@ export default function patient () {
           >
             <ThemedText>Allergies</ThemedText>
           </TouchableOpacity>
+
+          <View style={{ gap: 10 }}>
+            {
+              allergies.map((item, index) => (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    gap: 10
+                  }}
+                >
+                  <ThemedText>{`\u2022`}</ThemedText>
+                  <ThemedText>{item}</ThemedText>
+                </View>
+              ))
+            }
+          </View>
         </View>
       </ScrollView>
 

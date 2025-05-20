@@ -1,5 +1,5 @@
 import { View, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Appbar, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
@@ -16,6 +16,7 @@ import HapticWrapper from '@/components/Harptic'
 import { auth } from '@/utils/fb'
 import { calculateAge } from '@/libraries/calculateAge'
 import { getOrCreateChat } from '@/libraries/getOrCreateChat'
+import LoadingScreen from '@/components/LoadingScreen'
 
 export default function home () {
   const theme = useColorScheme()
@@ -23,11 +24,12 @@ export default function home () {
   const { appointments } = useSelector((state: RootState) => state.doctorAppointment)
 
   const [loading, setLoading] = useState(false)
+  const [screenLoading, setScreenLoading] = useState(true)
 
   const startChatWithPatient = async (item: Appointment) => {
     try {
       const userId: any = auth.currentUser?.uid;
-      
+
       setLoading(true)
 
       const chatRef = await getOrCreateChat(
@@ -50,147 +52,20 @@ export default function home () {
     }
   }
 
-  const renderItem = ({ item }: { item: Appointment }) => {
-    return (
-      <ThemedView
-        style={{
-          borderWidth: 1,
-          borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-          borderRadius: 20,
-          padding: 10
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'flex-start',
-            gap: 20
-          }}
-        >
-          <Image
-            source={item?.patient?.displayImage?.image}
-            placeholder={require('@/assets/images/images/avatar.png')}
-            contentFit='cover'
-            placeholderContentFit='cover'
-            transition={500}
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50
-            }}
-          />
+  useEffect(() => {
+    if (profile) {
+      if (profile.isApplicationSubmited) {
+        setScreenLoading(false);
+      } else {
+        router.push("/(app)/(doctor)/doctorApplication");
+        setTimeout(() => setScreenLoading(false), 500);
+      }
+    }
+  }, [profile]);
 
-          <View>
-            <ThemedText type='subtitle' font='Poppins-Bold'>{item?.patient?.name}</ThemedText>
-            <ThemedText type='body' font='Poppins-Regular'>{item?.appointment?.appointment?.reason}</ThemedText>
-            <ThemedText type='body' font='Poppins-Regular'>{calculateAge(item?.patient?.birth)}</ThemedText>
-          </View>
-        </View>
+  if (screenLoading)
+    return <LoadingScreen />
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: 20
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: 20
-            }}
-          >
-            <View style={{ flexDirection: 'row', gap: 5 }}>
-              <Image
-                source={require('@/assets/images/icons/calendar.png')}
-                style={{
-                  width: 12,
-                  height: 12,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
-              />
-
-              <ThemedText type='caption' font='Poppins-Light'>{formatCustomDate(item?.appointment?.selectedDate)}</ThemedText>
-            </View>
-
-            <View style={{ flexDirection: 'row', gap: 5 }}>
-              <Image
-                source={require('@/assets/images/icons/clock.png')}
-                style={{
-                  width: 12,
-                  height: 12,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
-              />
-
-              <ThemedText type='caption' font='Poppins-Light'>{item?.appointment?.selectedTime?.time}</ThemedText>
-            </View>
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <HapticWrapper
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 10,
-                backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <Image
-                source={require('@/assets/images/icons/phone_fill.png')}
-                style={{
-                  width: 20,
-                  height: 20,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
-              />
-            </HapticWrapper>
-
-            <HapticWrapper
-              onPress={() => startChatWithPatient(item)}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 10,
-                backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              {
-                loading ? (
-                  <ActivityIndicator
-                    size={18}
-                    color={theme == 'dark' ? light : accent}
-                    style={{
-                      width: 20,
-                      height: 20
-                    }}
-                  />
-                ) :
-                  (
-                    <Image
-                      source={require('@/assets/images/icons/chat_alt_fill.png')}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        tintColor: theme == 'dark' ? light : accent
-                      }}
-                    />
-                  )
-              }
-            </HapticWrapper>
-          </View>
-        </View>
-      </ThemedView>
-    )
-  }
 
   return (
     <PaperProvider>
@@ -277,7 +152,6 @@ export default function home () {
 
         <FlashList
           data={appointments}
-          renderItem={renderItem}
           keyExtractor={(item: any) => item.id}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
@@ -299,6 +173,149 @@ export default function home () {
           estimatedItemSize={20}
           contentContainerStyle={{
             padding: 20,
+          }}
+
+
+          renderItem={({ item }: { item: Appointment }) => {
+            return (
+              <ThemedView
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
+                  borderRadius: 20,
+                  padding: 10
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    gap: 20
+                  }}
+                >
+                  <Image
+                    source={item?.patient?.displayImage?.image}
+                    placeholder={require('@/assets/images/images/avatar.png')}
+                    contentFit='cover'
+                    placeholderContentFit='cover'
+                    transition={500}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 50
+                    }}
+                  />
+
+                  <View>
+                    <ThemedText type='subtitle' font='Poppins-Bold'>{item?.patient?.name}</ThemedText>
+                    <ThemedText type='body' font='Poppins-Regular'>{item?.appointment?.appointment?.reason}</ThemedText>
+                    <ThemedText type='body' font='Poppins-Regular'>{calculateAge(item?.patient?.birth)}</ThemedText>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    gap: 20
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      alignItems: 'center',
+                      gap: 20
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', gap: 5 }}>
+                      <Image
+                        source={require('@/assets/images/icons/calendar.png')}
+                        style={{
+                          width: 12,
+                          height: 12,
+                          tintColor: theme == 'dark' ? light : accent
+                        }}
+                      />
+
+                      <ThemedText type='caption' font='Poppins-Light'>{formatCustomDate(item?.appointment?.selectedDate)}</ThemedText>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', gap: 5 }}>
+                      <Image
+                        source={require('@/assets/images/icons/clock.png')}
+                        style={{
+                          width: 12,
+                          height: 12,
+                          tintColor: theme == 'dark' ? light : accent
+                        }}
+                      />
+
+                      <ThemedText type='caption' font='Poppins-Light'>{item?.appointment?.selectedTime?.time}</ThemedText>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', gap: 10 }}>
+                    <HapticWrapper
+                      style={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 10,
+                        backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Image
+                        source={require('@/assets/images/icons/phone_fill.png')}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          tintColor: theme == 'dark' ? light : accent
+                        }}
+                      />
+                    </HapticWrapper>
+
+                    <HapticWrapper
+                      onPress={() => startChatWithPatient(item)}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 10,
+                        backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      {
+                        loading ? (
+                          <ActivityIndicator
+                            size={18}
+                            color={theme == 'dark' ? light : accent}
+                            style={{
+                              width: 20,
+                              height: 20
+                            }}
+                          />
+                        ) :
+                          (
+                            <Image
+                              source={require('@/assets/images/icons/chat_alt_fill.png')}
+                              style={{
+                                width: 20,
+                                height: 20,
+                                tintColor: theme == 'dark' ? light : accent
+                              }}
+                            />
+                          )
+                      }
+                    </HapticWrapper>
+                  </View>
+                </View>
+              </ThemedView>
+            )
           }}
         />
       </ThemedView>

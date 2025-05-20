@@ -11,6 +11,7 @@ import { auth, db } from '@/utils/fb'
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage'
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { router } from 'expo-router'
+import medicalExperienceLevels from '@/libraries/experienceLevels'
 
 const labguageLevel = [
   "Poor",
@@ -20,10 +21,18 @@ const labguageLevel = [
   "Proficient"
 ]
 
+interface MedicalExperienceLevel {
+  id: number;
+  name: string;
+  description: string;
+  years: string;
+}
+
 export default function doctorApplication () {
   const theme = useColorScheme()
 
   const [activeLanguage, setActiveLanguage] = useState('')
+  const [experienceLevel, setExperienceLevel] = useState<MedicalExperienceLevel | null>(null)
 
   const [MedicalDegree, setMedicalDegree] = useState('')
   const [Specialty, setSpecialty] = useState('')
@@ -144,12 +153,13 @@ export default function doctorApplication () {
 
       await Promise.all(uploadPromises); // Wait for all uploads to complete
 
-      const carRef = await addDoc(collection(db, 'doctors', String(id), 'credentials'), {
+      addDoc(collection(db, 'doctors', String(id), 'credentials'), {
         user: id,
         images: uploadedImages,
         isApplicationSubmited: true,
         isApplicationSuccessful: false,
         activeLanguage,
+        experienceLevel,
         timestamp: serverTimestamp(),
       });
 
@@ -242,7 +252,7 @@ export default function doctorApplication () {
         </Modal>
       </Portal>
 
-      <ScrollView style={{ flex: 1, padding: 20 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flexGrow: 1, padding: 20 }} showsVerticalScrollIndicator={false}>
         <ThemedText type='subtitle'>Medical Credentials</ThemedText>
 
         <View style={{ marginTop: 20 }}>
@@ -391,7 +401,6 @@ export default function doctorApplication () {
         </View>
 
         <ThemedText style={{ marginTop: 40 }} type='subtitle'>Communication Skills</ThemedText>
-
         <View
           style={{
             padding: 20,
@@ -425,6 +434,52 @@ export default function doctorApplication () {
                       width: 10,
                       height: 10,
                       backgroundColor: activeLanguage == item ? green : transparent,
+                      borderRadius: 50
+                    }}
+                  />
+                </TouchableOpacity>
+              ))
+            }
+          </View>
+        </View>
+
+        <ThemedText style={{ marginTop: 40 }} type='subtitle'>Experience Level</ThemedText>
+        <View
+          style={{
+            padding: 20,
+            borderRadius: 12,
+            marginTop: 20,
+            borderWidth: 1,
+            borderColor: `${theme == 'dark' ? light : appDark}20`,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            gap: 20,
+            marginBottom: 20
+          }}
+        >
+          <View style={{ flex: 1, gap: 20 }}>
+            {
+              medicalExperienceLevels.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setExperienceLevel(item)}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <View>
+                    <ThemedText type='default' font='Poppins-Bold'>{item.name}</ThemedText>
+                    <ThemedText type='body' opacity={0.6}>{item.years}</ThemedText>
+                    <ThemedText type='body' opacity={0.6}>{item.description}</ThemedText>
+                  </View>
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      backgroundColor: experienceLevel?.name == item.name ? green : transparent,
                       borderRadius: 50
                     }}
                   />

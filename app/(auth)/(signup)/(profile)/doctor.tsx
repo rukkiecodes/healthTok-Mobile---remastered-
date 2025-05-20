@@ -207,7 +207,7 @@ export default function doctor () {
               paddingHorizontal: 20
             }}
           >
-            <ThemedText>Date of Birth</ThemedText>
+            <ThemedText>Date of Birth: {new Date(birth).toDateString()}</ThemedText>
 
             <Image
               source={require('@/assets/images/icons/calendar.png')}
