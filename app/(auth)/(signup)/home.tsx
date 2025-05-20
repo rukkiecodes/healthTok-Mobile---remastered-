@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Platform, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import { ActivityIndicator, Appbar, Checkbox, PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { Image } from 'expo-image'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { accent, appDark, black, light } from '@/utils/colors'
@@ -133,18 +133,26 @@ export default function Signup () {
                 uncheckedColor={theme == 'dark' ? light : black}
               />
 
-              <ThemedText type='body'>
-                I agree to the healthtok
-                <ThemedText
-                  lightColor={accent}
-                  type='body'
-                  style={{
-                    textDecorationLine: theme == 'dark' ? "underline" : "none"
-                  }}
-                >
-                  Terms of Service and Privacy Policy
-                </ThemedText>
-              </ThemedText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  gap: 5
+                }}
+              >
+                <ThemedText type='body'>I agree to the healthtok</ThemedText>
+
+                <Link href='/(auth)/(signup)/terms' asChild>
+                  <ThemedText type='body' lightColor={accent} style={{ textDecorationLine: theme == 'dark' ? "underline" : "none" }}>Terms of Service</ThemedText>
+                </Link>
+
+                <ThemedText type='body'>and</ThemedText>
+
+                <Link href='/(auth)/(signup)/privacy' asChild>
+                  <ThemedText type='body' lightColor={accent} style={{ textDecorationLine: theme == 'dark' ? "underline" : "none" }}>Privacy Policy</ThemedText>
+                </Link>
+              </View>
             </View>
 
             <TouchableOpacity

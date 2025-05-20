@@ -145,7 +145,7 @@ export default function doctorApplication () {
       await Promise.all(uploadPromises); // Wait for all uploads to complete
 
       const carRef = await addDoc(collection(db, 'doctors', String(id), 'credentials'), {
-        carOwner: id,
+        user: id,
         images: uploadedImages,
         isApplicationSubmited: true,
         isApplicationSuccessful: false,
