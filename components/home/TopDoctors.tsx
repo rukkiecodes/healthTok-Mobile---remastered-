@@ -1,7 +1,7 @@
 import { View, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { ThemedText } from '../ThemedText'
-import { accent, appDark, black, green, light } from '@/utils/colors'
+import { accent, appDark, black, light } from '@/utils/colors'
 import { Image } from 'expo-image'
 import { ThemedView } from '../ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
@@ -11,6 +11,7 @@ import { RootState } from '@/store/types/types'
 import { Doctor } from '@/store/types/patient/doctor'
 import { getDistanceFromLatLonInKm } from '@/libraries/distance'
 import Rating from './Rating'
+import CustomImage from '../CustomImage'
 
 export function TopDoctors () {
   const theme = useColorScheme()
@@ -70,24 +71,18 @@ export function TopDoctors () {
                   gap: 20
                 }}
               >
-                <View
+                <CustomImage
+                  source={item?.displayImage ? item?.displayImage?.image : item?.profilePicture}
+                  placeholder={require('@/assets/images/images/avatar.png')}
+                  contentFit='cover'
+                  placeholderContentFit='cover'
+                  size={0.2}
                   style={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: 100,
-                    overflow: 'hidden'
+                    borderRadius: 100
                   }}
-                >
-                  <Image
-                    source={item?.displayImage ? item?.displayImage?.image : item?.profilePicture}
-                    placeholder={require('@/assets/images/images/avatar.png')}
-                    contentFit='cover'
-                    placeholderContentFit='cover'
-                    style={{ width: 120, height: 120 }}
-                  />
-                </View>
+                />
 
-                <View style={{ flex: 1, height: 100 }}>
+                <View style={{ flex: 1 }}>
                   <View
                     style={{
                       flex: 1,
@@ -101,24 +96,13 @@ export function TopDoctors () {
                       <ThemedText type='subtitle' font='Poppins-Bold'>{item?.name}</ThemedText>
                       <ThemedText type='body' font='Poppins-Medium'>{item?.specialization}</ThemedText>
                     </View>
-
-                    <View
-                      style={{
-                        width: 15,
-                        height: 15,
-                        backgroundColor: green,
-                        borderRadius: 50,
-                        marginTop: 10
-                      }}
-                    />
                   </View>
 
                   <ThemedView
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: 20
+                      alignItems: 'center'
                     }}
                   >
                     <ThemedView
@@ -129,17 +113,15 @@ export function TopDoctors () {
                         backgroundColor: theme == 'dark' ? `${light}33` : `${accent}20`,
                         alignSelf: 'flex-start',
                         paddingHorizontal: 10,
-                        paddingVertical: 3,
                         borderRadius: 10,
                         gap: 5
                       }}
                     >
-                      <Image
+                      <CustomImage
                         source={require('@/assets/images/icons/star.png')}
                         contentFit='contain'
+                        size={0.03}
                         style={{
-                          width: 20,
-                          height: 20,
                           tintColor: theme == 'dark' ? light : accent
                         }}
                       />
@@ -158,12 +140,11 @@ export function TopDoctors () {
                         gap: 5
                       }}
                     >
-                      <Image
+                      <CustomImage
                         source={require('@/assets/images/icons/location_marker.png')}
                         contentFit='contain'
+                        size={0.03}
                         style={{
-                          width: 20,
-                          height: 20,
                           tintColor: theme == 'dark' ? light : appDark
                         }}
                       />

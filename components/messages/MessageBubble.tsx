@@ -52,7 +52,7 @@ const MessageBubble = ({
               marginBottom: 10
             }}
           >
-            <Avatar user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : doctor} size={30} />
+            <Avatar user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : doctor} size={0.07} />
 
             {
               sender != auth.currentUser?.uid &&

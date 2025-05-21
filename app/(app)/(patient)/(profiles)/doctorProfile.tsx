@@ -18,13 +18,17 @@ import CountPatients from '@/components/profile/CountPatients'
 import CountReviews from '@/components/profile/CountReviews'
 import HapticWrapper from '@/components/Harptic'
 import { getOrCreateChat } from '@/libraries/getOrCreateChat'
+import CustomImage from '@/components/CustomImage'
 
 const { width } = Dimensions.get('window')
 
 
 const INFO_CARDS = (width / 4) - 35
-const DAYS_CARDS = (width / 7) - 15
 const TIME_CARDS = (width / 3) - 30
+
+const ITEM_MARGIN = 5;
+const NUM_COLUMNS = 7;
+const ITEM_WIDTH = (width - (ITEM_MARGIN * 2 * NUM_COLUMNS)) / NUM_COLUMNS;
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -186,8 +190,8 @@ export default function doctorProfile () {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -204,7 +208,7 @@ export default function doctorProfile () {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Doctor’s Details</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
@@ -223,12 +227,12 @@ export default function doctorProfile () {
               overflow: 'hidden'
             }}
           >
-            <Image
+            <CustomImage
               source={doctorProfile?.displayImage ? doctorProfile?.displayImage?.image : doctorProfile?.profilePicture}
               placeholder={require('@/assets/images/images/avatar.png')}
               placeholderContentFit='cover'
               contentFit='contain'
-              style={{ width: 150, height: 150 }}
+              size={0.28}
             />
           </TouchableOpacity>
 
@@ -244,20 +248,16 @@ export default function doctorProfile () {
                 backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                 alignSelf: 'flex-start',
                 paddingHorizontal: 10,
-                paddingVertical: 3,
                 borderRadius: 10,
                 gap: 5,
                 marginVertical: 10
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/star.png')}
                 contentFit='contain'
-                style={{
-                  width: 15,
-                  height: 15,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.03}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
 
               {doctorProfile && <Rating item={doctorProfile} />}
@@ -272,12 +272,11 @@ export default function doctorProfile () {
                 maxWidth: 300
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/location_marker.png')}
                 contentFit='contain'
+                size={0.03}
                 style={{
-                  width: 20,
-                  height: 20,
                   marginBottom: 3,
                   tintColor: theme == 'dark' ? light : appDark
                 }}
@@ -315,13 +314,10 @@ export default function doctorProfile () {
                 marginBottom: 10,
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/account_group_fill.png')}
-                style={{
-                  width: 30,
-                  height: 30,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.05}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
             </View>
 
@@ -349,13 +345,10 @@ export default function doctorProfile () {
                 marginBottom: 10,
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/mortarboard_fill.png')}
-                style={{
-                  width: 30,
-                  height: 30,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.05}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
             </View>
 
@@ -383,13 +376,10 @@ export default function doctorProfile () {
                 marginBottom: 10,
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/phone_fill.png')}
-                style={{
-                  width: 30,
-                  height: 30,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.05}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
             </View>
 
@@ -417,13 +407,10 @@ export default function doctorProfile () {
                 marginBottom: 10,
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/chat_alt_fill.png')}
-                style={{
-                  width: 30,
-                  height: 30,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.05}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
             </View>
 
@@ -446,38 +433,49 @@ export default function doctorProfile () {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: 10,
-              flexWrap: 'wrap'
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
             }}
           >
             {
-              getRemainingMonthDays().map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => dispatch(setSelectedDate(item))}
-                  disabled={loadBookingButton}
-                  style={{
-                    width: DAYS_CARDS,
-                    borderWidth: 1.5,
-                    borderRadius: 20,
-                    borderColor: item.day == selectedDate?.day ? transparent : (item.isToday ? (theme == 'dark' ? amber : accent) : `${theme == 'dark' ? light : appDark}33`),
-                    backgroundColor: item.day == selectedDate?.day ? accent : transparent,
-                    paddingVertical: 15,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    opacity: item.expired ? 0.2 : 1
-                  }}
-                >
-                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='caption' font='Poppins-Medium'>
-                    {item.dayName}
-                  </ThemedText>
-                  <ThemedText lightColor={item.day == selectedDate?.day ? light : appDark} type='default' font='Poppins-Bold'>
-                    {item.day}
-                  </ThemedText>
-                </TouchableOpacity>
-              ))
+              getRemainingMonthDays().map((item, index) => {
+                const isSelected = item.day == selectedDate?.day;
+                const isToday = item.isToday;
+                const borderColor = isSelected
+                  ? 'transparent'
+                  : isToday
+                    ? theme === 'dark' ? amber : accent
+                    : `${theme === 'dark' ? light : appDark}33`;
+
+                const backgroundColor = isSelected ? accent : 'transparent';
+                const textColor = isSelected ? light : appDark;
+
+                return (
+                  <HapticWrapper
+                    key={index}
+                    onPress={() => loadBookingButton ? null : dispatch(setSelectedDate(item))}
+                    style={{
+                      width: ITEM_WIDTH,
+                      margin: ITEM_MARGIN,
+                      borderWidth: 1.5,
+                      borderRadius: 20,
+                      borderColor,
+                      backgroundColor,
+                      paddingVertical: 15,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      opacity: item.expired ? 0.2 : 1,
+                    }}
+                  >
+                    <ThemedText lightColor={textColor} type='caption' font='Poppins-Medium'>
+                      {item.dayName}
+                    </ThemedText>
+                    <ThemedText lightColor={textColor} type='default' font='Poppins-Bold'>
+                      {item.day}
+                    </ThemedText>
+                  </HapticWrapper>
+                );
+              })
             }
           </View>
         </View>
@@ -506,7 +504,7 @@ export default function doctorProfile () {
                     disabled={!item.active || loadBookingButton}
                     style={{
                       width: TIME_CARDS,
-                      height: 50,
+                      height: 40,
                       borderWidth: 1.5,
                       borderRadius: 20,
                       borderColor: item.time == selectedTime?.time ? transparent : (theme == 'dark' ? `${light}33` : `${accent}33`),
@@ -546,13 +544,13 @@ export default function doctorProfile () {
                   params: { doctorUID }
                 })
               }}
+              height={48}
               style={{
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: accent,
                 borderRadius: 20,
-                height: 50
               }}
             >
               <ThemedText lightColor={light} font='Poppins-Bold' type='body'>Book Apointment</ThemedText>
@@ -569,13 +567,13 @@ export default function doctorProfile () {
 
               <HapticWrapper
                 onPress={() => startChatWithDoctor()}
+                height={48}
                 style={{
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: accent,
                   borderRadius: 20,
-                  height: 50,
                   marginTop: 10
                 }}
               >

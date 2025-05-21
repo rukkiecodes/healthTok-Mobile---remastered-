@@ -74,7 +74,7 @@ export default function doctor () {
                 }}
                 style={{
                   backgroundColor: transparent,
-                  minHeight: 50,
+                  minheight: 40,
                   maxHeight: 200,
                 }}
               />
@@ -92,7 +92,7 @@ export default function doctor () {
                 }}
                 style={{
                   backgroundColor: transparent,
-                  minHeight: 50,
+                  minheight: 40,
                   maxHeight: 200,
                 }}
               />
@@ -103,7 +103,7 @@ export default function doctor () {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  height: 50,
+                  height: 40,
                   borderRadius: 20,
                   borderWidth: 1.5,
                   borderColor: theme == 'dark' ? `${light}60` : `${appDark}60`,
@@ -139,7 +139,7 @@ export default function doctor () {
                   <TouchableOpacity
                     onPress={() => setGender('male')}
                     style={{
-                      height: 50,
+                      height: 40,
                       width: '50%',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -152,7 +152,7 @@ export default function doctor () {
                   <TouchableOpacity
                     onPress={() => setGender('female')}
                     style={{
-                      height: 50,
+                      height: 40,
                       width: '50%',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -170,7 +170,7 @@ export default function doctor () {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  height: 50,
+                  height: 40,
                   borderRadius: 20,
                   borderWidth: 1.5,
                   borderColor: theme == 'dark' ? `${light}60` : `${appDark}60`,
@@ -204,7 +204,7 @@ export default function doctor () {
                 }}
                 style={{
                   backgroundColor: transparent,
-                  minHeight: 50,
+                  minheight: 40,
                   maxHeight: 200,
                   marginTop: -20
                 }}
@@ -250,7 +250,7 @@ export default function doctor () {
           onPress={setupProfile}
           style={{
             width: '100%',
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'row',

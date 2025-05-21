@@ -7,11 +7,11 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/utils/fb'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
-import { setAppointment, setDoctorProfile } from '@/store/slices/appointmentSlice'
+import { setAppointment } from '@/store/slices/appointmentSlice'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
 import { convertUSDToNGN } from '@/libraries/convertUSDToNGN';
 import { formatCurrency } from '@/libraries/formatMoney'
@@ -23,6 +23,7 @@ import HapticWrapper from '@/components/Harptic'
 import { useNotification } from '@/context/notification'
 import { Profile } from '@/store/types/doctor/profile'
 import { formatCustomDate } from '@/libraries/formatDate'
+import CustomImage from '@/components/CustomImage'
 
 
 type DayObject = {
@@ -302,8 +303,8 @@ export default function appointment () {
         <TouchableOpacity
           onPress={() => router.dismissTo('/(app)/(patient)/(tabs)/home')}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -312,8 +313,8 @@ export default function appointment () {
             source={require('@/assets/images/icons/arrow_left.png')}
             style={{
               tintColor: theme == 'dark' ? light : appDark,
-              width: 25,
-              height: 25,
+              width: 20,
+              height: 20,
             }}
           />
         </TouchableOpacity>
@@ -322,8 +323,8 @@ export default function appointment () {
 
         <TouchableOpacity
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             opacity: 0
@@ -357,10 +358,10 @@ export default function appointment () {
               overflow: 'hidden'
             }}
           >
-            <Image
+            <CustomImage
               source={doctorProfile?.displayImage ? doctorProfile?.displayImage?.image : doctorProfile?.profilePicture}
               contentFit='contain'
-              style={{ width: 150, height: 150 }}
+              size={0.28}
             />
           </TouchableOpacity>
 
@@ -376,20 +377,16 @@ export default function appointment () {
                 backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                 alignSelf: 'flex-start',
                 paddingHorizontal: 10,
-                paddingVertical: 3,
                 borderRadius: 10,
                 gap: 5,
                 marginVertical: 10
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/star.png')}
                 contentFit='contain'
-                style={{
-                  width: 15,
-                  height: 15,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                size={0.03}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
               />
 
               {doctorProfile && <Rating item={doctorProfile} />}
@@ -404,12 +401,11 @@ export default function appointment () {
                 maxWidth: 300
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/location_marker.png')}
                 contentFit='contain'
+                size={0.03}
                 style={{
-                  width: 20,
-                  height: 20,
                   marginBottom: 3,
                   tintColor: theme == 'dark' ? light : appDark
                 }}
@@ -445,25 +441,22 @@ export default function appointment () {
           >
             <View
               style={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 50,
                 backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
               }}
             >
-              <Image
+              <CustomImage
                 source={require('@/assets/images/icons/calendar.png')}
-                style={{
-                  width: 25,
-                  height: 25,
-                  tintColor: theme == 'dark' ? light : accent
-                }}
+                style={{ tintColor: theme == 'dark' ? light : accent }}
+                size={0.06}
               />
             </View>
 
-            <ThemedText>{dateString || ''} | {selectedTime?.time || ''}</ThemedText>
+            <ThemedText type='body'>{dateString || ''} | {selectedTime?.time || ''}</ThemedText>
           </View>
         </View>
 
@@ -496,21 +489,18 @@ export default function appointment () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 50,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/edit_square.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : accent
-                  }}
+                  style={{ tintColor: theme == 'dark' ? light : accent }}
+                  size={0.06}
                 />
               </View>
 
@@ -521,7 +511,7 @@ export default function appointment () {
                   justifyContent: 'space-between'
                 }}
               >
-                <ThemedText>{appointment?.reason}</ThemedText>
+                <ThemedText type='body'>{appointment?.reason}</ThemedText>
                 <ThemedText lightColor={accent} type='body'>Optional</ThemedText>
               </View>
             </View>
@@ -603,7 +593,7 @@ export default function appointment () {
             alignItems: 'center',
             backgroundColor: accent,
             borderRadius: 20,
-            height: 50,
+            height: 40,
             opacity: convertedAmount ? 1 : 0.6
           }}
         >
@@ -614,37 +604,58 @@ export default function appointment () {
       <BottomSheet
         index={-1}
         ref={bottomSheetRef}
-        snapPoints={[500, 800]}
+        snapPoints={['50%']}
         enablePanDownToClose
         enableOverDrag
         enableDynamicSizing={false}
         animateOnMount
         backdropComponent={renderBackdrop}
       >
-        <BottomSheetScrollView contentContainerStyle={{ gap: 20, padding: 20 }}>
-          {
-            reasonsToSeeDoctor.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  dispatch(
-                    setAppointment({ ...appointment, reason: item })
-                  )
-                  bottomSheetRef.current?.close()
-                }}
-                style={{
-                  height: 50,
-                  backgroundColor: appointment?.reason == item ? `${accent}33` : transparent,
-                  borderRadius: 20,
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
-                <ThemedText type='body' font='Poppins-Regular' darkColor={appDark}>{item}</ThemedText>
-              </TouchableOpacity>
-            ))
-          }
+        <BottomSheetScrollView
+          contentContainerStyle={{
+            padding: 30,
+            gap: 20,
+            flexGrow: 1
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 10
+            }}
+          >
+            {
+              reasonsToSeeDoctor.map((item, index) => (
+                <HapticWrapper
+                  key={index}
+                  onPress={() => {
+                    dispatch(
+                      setAppointment({ ...appointment, reason: item })
+                    )
+                    bottomSheetRef.current?.close()
+                  }}
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    borderRadius: 50,
+                    borderWidth: 1.5,
+                    borderColor: appointment?.reason == item ? transparent : `${accent}33`,
+                    backgroundColor: appointment?.reason == item ? accent : transparent
+                  }}
+                >
+                  <ThemedText
+                    lightColor={appointment?.reason == item ? light : appDark}
+                    darkColor={appointment?.reason == item ? light : appDark}
+                    type='caption'
+                    font='Poppins-Medium'
+                  >
+                    {item}
+                  </ThemedText>
+                </HapticWrapper>
+              ))
+            }
+          </View>
         </BottomSheetScrollView>
       </BottomSheet>
 
@@ -696,7 +707,7 @@ export default function appointment () {
             onPress={() => startChatWithDoctor()}
             style={{
               paddingHorizontal: 40,
-              height: 50,
+              height: 40,
               backgroundColor: accent,
               borderRadius: 50,
               justifyContent: 'center',

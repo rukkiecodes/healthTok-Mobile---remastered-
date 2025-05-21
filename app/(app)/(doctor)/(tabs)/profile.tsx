@@ -162,8 +162,8 @@ export default function profile () {
               source={require('@/assets/images/icons/logout.png')}
               contentFit='contain'
               style={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 tintColor: theme == 'dark' ? light : accent
               }}
             />
@@ -176,7 +176,7 @@ export default function profile () {
               onPress={handleLogout}
               style={{
                 backgroundColor: theme == 'dark' ? red : accent,
-                height: 50,
+                height: 40,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 50
@@ -186,7 +186,7 @@ export default function profile () {
             </TouchableOpacity>
             <TouchableOpacity
               style={{
-                height: 50,
+                height: 40,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 50
@@ -306,8 +306,8 @@ export default function profile () {
                   >
                     <View
                       style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         justifyContent: 'center',
                         alignItems: 'center',
                         borderRadius: 100,
@@ -360,8 +360,8 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,

@@ -17,6 +17,7 @@ import { calculateAge } from '@/libraries/calculateAge'
 import { getAddressFromCoords } from '@/libraries/getAddress'
 import NoteList from '@/components/doctorChat/NoteList'
 import PrescriptionList from '@/components/doctorChat/PrescriptionList'
+import CustomImage from '@/components/CustomImage'
 
 export default function patientFile () {
   const theme = useColorScheme()
@@ -68,12 +69,12 @@ export default function patientFile () {
 
   return (
     <PaperProvider>
-      <Appbar.Header style={{ backgroundColor: theme == 'dark' ? appDark : light, paddingHorizontal: 20 }}>
+      <Appbar.Header style={{ backgroundColor: theme == 'dark' ? appDark : light }}>
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -108,17 +109,13 @@ export default function patientFile () {
               })
             }}
           >
-            <Image
+            <CustomImage
               source={profile?.displayImage ? profile?.displayImage?.image : profile?.profilePicture}
               placeholder={require('@/assets/images/images/avatar.png')}
-              contentFit='cover'
               placeholderContentFit='cover'
-              transition={500}
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 100
-              }}
+              style={{ borderRadius: 100 }}
+              contentFit='cover'
+              size={0.25}
             />
           </TouchableOpacity>
 

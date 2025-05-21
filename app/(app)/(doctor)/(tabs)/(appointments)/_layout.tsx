@@ -4,10 +4,10 @@ import { router, Stack, useSegments } from 'expo-router'
 import { accent, appDark, light, transparent } from '@/utils/colors'
 import { Appbar, PaperProvider } from 'react-native-paper'
 import { TouchableOpacity } from 'react-native'
-import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import HapticWrapper from '@/components/Harptic'
+import CustomImage from '@/components/CustomImage'
 
 export default function _layout () {
   const theme = useColorScheme()
@@ -29,19 +29,16 @@ export default function _layout () {
         <TouchableOpacity
           onPress={() => router.navigate('/(app)/(doctor)/notification')}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
-          <Image
+          <CustomImage
             source={require('@/assets/images/icons/bell.png')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: theme == 'dark' ? light : appDark
-            }}
+            style={{ tintColor: theme == 'dark' ? light : appDark }}
+            size={0.05}
           />
         </TouchableOpacity>
       </Appbar.Header>
@@ -62,7 +59,7 @@ export default function _layout () {
           style={{
             backgroundColor: screenName == 'upcoming' ? (theme == 'dark' ? light : accent) : transparent,
             flex: 1,
-            height: 50,
+            height: 40,
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center'
@@ -83,7 +80,7 @@ export default function _layout () {
           style={{
             backgroundColor: screenName == 'completed' ? (theme == 'dark' ? light : accent) : transparent,
             flex: 1,
-            height: 50,
+            height: 40,
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center'
@@ -104,7 +101,7 @@ export default function _layout () {
           style={{
             backgroundColor: screenName == 'canceled' ? (theme == 'dark' ? light : accent) : transparent,
             flex: 1,
-            height: 50,
+            height: 40,
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center'

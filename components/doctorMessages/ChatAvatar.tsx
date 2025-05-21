@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { auth, db } from '@/utils/fb'
-import { Profile } from '@/store/types/profile'
 import { doc, getDoc } from 'firebase/firestore'
-import { Image } from 'expo-image'
+import CustomImage from '../CustomImage'
 
 export default function ChatAvatar ({ user, size }: any) {
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [avatar, setAvatar] = useState<string | ''>('')
 
   useEffect(() => {
     (async () => {
-      const data: any = (await getDoc(doc(db, 'users', String(user)))).data()
-      setProfile(data)
+      const targetCollection = user == auth.currentUser?.uid ? 'doctors' : 'patient'
+
+      const usersDoc: any = (await getDoc(doc(db, String(targetCollection), String(user)))).data()
+      setAvatar(usersDoc?.displayImage ? usersDoc?.displayImage?.image : usersDoc?.profilePicture)
     })()
   }, [user])
 
   return (
-    <Image
-      source={profile?.displayImage ? profile?.displayImage?.image : profile?.profilePicture}
-      placeholder={require('@/assets/images/images/avatar.png')}
-      contentFit='cover'
+    <CustomImage
+      source={avatar}
+      placeholder={require('@/assets/images/imgs/johnDoe.png')}
       placeholderContentFit='cover'
-      transition={300}
+      contentFit='cover'
+      transition={1000}
+      size={size || 0.1}
       style={{
-        width: size || 60,
-        height: size || 60,
         borderRadius: 50
       }}
     />

@@ -178,7 +178,7 @@ export default function Faq () {
             onPress={sendMessage}
             style={{
               backgroundColor: accent,
-              height: 50,
+              height: 40,
               borderRadius: 50,
               justifyContent: 'center',
               alignItems: 'center',

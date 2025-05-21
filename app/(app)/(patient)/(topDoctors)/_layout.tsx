@@ -44,8 +44,8 @@ export default function _layout () {
         <TouchableOpacity
           onPress={() => router.dismissTo('/(app)/(patient)/(tabs)/home')}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -65,8 +65,8 @@ export default function _layout () {
         <TouchableOpacity
           onPress={() => bottomSheetRef.current?.expand()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -125,7 +125,7 @@ export default function _layout () {
                   bottomSheetRef.current?.close()
                 }}
                 style={{
-                  height: 50,
+                  height: 40,
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center'

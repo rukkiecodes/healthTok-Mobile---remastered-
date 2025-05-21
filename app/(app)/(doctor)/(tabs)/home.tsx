@@ -17,6 +17,7 @@ import { auth } from '@/utils/fb'
 import { calculateAge } from '@/libraries/calculateAge'
 import { getOrCreateChat } from '@/libraries/getOrCreateChat'
 import LoadingScreen from '@/components/LoadingScreen'
+import CustomImage from '@/components/CustomImage'
 
 export default function home () {
   const theme = useColorScheme()
@@ -84,17 +85,13 @@ export default function home () {
             gap: 20
           }}
         >
-          <Image
+          <CustomImage
             source={profile?.displayImage ? profile?.displayImage?.image : (profile?.profilePicture ? profile?.profilePicture : require('@/assets/images/imgs/johnDoe.png'))}
-            placeholder={require('@/assets/images/imgs/johnDoe.png')}
-            contentFit='cover'
+            placeholder={require('@/assets/images/images/avatar.png')}
             placeholderContentFit='cover'
-            transition={500}
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50
-            }}
+            style={{ borderRadius: 50 }}
+            contentFit='cover'
+            size={0.1}
           />
 
           <View style={{ gap: 3, justifyContent: 'center' }}>
@@ -106,19 +103,16 @@ export default function home () {
         <TouchableOpacity
           onPress={() => router.navigate('/(app)/(doctor)/notification')}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
-          <Image
+          <CustomImage
             source={require('@/assets/images/icons/bell.png')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: theme == 'dark' ? light : appDark
-            }}
+            style={{ tintColor: theme == 'dark' ? light : appDark }}
+            size={0.05}
           />
         </TouchableOpacity>
       </Appbar.Header>
@@ -129,7 +123,7 @@ export default function home () {
             borderWidth: 1,
             borderRadius: 50,
             borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-            height: 50,
+            height: 40,
             flexDirection: 'row',
             justifyContent: 'flex-start',
             alignItems: 'center',
@@ -194,17 +188,13 @@ export default function home () {
                     gap: 20
                   }}
                 >
-                  <Image
+                  <CustomImage
                     source={item?.patient?.displayImage?.image}
                     placeholder={require('@/assets/images/images/avatar.png')}
-                    contentFit='cover'
                     placeholderContentFit='cover'
-                    transition={500}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 50
-                    }}
+                    style={{ borderRadius: 50 }}
+                    contentFit='cover'
+                    size={0.1}
                   />
 
                   <View>
@@ -231,26 +221,20 @@ export default function home () {
                     }}
                   >
                     <View style={{ flexDirection: 'row', gap: 5 }}>
-                      <Image
+                      <CustomImage
                         source={require('@/assets/images/icons/calendar.png')}
-                        style={{
-                          width: 12,
-                          height: 12,
-                          tintColor: theme == 'dark' ? light : accent
-                        }}
+                        style={{ tintColor: theme == 'dark' ? light : accent }}
+                        size={0.03}
                       />
 
                       <ThemedText type='caption' font='Poppins-Light'>{formatCustomDate(item?.appointment?.selectedDate)}</ThemedText>
                     </View>
 
                     <View style={{ flexDirection: 'row', gap: 5 }}>
-                      <Image
+                      <CustomImage
                         source={require('@/assets/images/icons/clock.png')}
-                        style={{
-                          width: 12,
-                          height: 12,
-                          tintColor: theme == 'dark' ? light : accent
-                        }}
+                        style={{ tintColor: theme == 'dark' ? light : accent }}
+                        size={0.03}
                       />
 
                       <ThemedText type='caption' font='Poppins-Light'>{item?.appointment?.selectedTime?.time}</ThemedText>
@@ -260,29 +244,26 @@ export default function home () {
                   <View style={{ flexDirection: 'row', gap: 10 }}>
                     <HapticWrapper
                       style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         borderRadius: 10,
                         backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                         justifyContent: 'center',
                         alignItems: 'center'
                       }}
                     >
-                      <Image
+                      <CustomImage
                         source={require('@/assets/images/icons/phone_fill.png')}
-                        style={{
-                          width: 20,
-                          height: 20,
-                          tintColor: theme == 'dark' ? light : accent
-                        }}
+                        style={{ tintColor: theme == 'dark' ? light : accent }}
+                        size={0.06}
                       />
                     </HapticWrapper>
 
                     <HapticWrapper
                       onPress={() => startChatWithPatient(item)}
                       style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         borderRadius: 10,
                         backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                         justifyContent: 'center',
@@ -301,13 +282,10 @@ export default function home () {
                           />
                         ) :
                           (
-                            <Image
+                            <CustomImage
                               source={require('@/assets/images/icons/chat_alt_fill.png')}
-                              style={{
-                                width: 20,
-                                height: 20,
-                                tintColor: theme == 'dark' ? light : accent
-                              }}
+                              style={{ tintColor: theme == 'dark' ? light : accent }}
+                              size={0.06}
                             />
                           )
                       }

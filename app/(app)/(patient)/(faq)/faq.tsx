@@ -176,9 +176,9 @@ export default function Faq () {
 
           <HapticWrapper
             onPress={sendMessage}
+            height={40}
             style={{
               backgroundColor: accent,
-              height: 50,
               borderRadius: 50,
               justifyContent: 'center',
               alignItems: 'center',

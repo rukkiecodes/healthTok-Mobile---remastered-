@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { ActivityIndicator, Appbar, PaperProvider, RadioButton } from 'react-native-paper'
 import { Image } from 'expo-image'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
-import { accent, appDark, dark, light, transparent } from '@/utils/colors'
+import { accent, appDark, dark, green, light, transparent } from '@/utils/colors'
 import { router } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
@@ -14,6 +14,22 @@ import { auth, db } from '@/utils/fb'
 import { ThemedText } from '@/components/ThemedText'
 import { DatePickerModal } from 'react-native-paper-dates'
 import HapticWrapper from '@/components/Harptic'
+import medicalExperienceLevels from '@/libraries/experienceLevels'
+
+const labguageLevel = [
+  "Poor",
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Proficient"
+]
+
+interface MedicalExperienceLevel {
+  id: number;
+  name: string;
+  description: string;
+  years: string;
+}
 
 export default function personalData () {
   const theme = useColorScheme()
@@ -24,6 +40,8 @@ export default function personalData () {
   const [openDate, setOpenDate] = useState(false);
   const [loading, setLoading] = useState(false)
 
+  const [activeLanguage, setActiveLanguage] = useState('')
+  const [experienceLevel, setExperienceLevel] = useState<MedicalExperienceLevel | null>(null)
   const [name, setName] = useState<string>(profile?.name || '')
   const [phone, setPhone] = useState<string>(profile?.phone || '')
   const [email, setEmail] = useState<string>(profile?.email || '')
@@ -123,7 +141,8 @@ export default function personalData () {
         phone,
         email,
         gender,
-        phone
+        activeLanguage,
+        experienceLevel
       })
       setLoading(false)
     } catch (error) {
@@ -144,8 +163,8 @@ export default function personalData () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -163,7 +182,7 @@ export default function personalData () {
 
         <ThemedText type='subtitle'>Personal Data</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <KeyboardAvoidingView
@@ -247,7 +266,7 @@ export default function personalData () {
                   placeholderTextColor={`${theme == 'dark' ? light : appDark}33`}
                   onChangeText={text => setName(text)}
                   style={{
-                    height: 50,
+                    height: 40,
                     paddingHorizontal: 20,
                     borderWidth: 1,
                     borderRadius: 12,
@@ -261,7 +280,7 @@ export default function personalData () {
               <TouchableOpacity
                 onPress={() => setOpenDate(true)}
                 style={{
-                  height: 50,
+                  height: 40,
                   paddingHorizontal: 20,
                   borderWidth: 1,
                   borderRadius: 12,
@@ -295,7 +314,7 @@ export default function personalData () {
               <TouchableOpacity
                 onPress={() => setShowGender(!showGender)}
                 style={{
-                  height: 50,
+                  height: 40,
                   paddingHorizontal: 20,
                   borderWidth: 1,
                   borderRadius: 12,
@@ -306,7 +325,7 @@ export default function personalData () {
                   marginTop: 20
                 }}
               >
-                <ThemedText>Gender ({gender})</ThemedText>
+                <ThemedText>Gender: {gender}</ThemedText>
 
                 <Image
                   source={require('@/assets/images/icons/chevron_down.png')}
@@ -363,7 +382,7 @@ export default function personalData () {
                   onChangeText={text => setPhone(text)}
                   inputMode='tel'
                   style={{
-                    height: 50,
+                    height: 40,
                     paddingHorizontal: 20,
                     borderWidth: 1,
                     borderRadius: 12,
@@ -383,7 +402,7 @@ export default function personalData () {
                   onChangeText={text => setEmail(text)}
                   inputMode='email'
                   style={{
-                    height: 50,
+                    height: 40,
                     paddingHorizontal: 20,
                     borderWidth: 1,
                     borderRadius: 12,
@@ -393,17 +412,107 @@ export default function personalData () {
                   }}
                 />
               </View>
+
+              <ThemedText style={{ marginTop: 40 }} type='subtitle'>Communication Skills</ThemedText>
+              <View
+                style={{
+                  padding: 20,
+                  borderRadius: 12,
+                  marginTop: 20,
+                  borderWidth: 1,
+                  borderColor: `${theme == 'dark' ? light : appDark}20`,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                  gap: 20
+                }}
+              >
+                <ThemedText type='default'>English Proficiency:</ThemedText>
+
+                <View style={{ flex: 1, gap: 10 }}>
+                  {
+                    labguageLevel.map((item, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={() => setActiveLanguage(item)}
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <ThemedText opacity={0.6}>{item}</ThemedText>
+                        <View
+                          style={{
+                            width: 10,
+                            height: 10,
+                            backgroundColor: activeLanguage == item ? green : transparent,
+                            borderRadius: 50
+                          }}
+                        />
+                      </TouchableOpacity>
+                    ))
+                  }
+                </View>
+              </View>
+
+              <ThemedText style={{ marginTop: 40 }} type='subtitle'>Experience Level</ThemedText>
+              <View
+                style={{
+                  padding: 20,
+                  borderRadius: 12,
+                  marginTop: 20,
+                  borderWidth: 1,
+                  borderColor: `${theme == 'dark' ? light : appDark}20`,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                  gap: 20,
+                  marginBottom: 20
+                }}
+              >
+                <View style={{ flex: 1, gap: 20 }}>
+                  {
+                    medicalExperienceLevels.map((item, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={() => setExperienceLevel(item)}
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <View>
+                          <ThemedText type='default' font='Poppins-Bold'>{item.name}</ThemedText>
+                          <ThemedText type='body' opacity={0.6}>{item.years}</ThemedText>
+                          <ThemedText type='body' opacity={0.6}>{item.description}</ThemedText>
+                        </View>
+                        <View
+                          style={{
+                            width: 10,
+                            height: 10,
+                            backgroundColor: experienceLevel?.name == item.name ? green : transparent,
+                            borderRadius: 50
+                          }}
+                        />
+                      </TouchableOpacity>
+                    ))
+                  }
+                </View>
+              </View>
             </ScrollView>
 
             <HapticWrapper
               onPress={save}
+              height={40}
               style={{
                 backgroundColor: accent,
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 10,
-                height: 50,
+                height: 40,
                 borderRadius: 50,
                 margin: 20
               }}

@@ -62,8 +62,8 @@ export default function pricing () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -81,7 +81,7 @@ export default function pricing () {
 
         <ThemedText type='subtitle'>Pricing</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -114,7 +114,7 @@ export default function pricing () {
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'center',
-                        height: 50,
+                        height: 40,
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor: `${theme == 'dark' ? light : appDark}33`,
@@ -122,8 +122,8 @@ export default function pricing () {
                       }}
                     >
                       <View style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         justifyContent: 'center',
                         alignItems: 'center'
                       }}>
@@ -137,7 +137,7 @@ export default function pricing () {
                         placeholderTextColor={`${theme == 'dark' ? light : appDark}33`}
                         style={{
                           flex: 1,
-                          height: 50,
+                          height: 40,
                           fontFamily: 'Poppins-Medium',
                           color: theme == 'dark' ? light : appDark
                         }}
@@ -168,7 +168,7 @@ export default function pricing () {
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'center',
-                        height: 50,
+                        height: 40,
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor: `${theme == 'dark' ? light : appDark}33`,
@@ -176,8 +176,8 @@ export default function pricing () {
                       }}
                     >
                       <View style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         justifyContent: 'center',
                         alignItems: 'center'
                       }}>
@@ -192,7 +192,7 @@ export default function pricing () {
                         style={{
                           flex: 1,
                           opacity: 0.8,
-                          height: 50,
+                          height: 40,
                           fontFamily: 'Poppins-Medium',
                           color: theme == 'dark' ? light : appDark
                         }}
@@ -224,7 +224,7 @@ export default function pricing () {
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'center',
-                        height: 50,
+                        height: 40,
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor: `${theme == 'dark' ? light : appDark}33`,
@@ -232,8 +232,8 @@ export default function pricing () {
                       }}
                     >
                       <View style={{
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         justifyContent: 'center',
                         alignItems: 'center'
                       }}>
@@ -247,7 +247,7 @@ export default function pricing () {
                         placeholderTextColor={`${theme == 'dark' ? light : appDark}33`}
                         style={{
                           flex: 1,
-                          height: 50,
+                          height: 40,
                           fontFamily: 'Poppins-Medium',
                           color: theme == 'dark' ? light : appDark
                         }}
@@ -269,7 +269,7 @@ export default function pricing () {
                 alignItems: 'center',
                 gap: 10,
                 borderRadius: 50,
-                height: 50,
+                height: 40,
                 margin: 20
               }}
             >

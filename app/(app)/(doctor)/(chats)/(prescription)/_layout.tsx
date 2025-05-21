@@ -20,7 +20,6 @@ export default function _layout () {
       <Appbar.Header
         style={{
           backgroundColor: theme == 'dark' ? appDark : light,
-          paddingHorizontal: 20,
           flexDirection: 'row',
           justifyContent: 'space-between'
         }}
@@ -41,8 +40,8 @@ export default function _layout () {
               })
             }}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -68,7 +67,7 @@ export default function _layout () {
           }}
           style={{
             paddingHorizontal: 20,
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -89,6 +88,7 @@ export default function _layout () {
         }}
       >
         <HapticWrapper
+          height={40}
           onPress={() => {
             router.push({
               pathname: '/(app)/(doctor)/(chats)/(prescription)/sent',
@@ -97,7 +97,6 @@ export default function _layout () {
           }}
           style={{
             flex: 1,
-            height: 50,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,
@@ -115,6 +114,7 @@ export default function _layout () {
         </HapticWrapper>
 
         <HapticWrapper
+          height={40}
           onPress={() => {
             router.push({
               pathname: '/(app)/(doctor)/(chats)/(prescription)/injectables',
@@ -123,7 +123,6 @@ export default function _layout () {
           }}
           style={{
             flex: 1,
-            height: 50,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,
@@ -141,6 +140,7 @@ export default function _layout () {
         </HapticWrapper>
 
         <HapticWrapper
+          height={40}
           onPress={() => {
             router.push({
               pathname: '/(app)/(doctor)/(chats)/(prescription)/orals',
@@ -149,7 +149,6 @@ export default function _layout () {
           }}
           style={{
             flex: 1,
-            height: 50,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,

@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
 import { fetchConversations, searchConversations } from '@/store/actions/patient/conversations'
 import { router } from 'expo-router'
-import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { accent, appDark, black, ice, light, transparent } from '@/utils/colors'
 import { formatMessageTime } from '@/libraries/formatTime'
-import { PaperProvider, Searchbar } from 'react-native-paper'
+import { PaperProvider } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { FlashList } from '@shopify/flash-list'
+import CustomImage from '@/components/CustomImage'
 
 export default function all () {
   const dispatch = useDispatch()
@@ -47,17 +47,13 @@ export default function all () {
           gap: 20
         }}
       >
-        <Image
+        <CustomImage
           source={doctor?.photoURL}
           placeholder={require('@/assets/images/images/avatar.png')}
-          contentFit='cover'
           placeholderContentFit='cover'
-          transition={500}
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 50
-          }}
+          style={{ borderRadius: 50 }}
+          contentFit='cover'
+          size={0.12}
         />
 
         <View style={{ flex: 1 }}>

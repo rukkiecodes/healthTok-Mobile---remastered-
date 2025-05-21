@@ -232,7 +232,7 @@ export default function patient () {
             onPress={() => setShowGender(!showGender)}
             style={{
               backgroundColor: transparent,
-              height: 50,
+              height: 40,
               width: '100%',
               borderRadius: 20,
               borderWidth: 1.5,
@@ -295,7 +295,7 @@ export default function patient () {
             onPress={() => setOpenDate(true)}
             style={{
               backgroundColor: transparent,
-              height: 50,
+              height: 40,
               width: '100%',
               borderRadius: 20,
               borderWidth: 1.5,
@@ -340,7 +340,7 @@ export default function patient () {
             onPress={() => bottomSheetRef.current?.expand()}
             style={{
               backgroundColor: transparent,
-              height: 50,
+              height: 40,
               width: '100%',
               borderRadius: 20,
               borderWidth: 1.5,
@@ -376,8 +376,8 @@ export default function patient () {
 
       <HapticWrapper
         onPress={signupUser}
+        height={40}
         style={{
-          height: 50,
           borderRadius: 12,
           justifyContent: 'center',
           alignItems: 'center',

@@ -40,8 +40,8 @@ export default function ForgotPaswsord () {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -98,7 +98,7 @@ export default function ForgotPaswsord () {
                 gap: 10,
                 backgroundColor: accent,
                 width: '100%',
-                height: 50,
+                height: 40,
                 paddingHorizontal: 20,
                 borderRadius: 50,
                 marginTop: 20,

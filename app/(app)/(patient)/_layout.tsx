@@ -47,7 +47,7 @@ export default function _layout () {
         if (typeof unsub === 'function') unsub();
       });
     };
-  }, [dispatch, auth]);
+  }, [dispatch, auth, db]);
 
   return (
     <Stack

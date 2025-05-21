@@ -16,6 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage'
 import { doc, updateDoc } from 'firebase/firestore'
 import * as ImagePicker from 'expo-image-picker'
+import HapticWrapper from '@/components/Harptic'
+import CustomImage from '@/components/CustomImage'
 
 export default function profile () {
   const theme = useColorScheme()
@@ -132,8 +134,8 @@ export default function profile () {
               source={require('@/assets/images/icons/logout.png')}
               contentFit='contain'
               style={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 tintColor: theme == 'dark' ? light : accent
               }}
             />
@@ -142,28 +144,30 @@ export default function profile () {
           <View style={{ gap: 20 }}>
             <ThemedText type='subtitle' font='Poppins-Bold' style={{ textAlign: 'center' }} opacity={0.7}>Are you sure to log out of your account?</ThemedText>
 
-            <TouchableOpacity
+            <HapticWrapper
               onPress={handleLogout}
+              height={40}
               style={{
                 backgroundColor: theme == 'dark' ? red : accent,
-                height: 50,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 50
               }}
             >
               <ThemedText type='default' font='Poppins-Bold' lightColor={light}>Log Out</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </HapticWrapper>
+
+            <HapticWrapper
+              onPress={hideModal}
+              height={40}
               style={{
-                height: 50,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 50
               }}
             >
               <ThemedText type='default' font='Poppins-Bold' lightColor={accent}>Cancel</ThemedText>
-            </TouchableOpacity>
+            </HapticWrapper>
           </View>
         </Modal>
       </Portal>
@@ -199,17 +203,13 @@ export default function profile () {
                 overflow: 'hidden'
               }}
             >
-              <Image
-                source={profile?.displayImage ? profile?.displayImage?.image : (profile?.profilePicture ? profile?.profilePicture : require('@/assets/images/icons/profileFilled.png'))}
-                placeholder={require('@/assets/images/icons/profileFilled.png')}
-                contentFit='cover'
+              <CustomImage
+                source={profile?.displayImage ? profile?.displayImage?.image : profile?.profilePicture}
+                placeholder={require('@/assets/images/images/avatar.png')}
                 placeholderContentFit='cover'
-                transition={500}
-                style={{
-                  width: profile?.displayImage ? 100 : (profile?.profilePicture ? 100 : 80),
-                  height: profile?.displayImage ? 100 : (profile?.profilePicture ? 100 : 80),
-                  tintColor: profile?.displayImage ? '' : (profile?.profilePicture ? '' : (theme == 'dark' ? light : dark))
-                }}
+                contentFit='cover'
+                size={0.4}
+                style={{ borderRadius: 100 }}
               />
             </View>
 
@@ -273,34 +273,28 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/heart.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
+                  style={{ tintColor: theme == 'dark' ? light : appDark }}
+                  size={0.06}
                 />
               </View>
 
               <ThemedText type='default' font='Poppins-Medium'>My Saved</ThemedText>
             </View>
 
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
 
@@ -323,34 +317,28 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/document.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
+                  style={{ tintColor: theme == 'dark' ? light : appDark }}
+                  size={0.06}
                 />
               </View>
 
               <ThemedText type='default' font='Poppins-Medium'>Appointmnet</ThemedText>
             </View>
 
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
 
@@ -373,34 +361,28 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/wallet.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
+                  style={{ tintColor: theme == 'dark' ? light : appDark }}
+                  size={0.06}
                 />
               </View>
 
               <ThemedText type='default' font='Poppins-Medium'>Payment Method</ThemedText>
             </View>
 
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
 
@@ -424,34 +406,28 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,
                   backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/chat.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: theme == 'dark' ? light : appDark
-                  }}
+                  style={{ tintColor: theme == 'dark' ? light : appDark }}
+                  size={0.06}
                 />
               </View>
 
               <ThemedText type='default' font='Poppins-Medium'>FAQs</ThemedText>
             </View>
 
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
 
@@ -475,34 +451,28 @@ export default function profile () {
             >
               <View
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 100,
                   backgroundColor: `${red}33`
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/danger_circle.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: red
-                  }}
+                  style={{ tintColor: red }}
+                  size={0.06}
                 />
               </View>
 
               <ThemedText type='default' font='Poppins-Medium' darkColor={red} lightColor={red}>Logout</ThemedText>
             </View>
 
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/chevron_right.png')}
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
         </ThemedView>

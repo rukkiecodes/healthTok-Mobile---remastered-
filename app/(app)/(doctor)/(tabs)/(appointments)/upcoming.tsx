@@ -76,8 +76,8 @@ export default function upcoming () {
             placeholderContentFit='cover'
             transition={500}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               borderRadius: 50
             }}
           />
@@ -135,8 +135,8 @@ export default function upcoming () {
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <HapticWrapper
               style={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 borderRadius: 10,
                 backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                 justifyContent: 'center',
@@ -156,8 +156,8 @@ export default function upcoming () {
             <HapticWrapper
               onPress={() => startChatWithDoctor(item)}
               style={{
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 borderRadius: 10,
                 backgroundColor: theme == 'dark' ? `${light}33` : `${accent}33`,
                 justifyContent: 'center',

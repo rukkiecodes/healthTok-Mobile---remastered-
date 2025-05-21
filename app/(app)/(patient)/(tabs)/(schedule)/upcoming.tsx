@@ -7,7 +7,6 @@ import { accent, appDark, black, light, transparent } from '@/utils/colors'
 import { ThemedText } from '@/components/ThemedText'
 import { Divider, PaperProvider } from 'react-native-paper'
 import { FlashList } from '@shopify/flash-list'
-import { Image } from 'expo-image'
 import { formatCustomDate } from '@/libraries/formatDate'
 import HapticWrapper from '@/components/Harptic'
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
@@ -15,6 +14,7 @@ import { auth, db } from '@/utils/fb'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { setSelectedDate, setSelectedTime } from '@/store/slices/appointmentSlice'
 import { useNotification } from '@/context/notification'
+import CustomImage from '@/components/CustomImage'
 const { width } = Dimensions.get('window')
 
 const INFO_CARDS = (width / 4) - 35
@@ -175,7 +175,7 @@ export default function upcoming () {
           borderWidth: 1,
           borderColor: `${theme == 'dark' ? light : appDark}33`,
           borderRadius: 12,
-          padding: 20,
+          padding: 10,
           margin: 20
         }}
       >
@@ -191,12 +191,13 @@ export default function upcoming () {
             <ThemedText type='body' font='Poppins-Medium' opacity={0.6}>{item?.doctor?.specialization}</ThemedText>
           </View>
 
-          <Image
+          <CustomImage
             source={item?.doctor?.displayImage ? item?.doctor?.displayImage?.image : item?.doctor?.profilePicture}
             placeholder={require('@/assets/images/images/avatar.png')}
             placeholderContentFit='cover'
             contentFit='contain'
-            style={{ width: 50, height: 50, borderRadius: 50 }}
+            size={0.12}
+            style={{ borderRadius: 50 }}
           />
         </View>
 
@@ -217,12 +218,11 @@ export default function upcoming () {
               gap: 5
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/calendar.png')}
               contentFit='contain'
+              size={0.03}
               style={{
-                width: 14,
-                height: 14,
                 tintColor: theme == 'dark' ? light : appDark,
                 opacity: 0.8
               }}
@@ -239,12 +239,11 @@ export default function upcoming () {
               gap: 5
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/clock.png')}
               contentFit='contain'
+              size={0.03}
               style={{
-                width: 14,
-                height: 14,
                 tintColor: theme == 'dark' ? light : appDark,
                 opacity: 0.8
               }}
@@ -265,11 +264,11 @@ export default function upcoming () {
         >
           <HapticWrapper
             onPress={() => cancelAppointments(item)}
+            height={40}
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: theme == 'dark' ? black : `${accent}20`,
-              height: 50,
               borderRadius: 12,
               flex: 1,
             }}
@@ -282,11 +281,11 @@ export default function upcoming () {
               setSelectedAppointments(item)
               bottomSheetRef.current?.expand()
             }}
+            height={40}
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: accent,
-              height: 50,
               borderRadius: 12,
               flex: 1,
             }}
@@ -392,7 +391,7 @@ export default function upcoming () {
                           disabled={!item.active}
                           style={{
                             width: TIME_CARDS,
-                            height: 50,
+                            height: 40,
                             borderWidth: 1.5,
                             borderRadius: 20,
                             borderColor: item.time == selectedTime?.time ? transparent : (theme == 'dark' ? `${light}33` : `${accent}33`),
@@ -425,7 +424,7 @@ export default function upcoming () {
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: accent,
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flex: 1,
               marginVertical: 40

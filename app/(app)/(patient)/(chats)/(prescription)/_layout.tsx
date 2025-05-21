@@ -43,8 +43,8 @@ export default function _layout () {
               })
             }}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -82,7 +82,7 @@ export default function _layout () {
           }}
           style={{
             flex: 1,
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,
@@ -108,7 +108,7 @@ export default function _layout () {
           }}
           style={{
             flex: 1,
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,

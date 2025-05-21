@@ -4,10 +4,10 @@ import { router, Stack, useSegments } from 'expo-router'
 import { accent, appDark, light, transparent } from '@/utils/colors'
 import { Appbar, PaperProvider } from 'react-native-paper'
 import { TouchableOpacity } from 'react-native'
-import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import HapticWrapper from '@/components/Harptic'
+import CustomImage from '@/components/CustomImage'
 
 export default function _layout () {
   const theme = useColorScheme()
@@ -29,19 +29,16 @@ export default function _layout () {
         <TouchableOpacity
           onPress={() => router.navigate('/(app)/(doctor)/notification')}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
-          <Image
+          <CustomImage
             source={require('@/assets/images/icons/bell.png')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: theme == 'dark' ? light : appDark
-            }}
+            style={{ tintColor: theme == 'dark' ? light : appDark }}
+            size={0.05}
           />
         </TouchableOpacity>
       </Appbar.Header>
@@ -59,17 +56,17 @@ export default function _layout () {
       >
         <HapticWrapper
           onPress={() => router.navigate('/(app)/(doctor)/(tabs)/(conversations)/conversations')}
+          height={40}
           style={{
             backgroundColor: screenName == 'conversations' ? (theme == 'dark' ? light : accent) : transparent,
             flex: 1,
-            height: 50,
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
           <ThemedText
-            type='default'
+            type='body'
             font={screenName == 'conversations' ? 'Poppins-Bold' : 'Poppins-Medium'}
             lightColor={screenName == 'conversations' ? light : appDark}
             darkColor={screenName == 'conversations' ? appDark : light}
@@ -80,17 +77,17 @@ export default function _layout () {
 
         <HapticWrapper
           onPress={() => router.navigate('/(app)/(doctor)/(tabs)/(conversations)/community')}
+          height={40}
           style={{
             backgroundColor: screenName == 'community' ? (theme == 'dark' ? light : accent) : transparent,
             flex: 1,
-            height: 50,
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
           <ThemedText
-            type='default'
+            type='body'
             font={screenName == 'community' ? 'Poppins-Bold' : 'Poppins-Medium'}
             lightColor={screenName == 'community' ? light : appDark}
             darkColor={screenName == 'community' ? appDark : light}

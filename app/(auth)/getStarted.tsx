@@ -6,6 +6,8 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { ThemedText } from '@/components/ThemedText'
 import { accent, light, transparent } from '@/utils/colors'
 import { router } from 'expo-router'
+import HapticWrapper from '@/components/Harptic'
+import CustomImage from '@/components/CustomImage'
 
 export default function GetStared () {
   const theme = useColorScheme()
@@ -39,12 +41,9 @@ export default function GetStared () {
           />
         </TouchableOpacity>
 
-        <Image
+        <CustomImage
           source={theme == 'dark' ? require('@/assets/images/images/logo1.png') : require('@/assets/images/images/logo2.png')}
-          style={{
-            width: 250,
-            height: 250,
-          }}
+          size={0.5}
         />
 
         <ThemedText type='title' font='Poppins-Bold' style={{ textAlign: 'center' }}>Let's get started!</ThemedText>
@@ -52,12 +51,13 @@ export default function GetStared () {
           {`Login to get access the best medical\nfeatures we have made to improve a healthy living.`}
         </ThemedText>
 
-        <TouchableOpacity
+        <HapticWrapper
           onPress={() => router.push('/(auth)/login')}
+          haptic={false}
+          height={40}
           style={{
             backgroundColor: accent,
             width: '100%',
-            height: 50,
             borderRadius: 50,
             justifyContent: 'center',
             alignItems: 'center',
@@ -65,15 +65,17 @@ export default function GetStared () {
           }}
         >
           <ThemedText lightColor={light} type='body' font='Poppins-Bold' style={{ textAlign: 'center' }}>Login</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </HapticWrapper>
+
+        <HapticWrapper
           onPress={() => router.push('/(auth)/(signup)/home')}
+          haptic={false}
+          height={40}
           style={{
             backgroundColor: transparent,
             borderWidth: 1,
             borderColor: theme == 'dark' ? light : accent,
             width: '100%',
-            height: 50,
             borderRadius: 50,
             justifyContent: 'center',
             alignItems: 'center',
@@ -81,7 +83,7 @@ export default function GetStared () {
           }}
         >
           <ThemedText lightColor={accent} darkColor={light} type='body' font='Poppins-Bold' style={{ textAlign: 'center' }}>Sign Up</ThemedText>
-        </TouchableOpacity>
+        </HapticWrapper>
       </ThemedView>
     </PaperProvider>
   )

@@ -26,8 +26,8 @@ const AuthLayout = () => {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -44,7 +44,7 @@ const AuthLayout = () => {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Create Profile</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <View
@@ -60,9 +60,9 @@ const AuthLayout = () => {
       >
         <HapticWrapper
           onPress={() => router.navigate('/(auth)/(signup)/(profile)/patient')}
+          height={40}
           style={{
             flex: 1,
-            height: 50,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,
@@ -81,9 +81,9 @@ const AuthLayout = () => {
         
         <HapticWrapper
           onPress={() => router.navigate('/(auth)/(signup)/(profile)/doctor')}
+          height={40}
           style={{
             flex: 1,
-            height: 50,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 12,

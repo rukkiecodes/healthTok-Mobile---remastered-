@@ -5,6 +5,7 @@ import { Tabs } from 'expo-router';
 import { accent, appDark, dark, light } from '@/utils/colors';
 import { ThemedView } from '@/components/ThemedView';
 import { Image } from 'expo-image';
+import CustomImage from '@/components/CustomImage';
 
 export default function _layout () {
   const colorScheme = useColorScheme();
@@ -39,16 +40,13 @@ export default function _layout () {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/homeFilled.png') : require('@/assets/images/icons/home.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => null
+          tabBarLabel: () => null
         }}
       />
 
@@ -57,16 +55,13 @@ export default function _layout () {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/messageFilled.png') : require('@/assets/images/icons/message.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => null
+          tabBarLabel: () => null
         }}
       />
 
@@ -75,16 +70,13 @@ export default function _layout () {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/calendarFilled.png') : require('@/assets/images/icons/calendar.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => null
+          tabBarLabel: () => null
         }}
       />
 
@@ -93,16 +85,13 @@ export default function _layout () {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/profileFilled.png') : require('@/assets/images/icons/profile.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => null
+          tabBarLabel: () => null
         }}
       />
     </Tabs>

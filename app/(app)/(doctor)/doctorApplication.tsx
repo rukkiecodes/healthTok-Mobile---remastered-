@@ -238,7 +238,7 @@ export default function doctorApplication () {
           <HapticWrapper
             onPress={() => router.dismissTo('/(app)/(doctor)/(tabs)/home')}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 50,
               justifyContent: 'center',
               alignItems: 'center',
@@ -259,7 +259,7 @@ export default function doctorApplication () {
           <TouchableOpacity
             onPress={() => pickMedicalDegreeImage()}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -288,7 +288,7 @@ export default function doctorApplication () {
           <TouchableOpacity
             onPress={pickSpecialtyImage}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -317,7 +317,7 @@ export default function doctorApplication () {
           <TouchableOpacity
             onPress={pickBoardCertificationImage}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -346,7 +346,7 @@ export default function doctorApplication () {
           <TouchableOpacity
             onPress={pickCV}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -375,7 +375,7 @@ export default function doctorApplication () {
           <TouchableOpacity
             onPress={pickGovernmentIssuedID}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 12,
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -498,7 +498,7 @@ export default function doctorApplication () {
           justifyContent: 'center',
           alignItems: 'center',
           gap: 10,
-          height: 50,
+          height: 40,
           borderRadius: 50,
           margin: 20
         }}

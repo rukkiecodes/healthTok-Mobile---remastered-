@@ -24,8 +24,8 @@ export default function viewImage () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}

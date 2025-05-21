@@ -127,7 +127,7 @@ export default function addPresriptions () {
               setModalVisible(false)
             }}
             style={{
-              height: 50,
+              height: 40,
               borderRadius: 50,
               justifyContent: 'center',
               alignItems: 'center',
@@ -160,8 +160,8 @@ export default function addPresriptions () {
           <TouchableOpacity
             onPress={router.back}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -183,7 +183,7 @@ export default function addPresriptions () {
           disabled={!validateSave() || loading}
           style={{
             paddingHorizontal: 20,
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}

@@ -20,7 +20,7 @@ const MessageAttatchement = ({
       <TouchableOpacity
         onPress={action}
         style={{
-          width: 50,
+          width: 40,
           justifyContent: 'center',
           alignItems: 'center',
           marginBottom: 20
@@ -28,8 +28,8 @@ const MessageAttatchement = ({
       >
         <View
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 50,

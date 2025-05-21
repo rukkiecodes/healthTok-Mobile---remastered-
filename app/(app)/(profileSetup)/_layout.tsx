@@ -46,7 +46,7 @@ export default function _layout () {
             onPress={() => router.navigate('/(app)/(profileSetup)/patient')}
             style={{
               width: '50%',
-              height: 50,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 50,
@@ -60,7 +60,7 @@ export default function _layout () {
             onPress={() => router.navigate('/(app)/(profileSetup)/doctor')}
             style={{
               width: '50%',
-              height: 50,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 50,
@@ -114,7 +114,7 @@ export default function _layout () {
             onPress={hideModal}
             style={{
               width: '100%',
-              height: 50,
+              height: 40,
               borderRadius: 50,
               justifyContent: 'center',
               alignItems: 'center',

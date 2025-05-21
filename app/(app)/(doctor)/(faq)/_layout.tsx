@@ -22,8 +22,8 @@ export default function _layout () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -41,7 +41,7 @@ export default function _layout () {
 
         <ThemedText type='subtitle'>Frequently asked questions</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
       
       <Stack

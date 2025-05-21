@@ -13,6 +13,6 @@ export default function Rating ({ item }: any) {
   }, [item])
 
   return (
-    <ThemedText style={{ marginTop: 5 }}>{rating}</ThemedText>
+    <ThemedText type='body' style={{ marginTop: 5 }}>{rating}</ThemedText>
   )
 }

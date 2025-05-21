@@ -40,13 +40,13 @@ export default function Step3 () {
 
               <HapticWrapper
                 onPress={() => router.navigate('/(auth)/getStarted')}
+                height={40}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   backgroundColor: accent,
                   width: '100%',
-                  height: 50,
                   paddingHorizontal: 20,
                   borderRadius: 50,
                   marginTop: 20,

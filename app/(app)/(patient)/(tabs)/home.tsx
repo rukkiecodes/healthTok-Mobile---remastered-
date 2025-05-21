@@ -29,7 +29,7 @@ export default function home () {
             justifyContent: 'flex-start',
             alignItems: 'center',
             gap: 20,
-            height: 50,
+            height: 40,
             paddingHorizontal: 20,
             margin: 20,
             borderWidth: 1.5,

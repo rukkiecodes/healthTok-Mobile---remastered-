@@ -1,31 +1,28 @@
-import { Text, type TextProps, StyleSheet } from 'react-native';
-
+import { Text, type TextProps, StyleSheet, PixelRatio, Dimensions } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useFonts } from 'expo-font';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const BASE_WIDTH = 375;
+const BASE_HEIGHT = 812;
+
+const normalizeFontSize = (size: number) => {
+  const scaleWidth = SCREEN_WIDTH / BASE_WIDTH;
+  const scaleHeight = SCREEN_HEIGHT / BASE_HEIGHT;
+
+  // Use the smaller scale for more consistent results
+  const scale = Math.min(scaleWidth, scaleHeight);
+  const newSize = (size * scale) / 1.5;
+
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'caption' | 'body';
-  font?: 'Poppins-Black' |
-  'Poppins-BlackItalic' |
-  'Poppins-Bold' |
-  'Poppins-BoldItalic' |
-  'Poppins-ExtraBold' |
-  'Poppins-ExtraBoldItalic' |
-  'Poppins-ExtraLight' |
-  'Poppins-ExtraLightItalic' |
-  'Poppins-Italic' |
-  'Poppins-Light' |
-  'Poppins-LightItalic' |
-  'Poppins-Medium' |
-  'Poppins-MediumItalic' |
-  'Poppins-Regular' |
-  'Poppins-SemiBold' |
-  'Poppins-SemiBoldItalic' |
-  'Poppins-Thin' |
-  'Poppins-ThinItalic'
-  opacity?: number
+  font?: string;
+  opacity?: number;
 };
 
 export function ThemedText ({
@@ -62,9 +59,9 @@ export function ThemedText ({
 
   if (!loaded) return null;
 
-
   return (
     <Text
+      allowFontScaling={false}
       style={[
         { color },
         type === 'default' ? styles.default : undefined,
@@ -84,25 +81,25 @@ export function ThemedText ({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: 16,
+    fontSize: normalizeFontSize(16),
   },
   defaultSemiBold: {
-    fontSize: 16,
+    fontSize: normalizeFontSize(16),
   },
   title: {
-    fontSize: 32,
+    fontSize: normalizeFontSize(32),
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: normalizeFontSize(20),
   },
   link: {
-    lineHeight: 30,
-    fontSize: 16
+    lineHeight: normalizeFontSize(30),
+    fontSize: normalizeFontSize(16),
   },
   body: {
-    fontSize: 14
+    fontSize: normalizeFontSize(14),
   },
   caption: {
-    fontSize: 12
+    fontSize: normalizeFontSize(12),
   },
 });

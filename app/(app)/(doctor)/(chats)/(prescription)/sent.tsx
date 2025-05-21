@@ -111,8 +111,8 @@ export default function sent () {
               <HapticWrapper
                 onPress={() => deletePrescription(item)}
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 12,

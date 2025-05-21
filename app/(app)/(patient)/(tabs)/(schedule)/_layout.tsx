@@ -39,9 +39,9 @@ export default function _layout () {
               <HapticWrapper
                 key={index}
                 onPress={() => router.navigate(`/(app)/(patient)/(tabs)/(schedule)/${item}`)}
+                height={40}
                 style={{
                   flex: 1,
-                  height: 50,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 12,

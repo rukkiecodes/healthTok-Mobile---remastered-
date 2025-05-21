@@ -12,6 +12,7 @@ import { PaperProvider, Searchbar } from 'react-native-paper'
 import { ThemedView } from '@/components/ThemedView'
 import { FlashList } from '@shopify/flash-list'
 import { RootState } from '@/store/store'
+import CustomImage from '@/components/CustomImage'
 
 export default function conversations () {
   const dispatch = useDispatch()
@@ -52,17 +53,13 @@ export default function conversations () {
           gap: 20
         }}
       >
-        <Image
+        <CustomImage
           source={item?.patient?.photoURL}
           placeholder={require('@/assets/images/images/avatar.png')}
-          contentFit='cover'
           placeholderContentFit='cover'
-          transition={300}
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 50
-          }}
+          style={{ borderRadius: 50 }}
+          contentFit='cover'
+          size={0.12}
         />
 
         <View style={{ flex: 1 }}>

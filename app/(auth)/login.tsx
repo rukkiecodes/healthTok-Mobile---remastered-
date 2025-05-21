@@ -16,6 +16,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store';
+import CustomImage from '@/components/CustomImage'
+import HapticWrapper from '@/components/Harptic'
 
 const { webClientId, iosClientId } = Constants.expoConfig?.extra?.expoPublic || {};
 
@@ -119,7 +121,7 @@ export default function login () {
       router.replace(`/(app)/(${userCollection == 'patient' ? 'patient' : 'doctor'})/(tabs)/home`)
 
       setLoading(false);
-      
+
       const response = await axios.post("https://mailservice-e4b2cc7b9ef8.herokuapp.com/healthTok/registerStream", {
         email,
         id: user?.uid
@@ -160,8 +162,8 @@ export default function login () {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -178,7 +180,7 @@ export default function login () {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Login</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -220,9 +222,9 @@ export default function login () {
               </ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            <HapticWrapper
               onPress={() => signIn()}
-              disabled={loading}
+              height={40}
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -230,7 +232,6 @@ export default function login () {
                 gap: 10,
                 backgroundColor: accent,
                 width: '100%',
-                height: 50,
                 paddingHorizontal: 20,
                 borderRadius: 50,
                 marginTop: 20,
@@ -238,7 +239,7 @@ export default function login () {
             >
               {loading && <ActivityIndicator size={18} color={light} />}
               <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Login</ThemedText>
-            </TouchableOpacity>
+            </HapticWrapper>
 
             <TouchableOpacity
               onPress={() => router.push('/(auth)/(signup)/home')}
@@ -283,79 +284,49 @@ export default function login () {
             </View>
 
             <View style={{ gap: 20 }}>
-              <TouchableOpacity
+              <HapticWrapper
                 onPress={() => googleAuth()}
+                height={40}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
                   width: '100%',
-                  height: 50,
                   borderWidth: 1,
                   borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-                  borderRadius: 50
+                  borderRadius: 50,
+                  gap: 10
                 }}
               >
-                <Image
+                <CustomImage
                   source={require('@/assets/images/icons/google.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginRight: 10,
-                  }}
+                  size={0.04}
                 />
                 <ThemedText type='body' font='Poppins-Bold'>Sign in with Google</ThemedText>
-              </TouchableOpacity>
+              </HapticWrapper>
 
               {
                 Platform.OS == 'ios' &&
-                <TouchableOpacity
+                <HapticWrapper
+                  height={40}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
                     width: '100%',
-                    height: 50,
                     borderWidth: 1,
                     borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-                    borderRadius: 50
+                    borderRadius: 50,
+                    gap: 10
                   }}
                 >
-                  <Image
+                  <CustomImage
                     source={require('@/assets/images/icons/apple.png')}
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginRight: 10,
-                      tintColor: theme == 'dark' ? light : dark
-                    }}
+                    size={0.04}
                   />
                   <ThemedText type='body' font='Poppins-Bold'>Sign in with Apple</ThemedText>
-                </TouchableOpacity>
+                </HapticWrapper>
               }
-
-              {/* <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  height: 50,
-                  borderWidth: 1,
-                  borderColor: theme == 'dark' ? `${light}33` : `${appDark}33`,
-                  borderRadius: 50
-                }}
-              >
-                <Image
-                  source={require('@/assets/images/icons/facebook.png')}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginRight: 10,
-                  }}
-                />
-                <ThemedText type='body' font='Poppins-Bold'>Sign in with Facebook</ThemedText>
-              </TouchableOpacity> */}
             </View>
           </ThemedView>
         </TouchableWithoutFeedback>

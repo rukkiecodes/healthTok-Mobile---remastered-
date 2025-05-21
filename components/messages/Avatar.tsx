@@ -1,8 +1,8 @@
 import { ViewProps } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { doc, onSnapshot } from 'firebase/firestore'
-import { db } from '@/utils/fb'
-import { Image } from 'expo-image'
+import { doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { auth, db } from '@/utils/fb'
+import CustomImage from '../CustomImage'
 
 export type AvatarProps = ViewProps & {
   user?: string;
@@ -13,24 +13,23 @@ const Avatar = ({ user, size }: AvatarProps) => {
   const [avatar, setAvatar] = useState<string | ''>('')
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'users', String(user)), doc => {
-      const usersDoc = doc.data()
+    (async () => {
+      const targetCollection = user == auth.currentUser?.uid ? 'doctors' : 'patient'
 
+      const usersDoc: any = (await getDoc(doc(db, String(targetCollection), String(user)))).data()
       setAvatar(usersDoc?.displayImage ? usersDoc?.displayImage?.image : usersDoc?.profilePicture)
-    })
-    return unsub
-  }, [])
+    })()
+  }, [user])
 
   return (
-    <Image
+    <CustomImage
       source={avatar}
       placeholder={require('@/assets/images/imgs/johnDoe.png')}
       placeholderContentFit='cover'
       contentFit='cover'
       transition={1000}
+      size={size || 0.1}
       style={{
-        width: size || 100,
-        height: size || 100,
         borderRadius: 50
       }}
     />

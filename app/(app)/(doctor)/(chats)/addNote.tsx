@@ -85,8 +85,8 @@ export default function note () {
           <TouchableOpacity
             onPress={router.back}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -108,7 +108,7 @@ export default function note () {
           disabled={!validateSend() || loading}
           style={{
             paddingHorizontal: 20,
-            height: 50,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}

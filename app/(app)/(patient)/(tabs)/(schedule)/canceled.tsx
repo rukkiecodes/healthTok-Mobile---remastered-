@@ -7,8 +7,8 @@ import { appDark, light } from '@/utils/colors'
 import { ThemedText } from '@/components/ThemedText'
 import { PaperProvider } from 'react-native-paper'
 import { FlashList } from '@shopify/flash-list'
-import { Image } from 'expo-image'
 import { formatCustomDate } from '@/libraries/formatDate'
+import CustomImage from '@/components/CustomImage'
 
 export default function canceled () {
   const theme = useColorScheme()
@@ -37,12 +37,13 @@ export default function canceled () {
             <ThemedText type='body' font='Poppins-Medium' opacity={0.6}>{item?.doctor?.specialization}</ThemedText>
           </View>
 
-          <Image
+          <CustomImage
             source={item?.doctor?.displayImage ? item?.doctor?.displayImage?.image : item?.doctor?.profilePicture}
             placeholder={require('@/assets/images/images/avatar.png')}
             placeholderContentFit='cover'
+            style={{ borderRadius: 50 }}
             contentFit='contain'
-            style={{ width: 50, height: 50, borderRadius: 50 }}
+            size={0.12}
           />
         </View>
 
@@ -63,12 +64,11 @@ export default function canceled () {
               gap: 5
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/calendar.png')}
               contentFit='contain'
+              size={0.03}
               style={{
-                width: 14,
-                height: 14,
                 tintColor: theme == 'dark' ? light : appDark,
                 opacity: 0.8
               }}
@@ -85,12 +85,11 @@ export default function canceled () {
               gap: 5
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/clock.png')}
               contentFit='contain'
+              size={0.03}
               style={{
-                width: 14,
-                height: 14,
                 tintColor: theme == 'dark' ? light : appDark,
                 opacity: 0.8
               }}

@@ -1,11 +1,11 @@
 import * as Location from 'expo-location';
 
 /**
- * Gets a human-readable address from latitude and longitude using Expo Location.
+ * Gets the city and country from latitude and longitude using Expo Location.
  *
  * @param latitude - The user's latitude
  * @param longitude - The user's longitude
- * @returns The address as a string or null if not found
+ * @returns The location string or null if not found
  */
 export const getAddressFromCoords = async (
   latitude: number,
@@ -15,16 +15,8 @@ export const getAddressFromCoords = async (
     const [address] = await Location.reverseGeocodeAsync({ latitude, longitude });
 
     if (address) {
-      const {
-        name,
-        street,
-        city,
-        region,
-        postalCode,
-        country,
-      } = address;
-
-      return `${name || ''} ${street || ''}, ${city || ''}, ${region || ''} ${postalCode || ''}, ${country || ''}`.trim();
+      const { city, country } = address;
+      return `${city || ''}, ${country || ''}`.trim().replace(/^,|,$/g, '');
     }
 
     return null;

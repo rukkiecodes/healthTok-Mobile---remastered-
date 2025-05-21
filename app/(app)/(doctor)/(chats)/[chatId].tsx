@@ -15,6 +15,9 @@ import { FlashList } from '@shopify/flash-list';
 import MessageBubble from '@/components/doctorMessages/MessageBubble';
 import { getOtherParticipant } from '@/libraries/extractUID';
 import { useConsultationTimer } from '@/libraries/parseConsultationDateTime';
+import { checkAndEndConsultation } from '@/libraries/endConsultation';
+import HapticWrapper from '@/components/Harptic';
+import CustomImage from '@/components/CustomImage';
 
 interface Message {
   id: string;
@@ -147,14 +150,14 @@ export default function ChatScreen () {
 
   const endConsultion = async () => {
     const appointment = conversationData?.appointmentsData?.appointment;
-    // await checkAndEndConsultation(
-    //   chatId,
-    //   appointment,
-    //   String(conversationData?.appointmentsData?.patient?.uid),
-    //   String(auth?.currentUser?.uid),
-    //   String(conversationData?.appointmentsData?.id),
-    //   conversationData?.appointmentsData
-    // );
+    await checkAndEndConsultation(
+      chatId,
+      appointment,
+      String(conversationData?.appointmentsData?.patient?.uid),
+      String(auth?.currentUser?.uid),
+      String(conversationData?.appointmentsData?.id),
+      conversationData?.appointmentsData
+    );
 
     cuncludeAppointment(String(conversationData?.appointmentId))
   }
@@ -236,8 +239,8 @@ export default function ChatScreen () {
           <TouchableOpacity
             onPress={router.back}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -245,8 +248,8 @@ export default function ChatScreen () {
             <Image
               source={require('@/assets/images/icons/arrow_left.png')}
               style={{
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 tintColor: theme == 'dark' ? light : appDark
               }}
             />
@@ -269,19 +272,16 @@ export default function ChatScreen () {
               params: { chatId }
             })}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/video_camera.png')}
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.05}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -291,39 +291,33 @@ export default function ChatScreen () {
               params: { chatId }
             })}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/phone_fill.png')}
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.05}
             />
           </TouchableOpacity>
           <TouchableOpacity
             // disabled={!conversationData?.isAppointmentsOpen}
             onPress={() => bottomSheetRef.current?.expand()}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
-            <Image
+            <CustomImage
               source={require('@/assets/images/icons/dots_vertical.png')}
               contentFit='contain'
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: theme == 'dark' ? light : appDark
-              }}
+              style={{ tintColor: theme == 'dark' ? light : appDark }}
+              size={0.04}
             />
           </TouchableOpacity>
         </View>
@@ -389,8 +383,8 @@ export default function ChatScreen () {
         <TextInput
           value={input}
           mode='outlined'
-          style={{ flex: 1, height: 50, backgroundColor: transparent }}
-          editable={conversationData?.isAppointmentsOpen}
+          style={{ flex: 1, height: 40, backgroundColor: transparent }}
+          // editable={conversationData?.isAppointmentsOpen}
           onChangeText={(text: string) => {
             setInput(text)
             setTextInput(text)
@@ -407,11 +401,11 @@ export default function ChatScreen () {
           }}
         />
 
-        <TouchableOpacity
+        <HapticWrapper
+          height={40}
           onPress={sendMessage}
-          disabled={!conversationData?.isAppointmentsOpen}
+          // disabled={!conversationData?.isAppointmentsOpen}
           style={{
-            height: 50,
             paddingHorizontal: 20,
             borderRadius: 50,
             justifyContent: 'center',
@@ -420,13 +414,13 @@ export default function ChatScreen () {
           }}
         >
           <ThemedText type='body' font='Poppins-Medium' lightColor={light} darkColor={accent}>Send</ThemedText>
-        </TouchableOpacity>
+        </HapticWrapper>
       </View>
 
       <BottomSheet
         index={-1}
         ref={bottomSheetRef}
-        snapPoints={[320]}
+        snapPoints={[300]}
         enablePanDownToClose
         enableOverDrag
         enableDynamicSizing={false}
@@ -435,28 +429,29 @@ export default function ChatScreen () {
       >
         <BottomSheetView
           style={{
-            flex: 1,
-            padding: 30,
-            gap: 20
+            flexGrow: 1,
+            padding: 20,
+            gap: 10
           }}
         >
-          <TouchableOpacity
+          <HapticWrapper
             onPress={() => {
               endConsultion()
               bottomSheetRef.current?.close()
             }}
+            height={40}
+            haptic={false}
             style={{
               width: '100%',
-              height: 45,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center'
             }}
           >
             <ThemedText type='body' font='Poppins-Medium' lightColor={accent} darkColor={dark}>End Consultation</ThemedText>
-          </TouchableOpacity>
+          </HapticWrapper>
 
-          <TouchableOpacity
+          <HapticWrapper
             onPress={() => {
               router.push({
                 pathname: '/(app)/(doctor)/(chats)/patientFile',
@@ -464,18 +459,19 @@ export default function ChatScreen () {
               })
               bottomSheetRef.current?.close()
             }}
+            height={40}
+            haptic={false}
             style={{
               width: '100%',
-              height: 45,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center'
             }}
           >
             <ThemedText type='body' font='Poppins-Medium' lightColor={accent} darkColor={dark}>Patient File</ThemedText>
-          </TouchableOpacity>
+          </HapticWrapper>
 
-          <TouchableOpacity
+          <HapticWrapper
             onPress={() => {
               router.push({
                 pathname: '/(app)/(doctor)/(chats)/note',
@@ -483,18 +479,19 @@ export default function ChatScreen () {
               })
               bottomSheetRef.current?.close()
             }}
+            height={40}
+            haptic={false}
             style={{
               width: '100%',
-              height: 45,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center'
             }}
           >
             <ThemedText type='body' font='Poppins-Medium' lightColor={accent} darkColor={dark}>Note</ThemedText>
-          </TouchableOpacity>
+          </HapticWrapper>
 
-          <TouchableOpacity
+          <HapticWrapper
             onPress={() => {
               router.push({
                 pathname: '/(app)/(doctor)/(chats)/(prescription)/sent',
@@ -502,16 +499,17 @@ export default function ChatScreen () {
               })
               bottomSheetRef.current?.close()
             }}
+            height={40}
+            haptic={false}
             style={{
               width: '100%',
-              height: 45,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center'
             }}
           >
             <ThemedText type='body' font='Poppins-Medium' lightColor={accent} darkColor={dark}>Prescription</ThemedText>
-          </TouchableOpacity>
+          </HapticWrapper>
         </BottomSheetView>
       </BottomSheet>
     </PaperProvider>

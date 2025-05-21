@@ -3,9 +3,8 @@ import { Tabs } from 'expo-router'
 import { Easing } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { accent, appDark, dark, light } from '@/utils/colors'
-import { Image } from 'expo-image'
 import { ThemedView } from '@/components/ThemedView'
-import { ThemedText } from '@/components/ThemedText'
+import CustomImage from '@/components/CustomImage'
 
 const MainAppTabsLayout = () => {
   const colorScheme = useColorScheme();
@@ -40,16 +39,13 @@ const MainAppTabsLayout = () => {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/homeFilled.png') : require('@/assets/images/icons/home.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => <ThemedText style={{ display: 'none' }}></ThemedText>
+          tabBarLabel: () => null
         }}
       />
 
@@ -58,16 +54,13 @@ const MainAppTabsLayout = () => {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/messageFilled.png') : require('@/assets/images/icons/message.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => <ThemedText style={{ display: 'none' }}></ThemedText>
+          tabBarLabel: () => null
         }}
       />
 
@@ -76,16 +69,13 @@ const MainAppTabsLayout = () => {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/calendarFilled.png') : require('@/assets/images/icons/calendar.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => <ThemedText style={{ display: 'none' }}></ThemedText>
+          tabBarLabel: () => null
         }}
       />
 
@@ -94,16 +84,13 @@ const MainAppTabsLayout = () => {
         options={{
           title: '',
           tabBarIcon: ({ focused, color }) =>
-            <Image
+            <CustomImage
               source={focused ? require('@/assets/images/icons/profileFilled.png') : require('@/assets/images/icons/profile.png')}
-              tintColor={color}
+              style={{ tintColor: color }}
               contentFit='contain'
-              style={{
-                width: 30,
-                height: 30
-              }}
+              size={0.06}
             />,
-          tabBarLabel: ({ color }) => <ThemedText style={{ display: 'none' }}></ThemedText>
+          tabBarLabel: () => null
         }}
       />
     </Tabs>

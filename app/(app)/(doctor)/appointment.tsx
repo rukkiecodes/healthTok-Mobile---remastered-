@@ -60,8 +60,8 @@ export default function appointment () {
             placeholderContentFit='cover'
             transition={500}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               borderRadius: 50
             }}
           />
@@ -120,7 +120,7 @@ export default function appointment () {
             <View
               style={{
                 paddingHorizontal: 20,
-                height: 50,
+                height: 40,
                 borderRadius: 10,
                 backgroundColor: teal,
                 justifyContent: 'center',
@@ -133,7 +133,7 @@ export default function appointment () {
             <View
               style={{
                 paddingHorizontal: 20,
-                height: 50,
+                height: 40,
                 borderRadius: 10,
                 backgroundColor: accent,
                 justifyContent: 'center',
@@ -160,8 +160,8 @@ export default function appointment () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -179,7 +179,7 @@ export default function appointment () {
 
         <ThemedText type='subtitle'>Appointments</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <ThemedView style={{ flex: 1, padding: 20 }}>

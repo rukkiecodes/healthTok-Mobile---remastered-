@@ -41,8 +41,8 @@ export default function canceled () {
             placeholderContentFit='cover'
             transition={500}
             style={{
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               borderRadius: 50
             }}
           />

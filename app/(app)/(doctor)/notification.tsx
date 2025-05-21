@@ -11,6 +11,7 @@ import { router } from 'expo-router'
 import { Image } from 'expo-image'
 import { ThemedText } from '@/components/ThemedText'
 import HapticWrapper from '@/components/Harptic'
+import CustomImage from '@/components/CustomImage'
 
 export default function notification () {
   const theme = useColorScheme()
@@ -44,16 +45,13 @@ export default function notification () {
           gap: 20
         }}
       >
-        <Image
+        <CustomImage
           source={item?.patient?.displayImage?.image}
           placeholder={require('@/assets/images/images/avatar.png')}
           contentFit='cover'
           placeholderContentFit='cover'
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 50
-          }}
+          style={{ borderRadius: 50 }}
+          size={0.1}
         />
 
         <View>
@@ -76,8 +74,8 @@ export default function notification () {
         <TouchableOpacity
           onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -95,7 +93,7 @@ export default function notification () {
 
         <ThemedText type='subtitle'>Appointments</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <ThemedView style={{ flex: 1, padding: 20 }}>

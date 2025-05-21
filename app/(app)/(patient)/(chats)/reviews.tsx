@@ -1,4 +1,4 @@
-import { View, Text, Alert, TouchableOpacity, TextInput } from 'react-native'
+import { View, Alert, TouchableOpacity, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { Appbar, PaperProvider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/utils/fb';
+import HapticWrapper from '@/components/Harptic';
 
 export default function reviews () {
   const theme = useColorScheme()
@@ -43,11 +44,12 @@ export default function reviews () {
 
   return (
     <PaperProvider>
-      <Appbar.Header style={{ paddingHorizontal: 20, backgroundColor: theme == 'dark' ? appDark : light }}>
+      <Appbar.Header style={{ backgroundColor: theme == 'dark' ? appDark : light }}>
         <TouchableOpacity
+          onPress={router.back}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
@@ -99,8 +101,9 @@ export default function reviews () {
           }}
         />
 
-        <TouchableOpacity
+        <HapticWrapper
           onPress={submitReview}
+          haptic={false}
           style={{
             backgroundColor: accent, // your accent color
             padding: 15,
@@ -109,7 +112,7 @@ export default function reviews () {
           }}
         >
           <ThemedText type='body' font='Poppins-Bold' lightColor={light}>Submit Review</ThemedText>
-        </TouchableOpacity>
+        </HapticWrapper>
       </ThemedView>
     </PaperProvider>
   )

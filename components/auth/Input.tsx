@@ -58,7 +58,7 @@ export function Input ({
         style={{
           ...style,
           backgroundColor: transparent,
-          minHeight: 50,
+          minheight: 40,
           maxHeight: 200,
           paddingLeft: 30
         }}
@@ -87,8 +87,8 @@ export function Input ({
             position: 'absolute',
             right: 0,
             top: 0,
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}

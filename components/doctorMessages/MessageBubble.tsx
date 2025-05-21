@@ -52,7 +52,7 @@ const MessageBubble = ({
                 marginBottom: 10
               }}
             >
-              <ChatAvatar user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : participant} size={40} />
+              <ChatAvatar user={sender == auth.currentUser?.uid ? auth.currentUser?.uid : participant} size={0.07} />
 
               <View style={{ alignItems: sender == auth.currentUser?.uid ? 'flex-end' : 'flex-start' }}>
                 <Name

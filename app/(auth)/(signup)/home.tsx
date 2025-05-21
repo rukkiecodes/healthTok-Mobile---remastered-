@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { setAcceptTerms, setEmail, setName, setPassword } from '@/store/slices/signup'
 import axios from 'axios'
+import HapticWrapper from '@/components/Harptic'
 
 export default function Signup () {
   const theme = useColorScheme()
@@ -60,8 +61,8 @@ export default function Signup () {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -78,7 +79,7 @@ export default function Signup () {
 
         <ThemedText type='subtitle' font='Poppins-Bold'>Sign up</ThemedText>
 
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </Appbar.Header>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -155,16 +156,15 @@ export default function Signup () {
               </View>
             </View>
 
-            <TouchableOpacity
-              onPress={done}
-              disabled={!validateInputs()}
+            <HapticWrapper
+              onPress={() => validateInputs() && done()}
+              height={40}
               style={{
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 10,
                 backgroundColor: accent,
                 width: '100%',
-                height: 50,
                 paddingHorizontal: 20,
                 borderRadius: 50,
                 marginTop: 20,
@@ -175,7 +175,7 @@ export default function Signup () {
                 loading ? <ActivityIndicator color={light} /> :
                   <ThemedText lightColor={light} type='body' font='Poppins-Bold'>Next</ThemedText>
               }
-            </TouchableOpacity>
+            </HapticWrapper>
 
             <TouchableOpacity
               onPress={() => router.navigate('/(auth)/login')}
